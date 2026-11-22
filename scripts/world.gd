@@ -6,6 +6,10 @@ const GRID_ORIGIN := Vector2(640, 360)
 const AUTOSAVE_HINT := "Progress saves automatically"
 const VALLEY_TEXTURE: Texture2D = preload("res://assets/world/spring_valley_environment.svg")
 const CHICKEN_TEXTURE: Texture2D = preload("res://assets/animals/chicken.svg")
+const PLOT_TEXTURE: Texture2D = preload("res://assets/farming/tilled_plot.svg")
+const TURNIP_TEXTURE: Texture2D = preload("res://assets/farming/turnip_crop.svg")
+const TREE_TEXTURE: Texture2D = preload("res://assets/resources/oak_tree.svg")
+const ROCK_TEXTURE: Texture2D = preload("res://assets/resources/copper_rock.svg")
 
 var player: CharacterBody2D
 var day := 1
@@ -323,6 +327,7 @@ func _load_world_state(data: Dictionary) -> void:
 func _draw() -> void:
 	# Use the designed Spring Valley environment instead of the debug diamond field.
 	draw_texture(VALLEY_TEXTURE, Vector2(-160, -140))
+	_draw_resources()
 	_draw_plots()
 	_draw_chicken()
 
@@ -332,26 +337,22 @@ func _draw_home() -> void:
 func _draw_plots() -> void:
 	for plot in plots:
 		var p: Vector2 = plot.position
-		var color := Color("#76543a")
-		if str(plot.state) == "tilled":
-			color = Color("#68452f")
-		elif str(plot.state) == "planted":
-			color = Color("#526f3d")
-		elif str(plot.state) == "ripe":
-			color = Color("#8b7b37")
-		var points := PackedVector2Array([p + Vector2(0, -17), p + Vector2(29, 0), p + Vector2(0, 17), p + Vector2(-29, 0)])
-		draw_colored_polygon(points, color)
-		draw_polyline(PackedVector2Array([points[0], points[1], points[2], points[3], points[0]]), Color("#c8a77b"), 1.5)
+		draw_texture_rect(PLOT_TEXTURE, Rect2(p - Vector2(42, 25), Vector2(84, 50)), false)
 		if str(plot.state) in ["planted", "ripe"]:
-			var height := 8.0 + float(plot.get("growth", 0)) * 4.0
-			draw_line(p + Vector2(0, 2), p + Vector2(0, -height), Color("#5b9a48"), 3.0)
-			draw_circle(p + Vector2(-5, -height), 5.0, Color("#7ebc55"))
-			draw_circle(p + Vector2(5, -height - 2), 5.0, Color("#9bcf61"))
+			var crop_scale := 0.62 if str(plot.state) == "planted" else 0.82
+			draw_set_transform(p + Vector2(0, -14), 0.0, Vector2(crop_scale, crop_scale))
+			draw_texture(TURNIP_TEXTURE, Vector2(-48, -56))
+			draw_set_transform(Vector2.ZERO)
 		if bool(plot.watered):
-			draw_circle(p + Vector2(20, -11), 3.0, Color("#79c9ed"))
+			draw_circle(p + Vector2(27, -17), 5.0, Color("#a4e6ef"))
 
 func _draw_resources() -> void:
-	pass
+	for tree in trees:
+		var p: Vector2 = tree.position
+		draw_texture_rect(TREE_TEXTURE, Rect2(p - Vector2(55, 88), Vector2(110, 132)), false)
+	for rock in rocks:
+		var p: Vector2 = rock.position
+		draw_texture_rect(ROCK_TEXTURE, Rect2(p - Vector2(42, 33), Vector2(84, 66)), false)
 
 func _draw_chicken() -> void:
 	var p := Vector2(760, 430)
