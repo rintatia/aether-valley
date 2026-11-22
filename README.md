@@ -1,4 +1,4 @@
-# Aether Valley — Clean Start
+# Aether Valley 
 
 A new Godot 4.x / GDScript project. No legacy project code, repository workflows, APKs, or mixed branding are used as the foundation.
 
