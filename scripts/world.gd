@@ -103,19 +103,19 @@ func _build_hud() -> void:
 	layer.add_child(help)
 	var sleep_button := Button.new()
 	sleep_button.text = "SLEEP  /  NEXT DAY"
-	sleep_button.position = Vector2(18, 620)
+	sleep_button.position = Vector2(450, 620)
 	sleep_button.custom_minimum_size = Vector2(170, 42)
 	sleep_button.pressed.connect(_sleep)
 	layer.add_child(sleep_button)
 	var bag_button := Button.new()
 	bag_button.text = "BAG"
-	bag_button.position = Vector2(198, 620)
+	bag_button.position = Vector2(630, 620)
 	bag_button.custom_minimum_size = Vector2(90, 42)
 	bag_button.pressed.connect(_show_inventory)
 	layer.add_child(bag_button)
 	var tool_button := Button.new()
 	tool_button.text = "NEXT TOOL"
-	tool_button.position = Vector2(296, 620)
+	tool_button.position = Vector2(730, 620)
 	tool_button.custom_minimum_size = Vector2(120, 42)
 	tool_button.pressed.connect(_cycle_tool)
 	layer.add_child(tool_button)
