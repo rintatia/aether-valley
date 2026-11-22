@@ -295,6 +295,7 @@ func _use_plot(index: int) -> void:
 		plot.watered = true
 		_say("Crop watered. It will grow when you sleep.")
 	elif active_tool == "Hoe" and state == "ripe":
+		ActivityFeedback.play_harvest(self, plot.position + Vector2(0, -12))
 		inventory["Turnip"] = int(inventory["Turnip"]) + 1
 		coins += 8
 		plot.state = "empty"
