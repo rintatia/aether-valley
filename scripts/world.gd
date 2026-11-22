@@ -4,6 +4,8 @@ const TILE_W := 32.0
 const TILE_H := 16.0
 const GRID_ORIGIN := Vector2(640, 360)
 const AUTOSAVE_HINT := "Progress saves automatically"
+const VALLEY_TEXTURE: Texture2D = preload("res://assets/world/spring_valley_environment.svg")
+const CHICKEN_TEXTURE: Texture2D = preload("res://assets/animals/chicken.svg")
 
 var player: CharacterBody2D
 var day := 1
@@ -62,13 +64,13 @@ func _create_world_state() -> void:
 		for y in range(2):
 			plots.append({"id": "plot_%d_%d" % [x, y], "position": Vector2(520 + x * 58 + y * 29, 430 + y * 42 - x * 21), "state": "empty", "growth": 0, "watered": false})
 	trees = [
-		{"position": Vector2(355, 300), "hits": 0, "kind": "Oak"},
-		{"position": Vector2(405, 250), "hits": 0, "kind": "Birch"},
-		{"position": Vector2(920, 300), "hits": 0, "kind": "Willow"}
+		{"position": Vector2(730, 225), "hits": 0, "kind": "Oak"},
+		{"position": Vector2(780, 255), "hits": 0, "kind": "Birch"},
+		{"position": Vector2(1240, 360), "hits": 0, "kind": "Willow"}
 	]
 	rocks = [
-		{"position": Vector2(880, 480), "hits": 0, "kind": "Copper Vein"},
-		{"position": Vector2(945, 445), "hits": 0, "kind": "Stone Outcrop"}
+		{"position": Vector2(390, 700), "hits": 0, "kind": "Copper Vein"},
+		{"position": Vector2(1450, 760), "hits": 0, "kind": "Stone Outcrop"}
 	]
 
 func _build_hud() -> void:
@@ -319,26 +321,13 @@ func _load_world_state(data: Dictionary) -> void:
 		player.global_position = Vector2(float(position_data.get("x", 640.0)), float(position_data.get("y", 360.0)))
 
 func _draw() -> void:
-	draw_rect(Rect2(-5000, -5000, 10000, 10000), Color("#263d35"))
-	for gx in range(-30, 31):
-		for gy in range(-30, 31):
-			var center := GRID_ORIGIN + Vector2((gx - gy) * TILE_W, (gx + gy) * TILE_H)
-			var points := PackedVector2Array([center + Vector2(0, -TILE_H), center + Vector2(TILE_W, 0), center + Vector2(0, TILE_H), center + Vector2(-TILE_W, 0)])
-			var shade := Color("#355847") if (gx + gy) % 2 == 0 else Color("#315241")
-			draw_colored_polygon(points, shade)
-			draw_polyline(PackedVector2Array([points[0], points[1], points[2], points[3], points[0]]), Color("#41664f"), 1.0)
-	_draw_home()
+	# Use the designed Spring Valley environment instead of the debug diamond field.
+	draw_texture(VALLEY_TEXTURE, Vector2(-160, -140))
 	_draw_plots()
-	_draw_resources()
 	_draw_chicken()
 
 func _draw_home() -> void:
-	var p := Vector2(650, 245)
-	draw_colored_polygon(PackedVector2Array([p + Vector2(-65, -42), p + Vector2(0, -85), p + Vector2(65, -42), p + Vector2(0, 2)]), Color("#8d5944"))
-	draw_rect(Rect2(p.x - 43, p.y - 40, 86, 62), Color("#d7b77c"))
-	draw_rect(Rect2(p.x - 10, p.y - 12, 20, 34), Color("#694b38"))
-	draw_rect(Rect2(p.x - 34, p.y - 30, 16, 17), Color("#8fc1bd"))
-	draw_rect(Rect2(p.x + 18, p.y - 30, 16, 17), Color("#8fc1bd"))
+	pass
 
 func _draw_plots() -> void:
 	for plot in plots:
@@ -362,23 +351,10 @@ func _draw_plots() -> void:
 			draw_circle(p + Vector2(20, -11), 3.0, Color("#79c9ed"))
 
 func _draw_resources() -> void:
-	for tree in trees:
-		var p: Vector2 = tree.position
-		draw_rect(Rect2(p.x - 5, p.y - 4, 10, 29), Color("#79533a"))
-		draw_circle(p + Vector2(0, -16), 24, Color("#3f8050"))
-		draw_circle(p + Vector2(-12, -8), 15, Color("#4b9258"))
-		draw_circle(p + Vector2(12, -8), 15, Color("#367449"))
-	for rock in rocks:
-		var p: Vector2 = rock.position
-		draw_colored_polygon(PackedVector2Array([p + Vector2(-20, 7), p + Vector2(-13, -12), p + Vector2(5, -19), p + Vector2(20, -5), p + Vector2(17, 10)]), Color("#929a9b"))
-		if str(rock.kind) == "Copper Vein":
-			draw_circle(p + Vector2(2, -5), 4, Color("#d58a55"))
+	pass
 
 func _draw_chicken() -> void:
 	var p := Vector2(760, 430)
-	draw_circle(p + Vector2(0, 2), 12, Color("#e9dfc5"))
-	draw_circle(p + Vector2(8, -7), 7, Color("#f2e8d2"))
-	draw_colored_polygon(PackedVector2Array([p + Vector2(14, -8), p + Vector2(21, -5), p + Vector2(14, -2)]), Color("#d68b4e"))
-	draw_circle(p + Vector2(10, -9), 1.5, Color("#202020"))
+	draw_texture_rect(CHICKEN_TEXTURE, Rect2(p - Vector2(42, 36), Vector2(84, 72)), false)
 	if chicken.egg_ready:
-		draw_colored_polygon(PackedVector2Array([p + Vector2(-11, 1), p + Vector2(-6, 8), p + Vector2(-11, 15), p + Vector2(-16, 8)]), Color("#fff5dc"))
+		draw_circle(p + Vector2(-30, 26), 6.0, Color("#fff5dc"))
