@@ -1,0 +1,114 @@
+name: Aether Valley Android Release test APK
+
+on:
+  push:
+    branches:
+      - release/secure-android-signing
+    paths:
+      - '**.gd'
+      - '**.tscn'
+      - '**.tres'
+      - '**.res'
+      - '**.json'
+      - 'project.godot'
+      - 'export_presets.cfg'
+      - '.github/workflows/android-test-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-test-apk:
+    name: Build and verify signed ARM64 Release APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.1" "ndk;28.1.13356709" "cmake;3.10.2.4988404"
+
+      - name: Set up Godot 4.7.2 and export templates
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.2
+          use-dotnet: false
+          include-templates: true
+
+      - name: Generate temporary test signing key
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          keytool -genkeypair -v \
+            -keystore "$RUNNER_TEMP/aether-valley-test.keystore" \
+            -storepass test-only-temporary-password \
+            -keypass test-only-temporary-password \
+            -alias aether-valley-test \
+            -keyalg RSA -keysize 3072 -validity 30 \
+            -dname "CN=Aether Valley Temporary Test, OU=CI, O=Aether Valley, L=NA, ST=NA, C=US"
+          {
+            echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=$RUNNER_TEMP/aether-valley-test.keystore"
+            echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=aether-valley-test"
+            echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=test-only-temporary-password"
+          } >> "$GITHUB_ENV"
+
+      - name: Verify toolchain and import project
+        run: |
+          godot --version
+          java -version
+          adb version
+          test -d "$ANDROID_HOME/platforms/android-35"
+          test -d "$ANDROID_HOME/build-tools/35.0.1"
+          godot --headless --editor --path . --quit
+
+      - name: Install Godot Android Gradle template
+        run: godot --headless --editor --path . --install-android-build-template --quit
+
+      - name: Run gameplay regression smoke test
+        run: godot --headless --path . --script res://tests/gameplay_smoke.gd
+
+      - name: Export Android Release APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          APK="build/AetherValley-v1.0.0-r$GITHUB_RUN_NUMBER-release.apk"
+          godot --headless --path . --export-release "Android Release APK" "$APK"
+          test -s "$APK"
+          echo "APK_PATH=$APK" >> "$GITHUB_ENV"
+
+      - name: Verify APK integrity, signature, package and architecture
+        shell: bash
+        run: |
+          set -euo pipefail
+          unzip -t "$APK_PATH"
+          "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose --print-certs "$APK_PATH"
+          BADGING="$("$ANDROID_HOME/build-tools/35.0.1/aapt" dump badging "$APK_PATH")"
+          echo "$BADGING" | head -n 20
+          echo "$BADGING" | grep -F "package: name='com.rintatia.aethervalley'"
+          unzip -l "$APK_PATH" | grep -E 'lib/arm64-v8a/.*\.so$'
+          sha256sum "$APK_PATH" | tee build/SHA256SUMS.txt
+
+      - name: Upload signed Release test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aether-Valley-v1.0.0-r${{ github.run_number }}-Release-Test-APK
+          path: |
+            ${{ env.APK_PATH }}
+            build/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
