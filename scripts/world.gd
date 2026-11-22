@@ -116,14 +116,25 @@ func _build_hud() -> void:
 	layer.name = "GameHUD"
 	add_child(layer)
 	var panel := PanelContainer.new()
-	panel.position = Vector2(16, 14)
-	panel.custom_minimum_size = Vector2(390, 120)
+	panel.position = Vector2(22, 18)
+	panel.custom_minimum_size = Vector2(370, 112)
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.075, 0.16, 0.13, 0.88)
+	panel_style.border_color = Color("#b8c994")
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(14)
+	panel_style.content_margin_left = 16
+	panel_style.content_margin_right = 16
+	panel_style.content_margin_top = 10
+	panel_style.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", panel_style)
 	layer.add_child(panel)
 	var stack := VBoxContainer.new()
 	panel.add_child(stack)
 	var title := Label.new()
-	title.text = "AETHER VALLEY  /  HOMESTEAD"
-	title.add_theme_font_size_override("font_size", 19)
+	title.text = "AETHER VALLEY"
+	title.add_theme_font_size_override("font_size", 21)
+	title.add_theme_color_override("font_color", Color("#f3e8c8"))
 	stack.add_child(title)
 	_stats = Label.new()
 	stack.add_child(_stats)
@@ -137,10 +148,13 @@ func _build_hud() -> void:
 	_hud.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	layer.add_child(_hud)
 	var help := Label.new()
-	help.text = "MOVE: WASD / D-PAD     ACT: E     TOOL: Q     SLEEP: F     INVENTORY: I"
-	help.position = Vector2(18, 680)
-	help.add_theme_font_size_override("font_size", 13)
+	help.text = "WASD / ARROWS: MOVE     E: INTERACT     Q: TOOL     F: REST     I: BAG"
+	help.position = Vector2(22, 690)
+	help.add_theme_font_size_override("font_size", 12)
+	help.add_theme_color_override("font_color", Color("#f4e9cc"))
 	layer.add_child(help)
+	if OS.has_feature("mobile"):
+		help.visible = false
 	var sleep_button := Button.new()
 	sleep_button.text = "SLEEP  /  NEXT DAY"
 	sleep_button.position = Vector2(450, 620)
@@ -163,9 +177,9 @@ func _build_hud() -> void:
 func _update_hud() -> void:
 	if not is_instance_valid(_stats):
 		return
-	_stats.text = "%s  ·  DAY %02d  ·  %d G" % [season_names[season_index].to_upper(), day, coins]
+	_stats.text = "%s  ·  DAY %02d                         %d G" % [season_names[season_index], day, coins]
 	_inventory_label.text = "SEEDS %d   TURNIP %d   WOOD %d   STONE %d   ORE %d   EGG %d" % [int(inventory["Turnip Seeds"]), int(inventory["Turnip"]), int(inventory["Wood"]), int(inventory["Stone"]), int(inventory["Ore"]), int(inventory["Egg"])]
-	_tool_label.text = "TOOL: " + active_tool
+	_tool_label.text = "EQUIPPED  ·  " + active_tool
 	_hud.text = message
 
 func _say(text: String, seconds := 3.5) -> void:
