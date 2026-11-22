@@ -167,14 +167,13 @@ func _add_selected_item() -> void:
     sprite.scale = Vector2.ONE * float(_selected_item.get("scale", 1.0))
     sprite.z_index = int(_selected_item.get("z_index", 10))
     item.add_child(sprite)
-    sprite.owner = scene_root
-
-    if collision_toggle.button_pressed:
-        _add_collision(item, scene_root)
 
     scene_root.add_child(item)
     item.owner = scene_root
+    sprite.owner = scene_root
     item.position = Vector2.ZERO
+    if collision_toggle.button_pressed:
+        _add_collision(item, scene_root)
     EditorInterface.get_selection().clear()
     EditorInterface.get_selection().add_node(item)
     EditorInterface.get_editor_main_screen().grab_focus()
