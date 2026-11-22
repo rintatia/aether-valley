@@ -36,3 +36,5 @@ jobs:
         run: godot --headless --editor --path . --quit
       - name: Headless project launch
         run: godot --headless --path . --quit-after 3
+      - name: Gameplay smoke test
+        run: godot --headless --path . --script res://tests/gameplay_smoke.gd
