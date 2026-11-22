@@ -33,6 +33,7 @@ var _last_day := 1
 func _ready() -> void:
 	player = get_node_or_null("Player") as CharacterBody2D
 	_create_world_state()
+	_create_world_collisions()
 	_build_hud()
 	var saved := SaveService.load_game()
 	if not saved.is_empty():
@@ -76,6 +77,39 @@ func _create_world_state() -> void:
 		{"position": Vector2(390, 700), "hits": 0, "kind": "Copper Vein"},
 		{"position": Vector2(1450, 760), "hits": 0, "kind": "Stone Outcrop"}
 	]
+
+func _create_world_collisions() -> void:
+	# Physical boundaries keep the player inside the illustrated valley.
+	_add_collision_rect(Vector2(640, -145), Vector2(1640, 48))
+	_add_collision_rect(Vector2(640, 865), Vector2(1640, 48))
+	_add_collision_rect(Vector2(-185, 360), Vector2(48, 1050))
+	_add_collision_rect(Vector2(1465, 360), Vector2(48, 1050))
+	# Cottage footprint and resource trunks/outcrops are solid world objects.
+	_add_collision_rect(Vector2(190, 330), Vector2(205, 135))
+	for tree in trees:
+		_add_collision_circle(tree.position + Vector2(0, 18), 19.0)
+	for rock in rocks:
+		_add_collision_circle(rock.position + Vector2(0, 5), 23.0)
+
+func _add_collision_rect(center: Vector2, dimensions: Vector2) -> void:
+	var body := StaticBody2D.new()
+	body.position = center
+	var shape := CollisionShape2D.new()
+	var rectangle := RectangleShape2D.new()
+	rectangle.size = dimensions
+	shape.shape = rectangle
+	body.add_child(shape)
+	add_child(body)
+
+func _add_collision_circle(center: Vector2, radius: float) -> void:
+	var body := StaticBody2D.new()
+	body.position = center
+	var shape := CollisionShape2D.new()
+	var circle := CircleShape2D.new()
+	circle.radius = radius
+	shape.shape = circle
+	body.add_child(shape)
+	add_child(body)
 
 func _build_hud() -> void:
 	var layer := CanvasLayer.new()
