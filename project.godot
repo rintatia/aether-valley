@@ -1,5 +1,4 @@
-; Aether Valley — clean project baseline
-; Godot 4.x / GDScript. Temporary geometry is intentionally not final art.
+; Aether Valley — playable homestead build
 config_version=5
 
 [application]
@@ -23,6 +22,9 @@ move_right={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":68)
 move_up={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":87),Object(InputEventKey,"physical_keycode":4194320)]}
 move_down={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":83),Object(InputEventKey,"physical_keycode":4194322)]}
 interact={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":69)]}
+tool_next={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":81)]}
+advance_day={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":70)]}
+inventory={"deadzone":0.2,"events":[Object(InputEventKey,"physical_keycode":73)]}
 
 [rendering]
 textures/vram_compression/import_etc2_astc=true
