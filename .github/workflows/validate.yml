@@ -1,0 +1,38 @@
+name: Aether Valley validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Static source audit
+        run: python tests/static_audit.py
+      - name: Validate season data
+        run: python -m json.tool data/seasons.json > /dev/null
+
+  godot-import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.2
+          use-dotnet: false
+      - name: Import project and parse resources
+        run: godot --headless --editor --path . --quit
+      - name: Headless project launch
+        run: godot --headless --path . --quit-after 3
