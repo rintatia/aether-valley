@@ -22,6 +22,7 @@ var inventory := {"Turnip Seeds": 8, "Turnip": 0, "Wood": 0, "Stone": 0, "Ore": 
 var plots: Array[Dictionary] = []
 var trees: Array[Dictionary] = []
 var rocks: Array[Dictionary] = []
+var grass_patches: Array[Dictionary] = []
 var _tree_collision_bodies: Array[StaticBody2D] = []
 var _rock_collision_bodies: Array[StaticBody2D] = []
 var chicken := {"fed": false, "egg_ready": false}
@@ -80,6 +81,13 @@ func _create_world_state() -> void:
 	rocks = [
 		{"position": Vector2(390, 700), "hits": 0, "kind": "Copper Vein"},
 		{"position": Vector2(1450, 760), "hits": 0, "kind": "Stone Outcrop"}
+	]
+	grass_patches = [
+		{"position": Vector2(470, 350), "cut": false},
+		{"position": Vector2(900, 510), "cut": false},
+		{"position": Vector2(1080, 735), "cut": false},
+		{"position": Vector2(1360, 560), "cut": false},
+		{"position": Vector2(610, 650), "cut": false}
 	]
 
 func _create_world_collisions() -> void:
@@ -196,7 +204,7 @@ func _say(text: String, seconds := 3.5) -> void:
 	_update_hud()
 
 func _cycle_tool() -> void:
-	var tools := ["Hoe", "Watering Can", "Axe", "Pickaxe"]
+	var tools := ["Hoe", "Watering Can", "Axe", "Pickaxe", "Sickle"]
 	var index := tools.find(active_tool)
 	active_tool = tools[(index + 1) % tools.size()]
 	_say("Equipped " + active_tool, 1.5)
@@ -229,6 +237,14 @@ func _interact() -> void:
 				_say("The chicken needs hay.")
 		else:
 			_say("The chicken is content. Check back tomorrow.")
+		_mark_saved()
+		return
+	var grass_index := _nearest_grass()
+	if grass_index >= 0 and active_tool == "Sickle":
+		grass_patches[grass_index].cut = true
+		inventory["Hay"] = int(inventory["Hay"]) + 1
+		ActivityFeedback.play_grass_cut(self, grass_patches[grass_index].position)
+		_say("Grass cut: +1 Hay.")
 		_mark_saved()
 		return
 	var tree_index := _nearest_resource(trees)
@@ -267,6 +283,18 @@ func _interact() -> void:
 		_say("A quiet homestead. Press SLEEP to begin the next day.")
 		return
 	_say("Nothing to interact with nearby. Move closer to a plot, tree, rock, or chicken.")
+
+func _nearest_grass() -> int:
+	var best := -1
+	var best_distance := 64.0
+	for i in range(grass_patches.size()):
+		if bool(grass_patches[i].cut):
+			continue
+		var distance: float = player.global_position.distance_to(grass_patches[i].position)
+		if distance < best_distance:
+			best = i
+			best_distance = distance
+	return best
 
 func _nearest_resource(items: Array[Dictionary]) -> int:
 	var best := -1
@@ -313,6 +341,8 @@ func _sleep() -> void:
 	if day > 28:
 		day = 1
 		season_index = (season_index + 1) % season_names.size()
+	for patch in grass_patches:
+		patch.cut = false
 	for plot in plots:
 		if str(plot.state) == "planted" and bool(plot.watered):
 			plot.growth = int(plot.growth) + 1
@@ -351,6 +381,7 @@ func make_save_payload() -> Dictionary:
 		"plots": plots.duplicate(true),
 		"trees": trees.duplicate(true),
 		"rocks": rocks.duplicate(true),
+		"grass_patches": grass_patches.duplicate(true),
 		"chicken": chicken.duplicate(true),
 		"player_position": {"x": player.global_position.x, "y": player.global_position.y} if player != null else {"x": 640.0, "y": 360.0}
 	}
@@ -380,6 +411,11 @@ func _load_world_state(data: Dictionary) -> void:
 		for entry in saved_rocks:
 			if entry is Dictionary:
 				rocks.append(entry)
+	var saved_grass: Variant = data.get("grass_patches", [])
+	if saved_grass is Array and saved_grass.size() == grass_patches.size():
+		for i in range(saved_grass.size()):
+			if saved_grass[i] is Dictionary:
+				grass_patches[i] = saved_grass[i]
 	var saved_chicken: Variant = data.get("chicken", {})
 	if saved_chicken is Dictionary:
 		chicken = {"fed": bool(saved_chicken.get("fed", false)), "egg_ready": bool(saved_chicken.get("egg_ready", false))}
@@ -390,6 +426,7 @@ func _load_world_state(data: Dictionary) -> void:
 func _draw() -> void:
 	# Use the designed Spring Valley environment instead of the debug diamond field.
 	draw_texture(VALLEY_TEXTURE, Vector2(-160, -140))
+	_draw_grass()
 	_draw_resources()
 	_draw_plots()
 	_draw_chicken()
@@ -408,6 +445,15 @@ func _draw_plots() -> void:
 			draw_set_transform(Vector2.ZERO)
 		if bool(plot.watered):
 			draw_circle(p + Vector2(27, -17), 5.0, Color("#a4e6ef"))
+
+func _draw_grass() -> void:
+	for patch in grass_patches:
+		if bool(patch.cut):
+			continue
+		var p: Vector2 = patch.position
+		for i in range(5):
+			var offset := Vector2(float(i - 2) * 5.0, 0)
+			draw_line(p + offset, p + offset + Vector2(float(i - 2) * 2.0, -17.0 - float(i % 2) * 5.0), Color("#8fbd62"), 3.0, true)
 
 func _draw_resources() -> void:
 	for tree in trees:
