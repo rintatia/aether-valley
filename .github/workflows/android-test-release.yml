@@ -38,7 +38,9 @@ jobs:
 
       - name: Install Android SDK packages
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
+          set +o pipefail
+          yes | sdkmanager --licenses >/dev/null
+          set -o pipefail
           sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.1" "ndk;28.1.13356709" "cmake;3.10.2.4988404"
 
       - name: Set up Godot 4.7.2 and export templates
@@ -74,9 +76,6 @@ jobs:
           test -d "$ANDROID_HOME/platforms/android-35"
           test -d "$ANDROID_HOME/build-tools/35.0.1"
           godot --headless --editor --path . --quit
-
-      - name: Install Godot Android Gradle template
-        run: godot --headless --editor --path . --install-android-build-template --quit
 
       - name: Run gameplay regression smoke test
         run: godot --headless --path . --script res://tests/gameplay_smoke.gd
