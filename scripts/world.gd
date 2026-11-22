@@ -154,17 +154,17 @@ func _interact() -> void:
 		return
 	var chicken_pos := Vector2(760, 430)
 	if player.global_position.distance_to(chicken_pos) < 72.0:
-		if not chicken.fed:
+		if chicken.egg_ready:
+			chicken.egg_ready = false
+			inventory["Egg"] = int(inventory["Egg"]) + 1
+			_say("Collected a fresh egg.")
+		elif not chicken.fed:
 			if int(inventory["Hay"]) > 0:
 				inventory["Hay"] = int(inventory["Hay"]) - 1
 				chicken.fed = true
 				_say("You fed the chicken. It clucks happily.")
 			else:
 				_say("The chicken needs hay.")
-		elif chicken.egg_ready:
-			chicken.egg_ready = false
-			inventory["Egg"] = int(inventory["Egg"]) + 1
-			_say("Collected a fresh egg.")
 		else:
 			_say("The chicken is content. Check back tomorrow.")
 		_mark_saved()
