@@ -1,5 +1,7 @@
 extends Node2D
 
+const ActivityFeedback = preload("res://scripts/activity_feedback.gd")
+
 const TILE_W := 32.0
 const TILE_H := 16.0
 const GRID_ORIGIN := Vector2(640, 360)
