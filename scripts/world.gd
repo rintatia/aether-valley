@@ -292,16 +292,24 @@ func _load_world_state(data: Dictionary) -> void:
 			inventory[key] = maxi(0, int(saved_inventory.get(key, inventory[key])))
 	var saved_plots: Variant = data.get("plots", [])
 	if saved_plots is Array and saved_plots.size() == plots.size():
-		plots = saved_plots
+		for i in range(saved_plots.size()):
+			if saved_plots[i] is Dictionary:
+				plots[i] = saved_plots[i]
 	var saved_trees: Variant = data.get("trees", [])
 	if saved_trees is Array:
-		trees = saved_trees
+		trees.clear()
+		for entry in saved_trees:
+			if entry is Dictionary:
+				trees.append(entry)
 	var saved_rocks: Variant = data.get("rocks", [])
 	if saved_rocks is Array:
-		rocks = saved_rocks
+		rocks.clear()
+		for entry in saved_rocks:
+			if entry is Dictionary:
+				rocks.append(entry)
 	var saved_chicken: Variant = data.get("chicken", {})
 	if saved_chicken is Dictionary:
-		chicken = saved_chicken
+		chicken = {"fed": bool(saved_chicken.get("fed", false)), "egg_ready": bool(saved_chicken.get("egg_ready", false))}
 	var position_data: Variant = data.get("player_position", {})
 	if player != null and position_data is Dictionary:
 		player.global_position = Vector2(float(position_data.get("x", 640.0)), float(position_data.get("y", 360.0)))
@@ -369,4 +377,4 @@ func _draw_chicken() -> void:
 	draw_colored_polygon(PackedVector2Array([p + Vector2(14, -8), p + Vector2(21, -5), p + Vector2(14, -2)]), Color("#d68b4e"))
 	draw_circle(p + Vector2(10, -9), 1.5, Color("#202020"))
 	if chicken.egg_ready:
-		draw_ellipse(p + Vector2(-11, 8), Vector2(5, 7), Color("#fff5dc"))
+		draw_colored_polygon(PackedVector2Array([p + Vector2(-11, 1), p + Vector2(-6, 8), p + Vector2(-11, 15), p + Vector2(-16, 8)]), Color("#fff5dc"))
