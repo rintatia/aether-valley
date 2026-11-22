@@ -1,9 +1,17 @@
 extends Node2D
 
+const ActivityFeedback = preload("res://scripts/activity_feedback.gd")
+
 const TILE_W := 32.0
 const TILE_H := 16.0
 const GRID_ORIGIN := Vector2(640, 360)
 const AUTOSAVE_HINT := "Progress saves automatically"
+const VALLEY_TEXTURE: Texture2D = preload("res://assets/world/spring_valley_environment.svg")
+const CHICKEN_TEXTURE: Texture2D = preload("res://assets/animals/chicken.svg")
+const PLOT_TEXTURE: Texture2D = preload("res://assets/farming/tilled_plot.svg")
+const TURNIP_TEXTURE: Texture2D = preload("res://assets/farming/turnip_crop.svg")
+const TREE_TEXTURE: Texture2D = preload("res://assets/resources/oak_tree.svg")
+const ROCK_TEXTURE: Texture2D = preload("res://assets/resources/copper_rock.svg")
 
 var player: CharacterBody2D
 var day := 1
@@ -14,6 +22,9 @@ var inventory := {"Turnip Seeds": 8, "Turnip": 0, "Wood": 0, "Stone": 0, "Ore": 
 var plots: Array[Dictionary] = []
 var trees: Array[Dictionary] = []
 var rocks: Array[Dictionary] = []
+var grass_patches: Array[Dictionary] = []
+var _tree_collision_bodies: Array[StaticBody2D] = []
+var _rock_collision_bodies: Array[StaticBody2D] = []
 var chicken := {"fed": false, "egg_ready": false}
 var active_tool := "Hoe"
 var message := "Welcome to your new valley. Tend the soil and make it home."
@@ -27,6 +38,7 @@ var _last_day := 1
 func _ready() -> void:
 	player = get_node_or_null("Player") as CharacterBody2D
 	_create_world_state()
+	_create_world_collisions()
 	_build_hud()
 	var saved := SaveService.load_game()
 	if not saved.is_empty():
@@ -62,28 +74,83 @@ func _create_world_state() -> void:
 		for y in range(2):
 			plots.append({"id": "plot_%d_%d" % [x, y], "position": Vector2(520 + x * 58 + y * 29, 430 + y * 42 - x * 21), "state": "empty", "growth": 0, "watered": false})
 	trees = [
-		{"position": Vector2(355, 300), "hits": 0, "kind": "Oak"},
-		{"position": Vector2(405, 250), "hits": 0, "kind": "Birch"},
-		{"position": Vector2(920, 300), "hits": 0, "kind": "Willow"}
+		{"position": Vector2(730, 225), "hits": 0, "kind": "Oak"},
+		{"position": Vector2(780, 255), "hits": 0, "kind": "Birch"},
+		{"position": Vector2(1240, 360), "hits": 0, "kind": "Willow"}
 	]
 	rocks = [
-		{"position": Vector2(880, 480), "hits": 0, "kind": "Copper Vein"},
-		{"position": Vector2(945, 445), "hits": 0, "kind": "Stone Outcrop"}
+		{"position": Vector2(390, 700), "hits": 0, "kind": "Copper Vein"},
+		{"position": Vector2(1450, 760), "hits": 0, "kind": "Stone Outcrop"}
 	]
+	grass_patches = [
+		{"position": Vector2(470, 350), "cut": false},
+		{"position": Vector2(900, 510), "cut": false},
+		{"position": Vector2(1080, 735), "cut": false},
+		{"position": Vector2(1360, 560), "cut": false},
+		{"position": Vector2(610, 650), "cut": false}
+	]
+
+func _create_world_collisions() -> void:
+	# Physical boundaries keep the player inside the illustrated valley.
+	_add_collision_rect(Vector2(640, -145), Vector2(1640, 48))
+	_add_collision_rect(Vector2(640, 865), Vector2(1640, 48))
+	_add_collision_rect(Vector2(-185, 360), Vector2(48, 1050))
+	_add_collision_rect(Vector2(1465, 360), Vector2(48, 1050))
+	# Cottage footprint and resource trunks/outcrops are solid world objects.
+	_add_collision_rect(Vector2(190, 330), Vector2(205, 135))
+	_tree_collision_bodies.clear()
+	_rock_collision_bodies.clear()
+	for tree in trees:
+		_tree_collision_bodies.append(_add_collision_circle(tree.position + Vector2(0, 18), 19.0))
+	for rock in rocks:
+		_rock_collision_bodies.append(_add_collision_circle(rock.position + Vector2(0, 5), 23.0))
+
+func _add_collision_rect(center: Vector2, dimensions: Vector2) -> StaticBody2D:
+	var body := StaticBody2D.new()
+	body.position = center
+	var shape := CollisionShape2D.new()
+	var rectangle := RectangleShape2D.new()
+	rectangle.size = dimensions
+	shape.shape = rectangle
+	body.add_child(shape)
+	add_child(body)
+	return body
+
+func _add_collision_circle(center: Vector2, radius: float) -> StaticBody2D:
+	var body := StaticBody2D.new()
+	body.position = center
+	var shape := CollisionShape2D.new()
+	var circle := CircleShape2D.new()
+	circle.radius = radius
+	shape.shape = circle
+	body.add_child(shape)
+	add_child(body)
+	return body
 
 func _build_hud() -> void:
 	var layer := CanvasLayer.new()
 	layer.name = "GameHUD"
 	add_child(layer)
 	var panel := PanelContainer.new()
-	panel.position = Vector2(16, 14)
-	panel.custom_minimum_size = Vector2(390, 120)
+	panel.position = Vector2(22, 18)
+	panel.custom_minimum_size = Vector2(370, 112)
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.075, 0.16, 0.13, 0.88)
+	panel_style.border_color = Color("#b8c994")
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(14)
+	panel_style.content_margin_left = 16
+	panel_style.content_margin_right = 16
+	panel_style.content_margin_top = 10
+	panel_style.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", panel_style)
 	layer.add_child(panel)
 	var stack := VBoxContainer.new()
 	panel.add_child(stack)
 	var title := Label.new()
-	title.text = "AETHER VALLEY  /  HOMESTEAD"
-	title.add_theme_font_size_override("font_size", 19)
+	title.text = "AETHER VALLEY"
+	title.add_theme_font_size_override("font_size", 21)
+	title.add_theme_color_override("font_color", Color("#f3e8c8"))
 	stack.add_child(title)
 	_stats = Label.new()
 	stack.add_child(_stats)
@@ -97,10 +164,13 @@ func _build_hud() -> void:
 	_hud.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	layer.add_child(_hud)
 	var help := Label.new()
-	help.text = "MOVE: WASD / D-PAD     ACT: E     TOOL: Q     SLEEP: F     INVENTORY: I"
-	help.position = Vector2(18, 680)
-	help.add_theme_font_size_override("font_size", 13)
+	help.text = "WASD / ARROWS: MOVE     E: INTERACT     Q: TOOL     F: REST     I: BAG"
+	help.position = Vector2(22, 690)
+	help.add_theme_font_size_override("font_size", 12)
+	help.add_theme_color_override("font_color", Color("#f4e9cc"))
 	layer.add_child(help)
+	if OS.has_feature("mobile"):
+		help.visible = false
 	var sleep_button := Button.new()
 	sleep_button.text = "SLEEP  /  NEXT DAY"
 	sleep_button.position = Vector2(450, 620)
@@ -123,9 +193,9 @@ func _build_hud() -> void:
 func _update_hud() -> void:
 	if not is_instance_valid(_stats):
 		return
-	_stats.text = "%s  ·  DAY %02d  ·  %d G" % [season_names[season_index].to_upper(), day, coins]
+	_stats.text = "%s  ·  DAY %02d                         %d G" % [season_names[season_index], day, coins]
 	_inventory_label.text = "SEEDS %d   TURNIP %d   WOOD %d   STONE %d   ORE %d   EGG %d" % [int(inventory["Turnip Seeds"]), int(inventory["Turnip"]), int(inventory["Wood"]), int(inventory["Stone"]), int(inventory["Ore"]), int(inventory["Egg"])]
-	_tool_label.text = "TOOL: " + active_tool
+	_tool_label.text = "EQUIPPED  ·  " + active_tool
 	_hud.text = message
 
 func _say(text: String, seconds := 3.5) -> void:
@@ -134,7 +204,7 @@ func _say(text: String, seconds := 3.5) -> void:
 	_update_hud()
 
 func _cycle_tool() -> void:
-	var tools := ["Hoe", "Watering Can", "Axe", "Pickaxe"]
+	var tools := ["Hoe", "Watering Can", "Axe", "Pickaxe", "Sickle"]
 	var index := tools.find(active_tool)
 	active_tool = tools[(index + 1) % tools.size()]
 	_say("Equipped " + active_tool, 1.5)
@@ -169,11 +239,22 @@ func _interact() -> void:
 			_say("The chicken is content. Check back tomorrow.")
 		_mark_saved()
 		return
+	var grass_index := _nearest_grass()
+	if grass_index >= 0 and active_tool == "Sickle":
+		grass_patches[grass_index].cut = true
+		inventory["Hay"] = int(inventory["Hay"]) + 1
+		ActivityFeedback.play_grass_cut(self, grass_patches[grass_index].position)
+		_say("Grass cut: +1 Hay.")
+		_mark_saved()
+		return
 	var tree_index := _nearest_resource(trees)
 	if tree_index >= 0 and active_tool == "Axe":
 		trees[tree_index].hits = int(trees[tree_index].hits) + 1
 		if int(trees[tree_index].hits) >= 3:
 			inventory["Wood"] = int(inventory["Wood"]) + 3
+			if tree_index < _tree_collision_bodies.size():
+				_tree_collision_bodies[tree_index].queue_free()
+				_tree_collision_bodies.remove_at(tree_index)
 			trees.remove_at(tree_index)
 			_say("Tree felled: +3 Wood.")
 		else:
@@ -190,6 +271,9 @@ func _interact() -> void:
 			else:
 				inventory["Stone"] = int(inventory["Stone"]) + 3
 				_say("Stone outcrop mined: +3 Stone.")
+			if rock_index < _rock_collision_bodies.size():
+				_rock_collision_bodies[rock_index].queue_free()
+				_rock_collision_bodies.remove_at(rock_index)
 			rocks.remove_at(rock_index)
 		else:
 			_say("Mining... (%d/3)" % int(rocks[rock_index].hits))
@@ -199,6 +283,18 @@ func _interact() -> void:
 		_say("A quiet homestead. Press SLEEP to begin the next day.")
 		return
 	_say("Nothing to interact with nearby. Move closer to a plot, tree, rock, or chicken.")
+
+func _nearest_grass() -> int:
+	var best := -1
+	var best_distance := 64.0
+	for i in range(grass_patches.size()):
+		if bool(grass_patches[i].cut):
+			continue
+		var distance: float = player.global_position.distance_to(grass_patches[i].position)
+		if distance < best_distance:
+			best = i
+			best_distance = distance
+	return best
 
 func _nearest_resource(items: Array[Dictionary]) -> int:
 	var best := -1
@@ -229,6 +325,7 @@ func _use_plot(index: int) -> void:
 		plot.watered = true
 		_say("Crop watered. It will grow when you sleep.")
 	elif active_tool == "Hoe" and state == "ripe":
+		ActivityFeedback.play_harvest(self, plot.position + Vector2(0, -12))
 		inventory["Turnip"] = int(inventory["Turnip"]) + 1
 		coins += 8
 		plot.state = "empty"
@@ -244,6 +341,8 @@ func _sleep() -> void:
 	if day > 28:
 		day = 1
 		season_index = (season_index + 1) % season_names.size()
+	for patch in grass_patches:
+		patch.cut = false
 	for plot in plots:
 		if str(plot.state) == "planted" and bool(plot.watered):
 			plot.growth = int(plot.growth) + 1
@@ -282,6 +381,7 @@ func make_save_payload() -> Dictionary:
 		"plots": plots.duplicate(true),
 		"trees": trees.duplicate(true),
 		"rocks": rocks.duplicate(true),
+		"grass_patches": grass_patches.duplicate(true),
 		"chicken": chicken.duplicate(true),
 		"player_position": {"x": player.global_position.x, "y": player.global_position.y} if player != null else {"x": 640.0, "y": 360.0}
 	}
@@ -311,6 +411,11 @@ func _load_world_state(data: Dictionary) -> void:
 		for entry in saved_rocks:
 			if entry is Dictionary:
 				rocks.append(entry)
+	var saved_grass: Variant = data.get("grass_patches", [])
+	if saved_grass is Array and saved_grass.size() == grass_patches.size():
+		for i in range(saved_grass.size()):
+			if saved_grass[i] is Dictionary:
+				grass_patches[i] = saved_grass[i]
 	var saved_chicken: Variant = data.get("chicken", {})
 	if saved_chicken is Dictionary:
 		chicken = {"fed": bool(saved_chicken.get("fed", false)), "egg_ready": bool(saved_chicken.get("egg_ready", false))}
@@ -319,66 +424,47 @@ func _load_world_state(data: Dictionary) -> void:
 		player.global_position = Vector2(float(position_data.get("x", 640.0)), float(position_data.get("y", 360.0)))
 
 func _draw() -> void:
-	draw_rect(Rect2(-5000, -5000, 10000, 10000), Color("#263d35"))
-	for gx in range(-30, 31):
-		for gy in range(-30, 31):
-			var center := GRID_ORIGIN + Vector2((gx - gy) * TILE_W, (gx + gy) * TILE_H)
-			var points := PackedVector2Array([center + Vector2(0, -TILE_H), center + Vector2(TILE_W, 0), center + Vector2(0, TILE_H), center + Vector2(-TILE_W, 0)])
-			var shade := Color("#355847") if (gx + gy) % 2 == 0 else Color("#315241")
-			draw_colored_polygon(points, shade)
-			draw_polyline(PackedVector2Array([points[0], points[1], points[2], points[3], points[0]]), Color("#41664f"), 1.0)
-	_draw_home()
-	_draw_plots()
+	# Use the designed Spring Valley environment instead of the debug diamond field.
+	draw_texture(VALLEY_TEXTURE, Vector2(-160, -140))
+	_draw_grass()
 	_draw_resources()
+	_draw_plots()
 	_draw_chicken()
 
 func _draw_home() -> void:
-	var p := Vector2(650, 245)
-	draw_colored_polygon(PackedVector2Array([p + Vector2(-65, -42), p + Vector2(0, -85), p + Vector2(65, -42), p + Vector2(0, 2)]), Color("#8d5944"))
-	draw_rect(Rect2(p.x - 43, p.y - 40, 86, 62), Color("#d7b77c"))
-	draw_rect(Rect2(p.x - 10, p.y - 12, 20, 34), Color("#694b38"))
-	draw_rect(Rect2(p.x - 34, p.y - 30, 16, 17), Color("#8fc1bd"))
-	draw_rect(Rect2(p.x + 18, p.y - 30, 16, 17), Color("#8fc1bd"))
+	pass
 
 func _draw_plots() -> void:
 	for plot in plots:
 		var p: Vector2 = plot.position
-		var color := Color("#76543a")
-		if str(plot.state) == "tilled":
-			color = Color("#68452f")
-		elif str(plot.state) == "planted":
-			color = Color("#526f3d")
-		elif str(plot.state) == "ripe":
-			color = Color("#8b7b37")
-		var points := PackedVector2Array([p + Vector2(0, -17), p + Vector2(29, 0), p + Vector2(0, 17), p + Vector2(-29, 0)])
-		draw_colored_polygon(points, color)
-		draw_polyline(PackedVector2Array([points[0], points[1], points[2], points[3], points[0]]), Color("#c8a77b"), 1.5)
+		draw_texture_rect(PLOT_TEXTURE, Rect2(p - Vector2(42, 25), Vector2(84, 50)), false)
 		if str(plot.state) in ["planted", "ripe"]:
-			var height := 8.0 + float(plot.get("growth", 0)) * 4.0
-			draw_line(p + Vector2(0, 2), p + Vector2(0, -height), Color("#5b9a48"), 3.0)
-			draw_circle(p + Vector2(-5, -height), 5.0, Color("#7ebc55"))
-			draw_circle(p + Vector2(5, -height - 2), 5.0, Color("#9bcf61"))
+			var crop_scale := 0.62 if str(plot.state) == "planted" else 0.82
+			draw_set_transform(p + Vector2(0, -14), 0.0, Vector2(crop_scale, crop_scale))
+			draw_texture(TURNIP_TEXTURE, Vector2(-48, -56))
+			draw_set_transform(Vector2.ZERO)
 		if bool(plot.watered):
-			draw_circle(p + Vector2(20, -11), 3.0, Color("#79c9ed"))
+			draw_circle(p + Vector2(27, -17), 5.0, Color("#a4e6ef"))
+
+func _draw_grass() -> void:
+	for patch in grass_patches:
+		if bool(patch.cut):
+			continue
+		var p: Vector2 = patch.position
+		for i in range(5):
+			var offset := Vector2(float(i - 2) * 5.0, 0)
+			draw_line(p + offset, p + offset + Vector2(float(i - 2) * 2.0, -17.0 - float(i % 2) * 5.0), Color("#8fbd62"), 3.0, true)
 
 func _draw_resources() -> void:
 	for tree in trees:
 		var p: Vector2 = tree.position
-		draw_rect(Rect2(p.x - 5, p.y - 4, 10, 29), Color("#79533a"))
-		draw_circle(p + Vector2(0, -16), 24, Color("#3f8050"))
-		draw_circle(p + Vector2(-12, -8), 15, Color("#4b9258"))
-		draw_circle(p + Vector2(12, -8), 15, Color("#367449"))
+		draw_texture_rect(TREE_TEXTURE, Rect2(p - Vector2(55, 88), Vector2(110, 132)), false)
 	for rock in rocks:
 		var p: Vector2 = rock.position
-		draw_colored_polygon(PackedVector2Array([p + Vector2(-20, 7), p + Vector2(-13, -12), p + Vector2(5, -19), p + Vector2(20, -5), p + Vector2(17, 10)]), Color("#929a9b"))
-		if str(rock.kind) == "Copper Vein":
-			draw_circle(p + Vector2(2, -5), 4, Color("#d58a55"))
+		draw_texture_rect(ROCK_TEXTURE, Rect2(p - Vector2(42, 33), Vector2(84, 66)), false)
 
 func _draw_chicken() -> void:
 	var p := Vector2(760, 430)
-	draw_circle(p + Vector2(0, 2), 12, Color("#e9dfc5"))
-	draw_circle(p + Vector2(8, -7), 7, Color("#f2e8d2"))
-	draw_colored_polygon(PackedVector2Array([p + Vector2(14, -8), p + Vector2(21, -5), p + Vector2(14, -2)]), Color("#d68b4e"))
-	draw_circle(p + Vector2(10, -9), 1.5, Color("#202020"))
+	draw_texture_rect(CHICKEN_TEXTURE, Rect2(p - Vector2(42, 36), Vector2(84, 72)), false)
 	if chicken.egg_ready:
-		draw_colored_polygon(PackedVector2Array([p + Vector2(-11, 1), p + Vector2(-6, 8), p + Vector2(-11, 15), p + Vector2(-16, 8)]), Color("#fff5dc"))
+		draw_circle(p + Vector2(-30, 26), 6.0, Color("#fff5dc"))

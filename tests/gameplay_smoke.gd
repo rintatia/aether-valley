@@ -34,7 +34,7 @@ func _run() -> void:
 	var payload: Dictionary = world.call("make_save_payload")
 	assert(payload.has("inventory") and payload.has("plots") and payload.has("player_position"), "Save payload must include gameplay progress")
 
-	world.get("player").global_position = Vector2(355, 300)
+	world.get("player").global_position = Vector2(730, 225)
 	world.set("active_tool", "Axe")
 	world.call("_interact")
 	world.call("_interact")
