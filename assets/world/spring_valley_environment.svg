@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs>
+ <linearGradient id="grass" x2="0" y2="1"><stop stop-color="#8ebd78"/><stop offset=".48" stop-color="#6eaa70"/><stop offset="1" stop-color="#477e61"/></linearGradient>
+ <linearGradient id="water" x2="0" y2="1"><stop stop-color="#9ce5e5"/><stop offset=".55" stop-color="#49aeb9"/><stop offset="1" stop-color="#287d91"/></linearGradient>
+ <linearGradient id="cliff" x2="0" y2="1"><stop stop-color="#9caa8a"/><stop offset=".45" stop-color="#687d70"/><stop offset="1" stop-color="#405d58"/></linearGradient>
+ <linearGradient id="roof" x2="0" y2="1"><stop stop-color="#d87861"/><stop offset="1" stop-color="#8f4847"/></linearGradient>
+ <pattern id="grassfleck" width="34" height="30" patternUnits="userSpaceOnUse"><path d="M4 22l4-7m0 7l5-5M23 8l3-5m-2 8l5-4" stroke="#c5df91" stroke-width="2" opacity=".38"/></pattern>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="12"/></filter>
+</defs>
+<!-- distant sky and mountains -->
+<rect width="1600" height="1000" fill="#b8d8c0"/>
+<path d="M0 310L155 160 280 255 445 105 610 275 790 120 970 270 1165 110 1360 260 1510 145 1600 220V510H0Z" fill="#829d91"/>
+<path d="M0 355L175 230 300 325 470 190 625 340 815 210 1000 340 1190 210 1370 340 1530 220 1600 285V550H0Z" fill="#9bb8a1"/>
+<path d="M0 380Q350 300 650 390T1250 360T1600 380V1000H0Z" fill="url(#grass)"/>
+<path d="M0 380Q350 300 650 390T1250 360T1600 380V1000H0Z" fill="url(#grassfleck)"/>
+<!-- cliff ridge -->
+<path d="M0 465L110 405 215 420 330 365 445 415 545 365 650 405 760 345 875 390 985 340 1110 400 1230 350 1360 405 1490 350 1600 395V565H0Z" fill="url(#cliff)"/>
+<path d="M0 460L110 405 215 420 330 365 445 415 545 365 650 405 760 345 875 390 985 340 1110 400 1230 350 1360 405 1490 350 1600 395" fill="none" stroke="#c2c7a4" stroke-width="18" stroke-linejoin="round"/>
+<!-- waterfall and river -->
+<path d="M1030 385Q1065 455 1030 515Q990 590 1060 655Q1145 730 1090 820Q1055 880 1120 1000H1450Q1370 900 1400 825Q1445 735 1360 655Q1295 585 1345 510Q1380 450 1350 385Z" fill="#276f7b" opacity=".55"/>
+<path d="M1045 385Q1075 465 1040 520Q1010 590 1080 650Q1160 720 1110 820Q1070 900 1140 1000H1395Q1325 905 1355 825Q1395 735 1315 655Q1255 585 1300 520Q1335 450 1315 385Z" fill="url(#water)"/>
+<path d="M1070 390Q1090 460 1060 520M1300 390Q1320 465 1285 520M1115 660Q1190 720 1150 820" fill="none" stroke="#d4ffff" stroke-width="13" opacity=".72"/>
+<path d="M1075 680Q1210 740 1335 680M1115 850Q1230 910 1370 845" fill="none" stroke="#d8ffff" stroke-width="8" opacity=".55"/>
+<!-- stepping banks -->
+<g fill="#728875" stroke="#c4c7a4" stroke-width="7"><path d="M900 500l60-52 75 24 18 65-64 35-73-20z"/><path d="M1370 490l65-48 75 38-4 65-70 28-64-30z"/><path d="M920 760l70-48 66 32-12 62-77 22z"/><path d="M1380 760l60-42 75 35-5 65-80 22z"/></g>
+<!-- bridge -->
+<g transform="translate(1190 625)"><ellipse cx="0" cy="72" rx="150" ry="42" fill="#315a50" opacity=".3"/><path d="M-145 12Q0 92 145 12L130 55Q0 125-130 55Z" fill="#75523e" stroke="#493b32" stroke-width="8"/><path d="M-130 5Q0 78 130 5" fill="none" stroke="#d5a66b" stroke-width="16"/><path d="M-145 -5V-68M145 -5V-68M-105 15V-53M105 15V-53" stroke="#634631" stroke-width="12"/><path d="M-145 -65Q0 12 145 -65" fill="none" stroke="#b98251" stroke-width="13"/><path d="M-95 -35L-95 0M-45 -15L-45 25M5 -12L5 28M55 -22L55 18M100 -42L100 -2" stroke="#e0b77d" stroke-width="5"/></g>
+<!-- path -->
+<path d="M0 720Q250 650 470 705T850 700Q980 700 1050 760L1020 1000H0Z" fill="#c6b18a"/>
+<path d="M0 730Q250 660 470 715T850 710" fill="none" stroke="#e8d6aa" stroke-width="18"/>
+<g fill="#a28e70" opacity=".55"><path d="M80 770l48-12 20 22-54 15zM250 720l42-12 20 20-48 16zM470 765l52-12 18 22-58 15zM690 735l42-12 18 20-48 16zM870 780l52-12 18 22-48 15z"/></g>
+<!-- cottage -->
+<g transform="translate(350 470)">
+<ellipse cx="0" cy="170" rx="180" ry="38" fill="#315b4c" opacity=".28" filter="url(#shadow)"/>
+<path d="M-130 15L-5 -100 135 10V145H-130Z" fill="#e9c995" stroke="#6b5747" stroke-width="10"/>
+<path d="M-155 20L-8 -125 165 15L130 35L-8 -75L-120 45Z" fill="url(#roof)" stroke="#71484a" stroke-width="10"/>
+<path d="M-8 -118L-8 -72M30 -89L30 -48M68 -58L68 -20M-55 -84L-55 -45" stroke="#f3a17c" stroke-width="7"/>
+<rect x="-32" y="65" width="65" height="80" rx="5" fill="#674638"/><circle cx="17" cy="108" r="5" fill="#e8c879"/>
+<rect x="-105" y="30" width="42" height="42" fill="#8fd2d2" stroke="#8a654d" stroke-width="8"/><path d="M-84 30V72M-105 51H-63" stroke="#e8f4df" stroke-width="5"/>
+<rect x="65" y="30" width="42" height="42" fill="#8fd2d2" stroke="#8a654d" stroke-width="8"/><path d="M86 30V72M65 51H107" stroke="#e8f4df" stroke-width="5"/>
+<path d="M-130 145H135L160 165H-150Z" fill="#9a8064"/><path d="M-145 166H160" stroke="#e4d2aa" stroke-width="8"/>
+<g fill="#e7a6b6"><circle cx="-142" cy="25" r="12"/><circle cx="-122" cy="4" r="10"/><circle cx="142" cy="20" r="12"/><circle cx="125" cy="0" r="9"/></g>
+</g>
+<!-- windmill -->
+<g transform="translate(760 430)"><path d="M-42 0L42 0L30 180H-30Z" fill="#d5c29a" stroke="#6e5844" stroke-width="9"/><path d="M-60 5L0 -55 60 5L42 22H-42Z" fill="#a85c50" stroke="#68473e" stroke-width="8"/><circle cy="-18" r="16" fill="#8c6746"/><g fill="#f0dfb4" stroke="#765a43" stroke-width="7"><path d="M-9 -20L-25 -175L5 -190L9 -20Z"/><path d="M10 -18L165 -38L178 -8L10 8Z"/><path d="M8 -5L28 145L-2 158L-8 -5Z"/><path d="M-10 -7L-160 12L-174 -18L-10 -30Z"/></g></g>
+<!-- flowering trees -->
+<g transform="translate(130 410)"><path d="M0 0L-12 150H18L12 0Z" fill="#79553a"/><g fill="#e9a9c2" stroke="#c982a4" stroke-width="5"><circle cx="-50" cy="-30" r="55"/><circle cx="0" cy="-70" r="65"/><circle cx="55" cy="-25" r="55"/><circle cx="5" cy="-5" r="54"/></g><g fill="#fff0d4"><circle cx="-48" cy="-38" r="7"/><circle cx="15" cy="-85" r="8"/><circle cx="53" cy="-20" r="7"/><circle cx="-2" cy="0" r="8"/></g></g>
+<g transform="translate(890 365)"><path d="M0 0L-8 155H18L12 0Z" fill="#745139"/><g fill="#477e52" stroke="#2f674b" stroke-width="6"><circle cx="-45" cy="-20" r="55"/><circle cx="8" cy="-62" r="66"/><circle cx="60" cy="-20" r="55"/><circle cx="8" cy="5" r="56"/></g><g fill="#d7e89a"><circle cx="-35" cy="-35" r="9"/><circle cx="20" cy="-75" r="8"/><circle cx="62" cy="-10" r="9"/></g></g>
+<!-- meadow details -->
+<g fill="#fff0d3"><circle cx="90" cy="825" r="8"/><circle cx="115" cy="840" r="7"/><circle cx="400" cy="860" r="8"/><circle cx="450" cy="835" r="7"/><circle cx="820" cy="875" r="8"/><circle cx="920" cy="900" r="7"/></g>
+<g fill="#e99fbd"><circle cx="170" cy="875" r="10"/><circle cx="520" cy="890" r="9"/><circle cx="760" cy="830" r="10"/><circle cx="980" cy="920" r="9"/></g>
+<!-- foreground boulders and crystal -->
+<g transform="translate(560 845)"><path d="M-75 40L-90 -20L-40 -75L30 -70L80 -10L62 48Z" fill="#71847a" stroke="#a9b7a0" stroke-width="9"/><path d="M-8 -5L15 -90L45 -25L32 10Z" fill="#65cbd2" stroke="#b6f1e8" stroke-width="7"/></g>
+<g transform="translate(1450 880)"><path d="M-95 45L-80 -25L-25 -70L55 -58L95 5L75 52Z" fill="#758879" stroke="#b2bda1" stroke-width="9"/><path d="M-10 -5L5 -105L42 -25L30 20Z" fill="#8a8ae5" stroke="#d3c8ff" stroke-width="7"/></g>
+<!-- foreground shrubs -->
+<g fill="#3d7952" stroke="#2f6649" stroke-width="5"><circle cx="35" cy="950" r="52"/><circle cx="90" cy="925" r="48"/><circle cx="1530" cy="970" r="58"/><circle cx="1470" cy="940" r="48"/></g>
+</svg>
