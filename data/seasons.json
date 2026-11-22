@@ -1,0 +1,16 @@
+[
+  {"id":"spring","name":"Spring","category":"Natural","rarity":"Common"},
+  {"id":"summer","name":"Summer","category":"Natural","rarity":"Common"},
+  {"id":"autumn","name":"Autumn","category":"Natural","rarity":"Common"},
+  {"id":"winter","name":"Winter","category":"Natural","rarity":"Common"},
+  {"id":"bloomveil","name":"Bloomveil","category":"Magical","rarity":"Rare"},
+  {"id":"crimsonfall","name":"Crimsonfall","category":"Magical","rarity":"Rare"},
+  {"id":"frostveil","name":"Frostveil","category":"Magical","rarity":"Rare"},
+  {"id":"solstice_of_embers","name":"Solstice of Embers","category":"Magical","rarity":"Rare"},
+  {"id":"lunaris","name":"Lunaris","category":"Celestial","rarity":"Rare"},
+  {"id":"starfall","name":"Starfall","category":"Celestial","rarity":"Rare"},
+  {"id":"tidal_bloom","name":"Tidal Bloom","category":"Elemental","rarity":"Rare"},
+  {"id":"veil_of_whispers","name":"Veil of Whispers","category":"Mythical","rarity":"Rare"},
+  {"id":"crystalwake","name":"Crystalwake","category":"Magical","rarity":"Rare"},
+  {"id":"astral_drift","name":"Astral Drift","category":"Celestial","rarity":"Rare"}
+]
