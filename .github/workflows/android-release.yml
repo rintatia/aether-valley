@@ -94,10 +94,6 @@ jobs:
         run: godot --headless --path . --script res://tests/gameplay_smoke.gd
 
       - name: Export signed release APK and AAB
-        env:
-          GODOT_ANDROID_KEYSTORE_RELEASE_PATH: ${{ env.GODOT_ANDROID_KEYSTORE_RELEASE_PATH }}
-          GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ env.GODOT_ANDROID_KEYSTORE_RELEASE_USER }}
-          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ env.GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD }}
         run: |
           mkdir -p build
           REVISION="r${GITHUB_RUN_NUMBER}"
