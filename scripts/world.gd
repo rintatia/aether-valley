@@ -20,6 +20,8 @@ var inventory := {"Turnip Seeds": 8, "Turnip": 0, "Wood": 0, "Stone": 0, "Ore": 
 var plots: Array[Dictionary] = []
 var trees: Array[Dictionary] = []
 var rocks: Array[Dictionary] = []
+var _tree_collision_bodies: Array[StaticBody2D] = []
+var _rock_collision_bodies: Array[StaticBody2D] = []
 var chicken := {"fed": false, "egg_ready": false}
 var active_tool := "Hoe"
 var message := "Welcome to your new valley. Tend the soil and make it home."
@@ -86,12 +88,14 @@ func _create_world_collisions() -> void:
 	_add_collision_rect(Vector2(1465, 360), Vector2(48, 1050))
 	# Cottage footprint and resource trunks/outcrops are solid world objects.
 	_add_collision_rect(Vector2(190, 330), Vector2(205, 135))
+	_tree_collision_bodies.clear()
+	_rock_collision_bodies.clear()
 	for tree in trees:
-		_add_collision_circle(tree.position + Vector2(0, 18), 19.0)
+		_tree_collision_bodies.append(_add_collision_circle(tree.position + Vector2(0, 18), 19.0))
 	for rock in rocks:
-		_add_collision_circle(rock.position + Vector2(0, 5), 23.0)
+		_rock_collision_bodies.append(_add_collision_circle(rock.position + Vector2(0, 5), 23.0))
 
-func _add_collision_rect(center: Vector2, dimensions: Vector2) -> void:
+func _add_collision_rect(center: Vector2, dimensions: Vector2) -> StaticBody2D:
 	var body := StaticBody2D.new()
 	body.position = center
 	var shape := CollisionShape2D.new()
@@ -100,8 +104,9 @@ func _add_collision_rect(center: Vector2, dimensions: Vector2) -> void:
 	shape.shape = rectangle
 	body.add_child(shape)
 	add_child(body)
+	return body
 
-func _add_collision_circle(center: Vector2, radius: float) -> void:
+func _add_collision_circle(center: Vector2, radius: float) -> StaticBody2D:
 	var body := StaticBody2D.new()
 	body.position = center
 	var shape := CollisionShape2D.new()
@@ -110,6 +115,7 @@ func _add_collision_circle(center: Vector2, radius: float) -> void:
 	shape.shape = circle
 	body.add_child(shape)
 	add_child(body)
+	return body
 
 func _build_hud() -> void:
 	var layer := CanvasLayer.new()
@@ -228,6 +234,9 @@ func _interact() -> void:
 		trees[tree_index].hits = int(trees[tree_index].hits) + 1
 		if int(trees[tree_index].hits) >= 3:
 			inventory["Wood"] = int(inventory["Wood"]) + 3
+			if tree_index < _tree_collision_bodies.size():
+				_tree_collision_bodies[tree_index].queue_free()
+				_tree_collision_bodies.remove_at(tree_index)
 			trees.remove_at(tree_index)
 			_say("Tree felled: +3 Wood.")
 		else:
@@ -244,6 +253,9 @@ func _interact() -> void:
 			else:
 				inventory["Stone"] = int(inventory["Stone"]) + 3
 				_say("Stone outcrop mined: +3 Stone.")
+			if rock_index < _rock_collision_bodies.size():
+				_rock_collision_bodies[rock_index].queue_free()
+				_rock_collision_bodies.remove_at(rock_index)
 			rocks.remove_at(rock_index)
 		else:
 			_say("Mining... (%d/3)" % int(rocks[rock_index].hits))
