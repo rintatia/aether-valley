@@ -252,9 +252,13 @@ func _sleep() -> void:
 				plot.state = "ripe"
 		elif str(plot.state) == "planted":
 			_say("An unwatered crop did not grow.", 2.0)
+	var laid_egg := bool(chicken.fed)
 	chicken.fed = false
-	chicken.egg_ready = true
-	_say("Day %02d begins. Crops advance, and the chicken laid an egg." % day, 4.0)
+	if laid_egg:
+		chicken.egg_ready = true
+		_say("Day %02d begins. Crops advance, and your fed chicken laid an egg." % day, 4.0)
+	else:
+		_say("Day %02d begins. Crops advance. Feed the chicken to receive an egg." % day, 4.0)
 	_mark_saved()
 
 func _show_inventory() -> void:
