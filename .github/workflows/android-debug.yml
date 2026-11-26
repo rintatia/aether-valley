@@ -3,16 +3,7 @@ name: Aether Valley Android debug APK
 on:
   workflow_dispatch:
   push:
-    branches: [main]
-    paths:
-      - '**.gd'
-      - '**.tscn'
-      - '**.tres'
-      - '**.res'
-      - '**.json'
-      - 'project.godot'
-      - 'export_presets.cfg'
-      - '.github/workflows/android-debug.yml'
+    branches: [main, topdown-v6]
 
 permissions:
   contents: read
@@ -63,6 +54,12 @@ jobs:
       - name: Import project resources
         run: godot --headless --editor --path . --quit
 
+      - name: Selftest (headless)
+        continue-on-error: true
+        run: |
+          mkdir -p build
+          godot --headless --path . -- --selftest 2>&1 | tee build/selftest.log
+
       - name: Export debug APK
         run: |
           mkdir -p build
@@ -74,6 +71,14 @@ jobs:
           unzip -t build/AetherValley-debug.apk
           "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose build/AetherValley-debug.apk
           "$ANDROID_HOME/build-tools/35.0.1/aapt" dump badging build/AetherValley-debug.apk | head -n 20
+
+      - name: Upload selftest log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selftest-log
+          path: build/selftest.log
+          if-no-files-found: ignore
 
       - name: Upload test APK
         uses: actions/upload-artifact@v4

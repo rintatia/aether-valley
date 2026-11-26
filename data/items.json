@@ -1,0 +1,11 @@
+{
+  "_note": "Semua angka adalah usulan awal (Proposed), disetel saat uji.",
+  "item_turnip_seed":  {"name": "Benih Lobak",   "type": "seed", "crop": "crop_turnip",  "price": 20},
+  "item_carrot_seed":  {"name": "Benih Wortel",  "type": "seed", "crop": "crop_carrot",  "price": 30},
+  "item_wheat_seed":   {"name": "Benih Gandum",  "type": "seed", "crop": "crop_wheat",   "price": 15},
+  "item_pumpkin_seed": {"name": "Benih Labu",    "type": "seed", "crop": "crop_pumpkin", "price": 80},
+  "item_turnip":  {"name": "Lobak",  "type": "crop", "sell": 55},
+  "item_carrot":  {"name": "Wortel", "type": "crop", "sell": 85},
+  "item_wheat":   {"name": "Gandum", "type": "crop", "sell": 38},
+  "item_pumpkin": {"name": "Labu",   "type": "crop", "sell": 220}
+}

@@ -1,33 +1,29 @@
-extends CharacterBody2D
+extends Node2D
+## Karakter placeholder (posisi = kaki). Ganti dengan sprite nanti.
 
-@export var move_speed := 185.0
-var touch_direction := Vector2.ZERO
-var facing := Vector2.DOWN
+var color: Color = Color("#D8574F")
+var facing: float = 1.0
+var walking: bool = false
+var t: float = 0.0
 
-func _physics_process(_delta: float) -> void:
-	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	input_vector += touch_direction
-	if input_vector.length() > 1.0:
-		input_vector = input_vector.normalized()
-	var projected := Vector2(input_vector.x - input_vector.y, (input_vector.x + input_vector.y) * 0.5)
-	if projected.length() > 1.0:
-		projected = projected.normalized()
-	velocity = projected * move_speed
-	if projected.length_squared() > 0.001:
-		facing = projected.normalized()
-		SaveService.mark_dirty()
-	move_and_slide()
+
+func _process(delta: float) -> void:
+	if walking:
+		t += delta
+		queue_redraw()
+
 
 func _draw() -> void:
-	draw_set_transform(Vector2(0, 10), 0.0, Vector2(1.5, 0.55))
-	draw_circle(Vector2.ZERO, 9.0, Color(0.04, 0.06, 0.05, 0.35))
+	var bob: float = 0.0
+	if walking:
+		bob = absf(sin(t * 12.0)) * -1.5
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.4))
+	draw_circle(Vector2.ZERO, 7.0, Color(0, 0, 0, 0.25))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	var body := PackedVector2Array()
-	for i in range(12):
-		var angle := TAU * float(i) / 12.0
-		body.append(Vector2(cos(angle) * 8.0, 1.0 + sin(angle) * 11.0))
-	draw_colored_polygon(body, Color("#6b4c91"))
-	draw_circle(Vector2(0, -11), 8, Color("#f0c9a5"))
-	draw_rect(Rect2(-8, -19, 16, 5), Color("#563b32"))
-	draw_rect(Rect2(-6, -12, 3, 2), Color("#332a2a"))
-	draw_rect(Rect2(3, -12, 3, 2), Color("#332a2a"))
+	draw_rect(Rect2(-4, -5 + bob, 3, 5), Color("#43251D"))
+	draw_rect(Rect2(1, -5 - bob, 3, 5), Color("#43251D"))
+	draw_rect(Rect2(-5, -15 + bob, 10, 11), color)
+	draw_circle(Vector2(0, -19 + bob), 5.0, Color("#F5D0B0"))
+	draw_rect(Rect2(-5, -25 + bob, 10, 4), Color("#43251D"))
+	draw_rect(Rect2(-2.0 + facing * 1.5, -20 + bob, 1, 2), Color("#241912"))
+	draw_rect(Rect2(1.0 + facing * 1.5, -20 + bob, 1, 2), Color("#241912"))

@@ -1,0 +1,7 @@
+{
+  "_note": "Proposed. days = hari disiram sampai siap panen.",
+  "crop_turnip":  {"name": "Lobak",  "days": 4, "item": "item_turnip",  "color": "#F9BECF"},
+  "crop_carrot":  {"name": "Wortel", "days": 5, "item": "item_carrot",  "color": "#DE9A4C"},
+  "crop_wheat":   {"name": "Gandum", "days": 3, "item": "item_wheat",   "color": "#E0B83C"},
+  "crop_pumpkin": {"name": "Labu",   "days": 8, "item": "item_pumpkin", "color": "#C87D38"}
+}
