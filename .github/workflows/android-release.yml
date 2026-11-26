@@ -80,6 +80,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="v7-build-$GITHUB_RUN_NUMBER"
+          grep -q "SELFTEST OK" build/selftest.log || { echo "Selftest gagal - tidak dirilis"; exit 1; }
           gh release create "$TAG" "$APK_PATH" --title "Aether Valley v7 build $GITHUB_RUN_NUMBER" --notes "APK release arm64 (kunci sementara). Selftest log: branch ci-logs." --target "$GITHUB_SHA"
       - uses: actions/upload-artifact@v4
         if: always()

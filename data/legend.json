@@ -1,0 +1,21 @@
+{
+  "_note": "Arti huruf di data/maps/*.txt",
+  ".": {"tile": "tile_rumput"},
+  ":": {"tile": "tile_tanah"},
+  "=": {"tile": "tile_jalan"},
+  "s": {"tile": "tile_pasir"},
+  "~": {"tile": "tile_air", "block": true},
+  "T": {"tile": "tile_rumput", "obj": "obj_pohon"},
+  "t": {"tile": "tile_rumput", "obj": "obj_semak"},
+  "o": {"tile": "tile_rumput", "obj": "obj_batu"},
+  "B": {"tile": "tile_rumput", "obj": "obj_kotak_kirim"},
+  "H": {"tile": "tile_rumput", "obj": "bld_rumah", "id": "rumah"},
+  "S": {"tile": "tile_rumput", "obj": "bld_toko", "id": "toko"},
+  "F": {"tile": "tile_rumput", "obj": "bld_pandai", "id": "pandai"},
+  "K": {"tile": "tile_rumput", "obj": "bld_kedai", "id": "kedai"},
+  "E": {"tile": "tile_rumput", "obj": "bld_tetua", "id": "tetua"},
+  "P": {"tile": "tile_jalan", "spawn": true},
+  "Q": {"tile": "tile_jalan", "spawn": true},
+  ">": {"tile": "tile_jalan", "gate": "kota"},
+  "<": {"tile": "tile_jalan", "gate": "ladang"}
+}

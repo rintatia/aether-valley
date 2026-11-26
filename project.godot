@@ -6,12 +6,20 @@ config/name="Aether Valley v7"
 run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
+[autoload]
+Art="*res://scripts/art.gd"
+UIKit="*res://scripts/uikit.gd"
+
 [display]
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep"
 window/handheld/orientation=4
+
+[input_devices]
+pointing/emulate_touch_from_mouse=false
+pointing/emulate_mouse_from_touch=true
 
 [rendering]
 renderer/rendering_method="gl_compatibility"
