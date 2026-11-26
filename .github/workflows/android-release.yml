@@ -54,7 +54,7 @@ jobs:
           set -euo pipefail
           mkdir -p build
           APK="build/AetherValleyV7-r$GITHUB_RUN_NUMBER.apk"
-          godot --headless --path . --export-release "Android Release APK" "$APK"
+          godot --headless --path . --export-release "Android Release APK" "$APK" 2>&1 | tee build/export.log
           test -s "$APK"
           echo "APK_PATH=$APK" >> "$GITHUB_ENV"
       - name: Verify APK
@@ -67,7 +67,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          cp build/selftest.log "$RUNNER_TEMP/selftest.log" || echo "no log" > "$RUNNER_TEMP/selftest.log"
+          { cat build/selftest.log; echo ---EXPORT---; cat build/export.log; } > "$RUNNER_TEMP/selftest.log" 2>&1 || true
           git config user.name ci; git config user.email ci@example.com
           git checkout --orphan ci-logs
           git rm -rf . >/dev/null 2>&1 || true
