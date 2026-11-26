@@ -6,7 +6,7 @@ on:
     branches: [main, topdown-v6]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   release-apk:
@@ -62,6 +62,25 @@ jobs:
           unzip -tq "$APK_PATH"
           "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose "$APK_PATH"
           "$ANDROID_HOME/build-tools/35.0.1/aapt" dump badging "$APK_PATH" | head -n 8
+      - name: Publish selftest log to ci-logs branch
+        if: always()
+        shell: bash
+        run: |
+          set -e
+          cp build/selftest.log "$RUNNER_TEMP/selftest.log" || echo "no log" > "$RUNNER_TEMP/selftest.log"
+          git config user.name ci; git config user.email ci@example.com
+          git checkout --orphan ci-logs
+          git rm -rf . >/dev/null 2>&1 || true
+          cp "$RUNNER_TEMP/selftest.log" selftest.log
+          git add selftest.log
+          git commit -qm "selftest log run $GITHUB_RUN_NUMBER"
+          git push -f origin ci-logs
+      - name: Publish APK as GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="build-$GITHUB_RUN_NUMBER"
+          gh release create "$TAG" "$APK_PATH" --title "Aether Valley build $GITHUB_RUN_NUMBER" --notes "APK release arm64 (kunci sementara). Selftest log: branch ci-logs." --target "$GITHUB_SHA"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
