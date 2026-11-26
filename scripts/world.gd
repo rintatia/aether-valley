@@ -62,12 +62,10 @@ func _ready() -> void:
 # ---------------- peta ----------------
 func load_map(id: String, from_gate: String) -> void:
 	map_id = id
-	var f: FileAccess = FileAccess.open("res://data/maps/%s.txt" % id, FileAccess.READ)
+	var m: Dictionary = Art.load_json("res://data/maps/%s.json" % id)
 	grid = PackedStringArray()
-	while f != null and not f.eof_reached():
-		var line: String = f.get_line()
-		if line.length() > 0:
-			grid.append(line)
+	for line: Variant in m.get("rows", []) as Array:
+		grid.append(str(line))
 	mh = grid.size()
 	mw = grid[0].length() if mh > 0 else 0
 	for c: Node in ysort.get_children():
