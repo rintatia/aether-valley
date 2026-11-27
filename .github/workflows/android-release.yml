@@ -51,7 +51,7 @@ jobs:
       - name: Screenshot Godot 4K (layar virtual)
         continue-on-error: true
         run: |
-          mkdir -p build/shots
+          mkdir -p build/shots && touch build/.gdignore
           sudo apt-get install -y -qq xvfb >/dev/null 2>&1 || true
           SHOT_DIR="$PWD/build/shots" xvfb-run -a -s "-screen 0 3840x2160x24" godot --path . --rendering-driver opengl3 --resolution 3840x2160 -- --screenshot 2>&1 | tee build/shots.log | tail -20
           ls -la build/shots
@@ -60,7 +60,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p build
+          mkdir -p build && touch build/.gdignore
           APK="build/AetherValleyV7-r$GITHUB_RUN_NUMBER.apk"
           godot --headless --path . --export-release "Android Release APK" "$APK" 2>&1 | tee build/export.log
           test -s "$APK"
