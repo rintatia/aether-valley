@@ -2,7 +2,7 @@ extends Node2D
 ## Satu lapis tileset dual-grid 15-piece SpriteCook (atlas 4x4).
 ## Petak logis (x,y) menempati [x*T, (x+1)*T]; ubin yang digambar bergeser setengah petak.
 ## Agar alami:
-## - tiap ubin punya 2 rupa: asli, atau versi cermin (bingkai lawan, dibalik kiri-kanan) -> pola tidak berbaris
+## - tiap ubin TEPI punya 2 rupa: asli, atau versi cermin (bingkai lawan, dibalik kiri-kanan) -> pola tepi tidak berbaris
 ## - sisa salju hanya muncul berkelompok (noise frekuensi rendah); di luar itu pakai atlas bersih
 
 const FRAME_BY_MASK: Array[int] = [-1, 15, 8, 9, 0, 11, 14, 7, 13, 4, 1, 10, 3, 2, 5, 6]
@@ -70,7 +70,8 @@ func _draw() -> void:
 			var tex: Texture2D = atlas
 			if clean_atlas != null and snow_noise.get_noise_2d(x, y) < SNOW_LEVEL:
 				tex = clean_atlas
-			var flip: bool = (hash2(x, y) & 1) == 1
+			# isi penuh (mask 15) tidak dicermin: ubin isi dirancang menyambung dengan orientasi aslinya
+			var flip: bool = m != 15 and (hash2(x, y) & 1) == 1
 			var fr: int = FRAME_BY_MASK[mirror_mask(m) if flip else m]
 			var src: Rect2 = Rect2((fr % 4) * tile, (fr / 4) * tile, tile, tile)
 			var px: float = x * tile - half
