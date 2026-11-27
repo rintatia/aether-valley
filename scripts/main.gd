@@ -9,6 +9,9 @@ func _ready() -> void:
 	if "--selftest" in OS.get_cmdline_user_args():
 		await _selftest()
 		return
+	if "--screenshot" in OS.get_cmdline_user_args():
+		await _screenshots()
+		return
 	_title()
 
 
@@ -52,6 +55,33 @@ func _title() -> void:
 		world = (load("res://scripts/world.gd") as GDScript).new()
 		add_child(world))
 	v.add_child(b)
+	var bt: Button = UIKit.button("Uji Tileset SpriteCook", 0, 64)
+	bt.pressed.connect(func() -> void:
+		layer.queue_free()
+		add_child((load("res://scripts/tiletest.gd") as GDScript).new()))
+	v.add_child(bt)
+
+
+# ---------------- tangkapan layar (CI, pakai layar virtual) ----------------
+func _shot(name: String) -> void:
+	for i: int in range(4):
+		await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	var img: Image = get_viewport().get_texture().get_image()
+	var dir: String = OS.get_environment("SHOT_DIR")
+	if dir == "":
+		dir = "user://"
+	var err: int = img.save_png(dir.path_join(name))
+	print("SHOT %s %dx%d err=%d" % [name, img.get_width(), img.get_height(), err])
+
+
+func _screenshots() -> void:
+	var tt: Node2D = (load("res://scripts/tiletest.gd") as GDScript).new()
+	add_child(tt)
+	await _shot("uji_tileset_zoom1.png")
+	tt.call("set_zoom", 3, Vector2(20 * 32, 9 * 32))
+	await _shot("uji_tileset_zoom4.png")
+	get_tree().quit(0)
 
 
 # ---------------- selftest ----------------

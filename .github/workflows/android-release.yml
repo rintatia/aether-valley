@@ -48,6 +48,14 @@ jobs:
         run: |
           mkdir -p build
           godot --headless --path . -- --selftest 2>&1 | tee build/selftest.log
+      - name: Screenshot Godot 4K (layar virtual)
+        continue-on-error: true
+        run: |
+          mkdir -p build/shots
+          sudo apt-get install -y -qq xvfb >/dev/null 2>&1 || true
+          SHOT_DIR="$PWD/build/shots" xvfb-run -a -s "-screen 0 3840x2160x24" godot --path . --rendering-driver opengl3 --resolution 3840x2160 -- --screenshot 2>&1 | tee build/shots.log | tail -20
+          ls -la build/shots
+
       - name: Export Release APK
         shell: bash
         run: |
@@ -67,12 +75,16 @@ jobs:
         shell: bash
         run: |
           set -e
+          cp -r build/shots "$RUNNER_TEMP/shots" 2>/dev/null || true
+          cp build/shots.log "$RUNNER_TEMP/shots.log" 2>/dev/null || true
           { cat build/selftest.log; echo ---EXPORT---; cat build/export.log; } > "$RUNNER_TEMP/selftest.log" 2>&1 || true
           git config user.name ci; git config user.email ci@example.com
           git checkout --orphan ci-logs
           git rm -rf . >/dev/null 2>&1 || true
           cp "$RUNNER_TEMP/selftest.log" selftest.log
-          git add selftest.log
+          cp -r "$RUNNER_TEMP/shots" shots 2>/dev/null || true
+          cp "$RUNNER_TEMP/shots.log" shots.log 2>/dev/null || true
+          git add -A
           git commit -qm "selftest log run $GITHUB_RUN_NUMBER"
           git push -f origin ci-logs
       - name: Publish APK as GitHub Release
