@@ -26,7 +26,10 @@ func _ready() -> void:
 			arr.append(int(v))
 		var layer: Node2D = DualGrid.new()
 		add_child(layer)
-		layer.call("setup", load("res://assets/uji_spritecook/%s.png" % str(ld["tex"])) as Texture2D, arr, map_w, map_h, T)
+		var clean: Texture2D = null
+		if ld.has("clean"):
+			clean = load("res://assets/uji_spritecook/%s.png" % str(ld["clean"])) as Texture2D
+		layer.call("setup", load("res://assets/uji_spritecook/%s.png" % str(ld["tex"])) as Texture2D, arr, map_w, map_h, T, clean)
 	cam = Camera2D.new()
 	cam.position = Vector2(map_w * T / 2.0, map_h * T / 2.0)
 	add_child(cam)
