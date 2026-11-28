@@ -140,6 +140,59 @@ for _ in range(int((W+H)*2*0.25)):
     elif side==2: x,y=d,rng.integers(0,H)
     else: x,y=W-1-d,rng.integers(0,H)
     s=bush[rng.integers(len(bush))]; stamp(s,int(x)-s.shape[1]//2,int(y)-s.shape[0]//2)
+# ---------- bercak tanah / tanah berbatu / pasir: tepi bergerigi alami + helai rumput menjorok ----------
+from scipy.ndimage import distance_transform_edt
+PET={'tanah':dict(base='#EDBB78',dark='#DE9A4C',light='#F5D0B0',stamps=['tanah']),
+     'tanah_batu':dict(base='#DE9A4C',dark='#C87D38',light='#EDBB78',stamps=['tanah','tanah_batu']),
+     'pasir':dict(base='#F5D0B0',dark='#E8B28A',light='#F5D0B0',stamps=['pasir'])}
+SOIL={k:L(k) for k in ('tanah','tanah_batu','pasir')}
+BLADES=sum([L(z,'blades') for z in ZONES],[])
+GRASS_TUFT=[s for s in ST['rumput_dasar']+ST['rumput_rimbun'] if not is_flower(s) and s.shape[0]<=6 and s.shape[1]<=7]
+for p in MAP.get('petak_tanah',[]):
+    pr=np.random.default_rng(p['seed']); cfgp=PET[p['jenis']]
+    R0=int(p['r']*1.6)+24; x0,y0=int(p['x'])-R0,int(p['y'])-R0; S=2*R0
+    if x0<0 or y0<0 or x0+S>W or y0+S>H: continue
+    yy2,xx2=np.mgrid[0:S,0:S].astype(np.float32)
+    def n2(sig,sd):
+        z=gaussian_filter(np.random.default_rng(sd).standard_normal((S,S)).astype(np.float32),sig); return z/(z.std()*3.4)
+    d=np.hypot((xx2-R0)/p['r'],(yy2-R0)/(p['r']*0.78))
+    f=d+0.55*n2(p['r']/4,p['seed'])+0.20*n2(4,p['seed']+1)+0.10*n2(1.3,p['seed']+2)
+    rnd=pr.random((S,S)).astype(np.float32)
+    m=f<1.0+(rnd-0.5)*0.10                       # tepi bergerigi (dither halus)
+    from scipy.ndimage import label as _lab
+    lb,kk=_lab(m)
+    if kk==0: continue
+    sz=np.bincount(lb.ravel()); sz[0]=0; m=lb==sz.argmax()   # satu bercak utama
+    sub=img[y0:y0+S,x0:x0+S]
+    sub[m]=hx(cfgp['base'])
+    tn=n2(10,p['seed']+3)+0.4*n2(3,p['seed']+4)
+    sub[m&(tn>0.48)]=hx(cfgp['dark']); sub[m&(tn<-0.52)]=hx(cfgp['light'])
+    sp=pr.random((S,S))
+    sub[m&(sp<0.03)]=hx(cfgp['dark']); sub[m&(sp>0.975)]=hx(cfgp['light'])
+    din=distance_transform_edt(m)
+    # tanah dekat tepi sedikit lebih gelap (lembap di bawah rumput)
+    sub[m&(din<=2.2)&(pr.random((S,S))<0.55)]=hx(cfgp['dark'])
+    # stempel kerikil/retakan dari tileset
+    pool=sum([SOIL[k] for k in cfgp['stamps']],[])
+    pts=np.argwhere(m&(din>5))
+    for y,x in pts[pr.choice(len(pts),size=min(len(pts),max(2,len(pts)//520)),replace=False)] if len(pts) else []:
+        st=pool[pr.integers(len(pool))]; h,w=st.shape[:2]
+        if y+h<S and x+w<S:
+            mm=st[...,3]>0; sub[y:y+h,x:x+w][mm]=st[mm,:3]
+    # helai rumput menjorok ke tanah sepanjang tepi (pangkal di rumput)
+    edge=np.argwhere(m&(din<=1.0)); pr.shuffle(edge)
+    for y,x in edge[:len(edge)//4]:
+        b=BLADES[pr.integers(len(BLADES))]; b=b[-int(pr.integers(3,8)):]
+        if pr.random()<0.5: b=b[:,::-1]
+        h,w=b.shape[:2]; yy0=y-h+int(pr.integers(2,5)); xx0=x-w//2
+        if 0<=yy0 and yy0+h<S and 0<=xx0 and xx0+w<S:
+            mm=b[...,3]>0; sub[yy0:yy0+h,xx0:xx0+w][mm]=b[mm,:3]
+    # beberapa gumpal rumput kecil tumbuh di dalam tanah dekat tepi
+    inner=np.argwhere(m&(din>2)&(din<10)); pr.shuffle(inner)
+    for y,x in inner[:max(2,len(inner)//380)]:
+        t=GRASS_TUFT[pr.integers(len(GRASS_TUFT))]; h,w=t.shape[:2]
+        if y+h<S and x+w<S:
+            mm=t[...,3]>0; sub[y:y+h,x:x+w][mm]=t[mm,:3]
 out=f'../../assets/lanskap/{MID}'
 os.makedirs(out,exist_ok=True)
 for f in os.listdir(out):

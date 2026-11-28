@@ -212,8 +212,34 @@ if cfg['tebang']:
             items.append({"obj": pick(UNDER), "x": t['x'] + int(rng.integers(-14, 15)), "y": t['y'] + int(rng.integers(2, 8)),
                           "skala": round(UNDER_SCALE * rng.uniform(0.8, 1.05), 3), "cermin": bool(rng.random() < 0.5)})
 
-# ---------- taburan flora Hutan Tebang: FL15-16, FL18-44 ----------
-if cfg['tebang']:
+# ---------- bercak tanah / tanah berbatu / pasir (ladang saja, sedikit) ----------
+petak = []
+if MID == 'ladang':
+    jenis = ['tanah', 'tanah_batu', 'pasir', 'tanah', 'tanah_batu', 'pasir', 'tanah', 'tanah_batu', 'pasir', 'tanah']
+    sp = (C // 2 * T, R // 2 * T)
+    for jn in jenis:
+        for _ in range(400):
+            r = float(rng.uniform(45, 120))
+            x, y = rng.uniform(0, W), rng.uniform(0, H)
+            cx, cy = int(x // T), int(y // T)
+            pad = int(r // T) + 3
+            if any(grid[yy][xx] in '#<>' for yy in range(max(0, cy - pad), min(R, cy + pad + 1)) for xx in range(max(0, cx - pad), min(C, cx + pad + 1))):
+                continue
+            if (x - sp[0]) ** 2 + (y - sp[1]) ** 2 < (r + 5 * T) ** 2 or in_corridor(x, y, pad=2):
+                continue
+            if any((x - p['x']) ** 2 + (y - p['y']) ** 2 < (r + p['r'] + 260) ** 2 for p in petak):
+                continue
+            petak.append({"x": round(float(x)), "y": round(float(y)), "r": round(r), "jenis": jn, "seed": int(rng.integers(1, 10 ** 6))})
+            break
+
+
+def on_petak(x, y, extra=14):
+    return any((x - p['x']) ** 2 + ((y - p['y']) * 1.25) ** 2 < (p['r'] * 1.25 + extra) ** 2 for p in petak)
+
+
+# ---------- taburan flora: Hutan Tebang FL15-16 & FL18-44, Ladang FL20-44 ----------
+if True:
+    DENS = 1.0 if cfg['tebang'] else 0.35
     SEMAK = ['FL20', 'FL21', 'FL22', 'FL23', 'FL24', 'FL25', 'FL26', 'FL27']
     BUNGA = ['FL28', 'FL29', 'FL30', 'FL31', 'FL32', 'FL33', 'FL34', 'FL40', 'FL41']
     RUMPUT = ['FL35', 'FL36', 'FL37', 'FL38', 'FL39']
@@ -225,7 +251,7 @@ if cfg['tebang']:
         cx, cy = int(x // T), int(y // T)
         if not (0 <= cx < C and 0 <= cy < R) or grid[cy][cx] in '#<>':
             return False
-        if in_corridor(x, y, pad=0.3):
+        if in_corridor(x, y, pad=0.3) or on_petak(x, y):
             return False
         return not near(x, y, r, k=0.7)
 
@@ -233,12 +259,13 @@ if cfg['tebang']:
         lo, hi = SC[code]
         s_ = rng.uniform(lo, hi)
         items.append({"obj": code, "x": round(float(x)), "y": round(float(y)), "skala": round(float(s_), 3),
-                      "cermin": bool(rng.random() < 0.5), "goyang": code not in SOLID and code not in BATU})
+                      "cermin": bool(rng.random() < 0.5), "goyang": code not in KAYU and code not in BATU,
+                      "lewat": code not in KAYU})
         if solid_r:
             add(x, y, solid_r)
 
     # rumpun: 4-7 tanaman melingkar dengan CELAH di tengah (bisa diterobos lewat tengah)
-    n_rumpun = int(C * R / 55)
+    n_rumpun = int(C * R / 55 * DENS)
     tema = [SEMAK + RUMPUT, RUMPUT + BUNGA, BUNGA + RUMPUT, SEMAK + BUNGA]
     placed = 0
     for _ in range(n_rumpun * 30):
@@ -258,12 +285,12 @@ if cfg['tebang']:
         placed += 1
     # tanaman tunggal & batu kecil di sela-sela
     singles = SEMAK + BUNGA + RUMPUT + list(BATU)
-    for _ in range(int(C * R / 7)):
+    for _ in range(int(C * R / 7 * DENS)):
         x, y = rng.uniform(0, W), rng.uniform(0, H)
         if free_spot(x, y, 10):
             put(singles[int(rng.integers(len(singles)))], x, y)
-    # tunggul & kayu tumbang (tak bisa dilewati) - jarang
-    for _ in range(int(C * R / 260) * 20):
+    # tunggul & kayu tumbang (tak bisa dilewati) - jarang, hanya Hutan Tebang
+    for _ in range(int(C * R / 260) * 20 if cfg['tebang'] else 0):
         if sum(1 for t in items if t['obj'] in KAYU and t.get('goyang') is False) >= int(C * R / 260):
             break
         x, y = rng.uniform(0, W), rng.uniform(0, H)
@@ -275,6 +302,7 @@ items.sort(key=lambda t: t["y"])
 used = sorted({t['obj'] for t in items} | {t['obj'] for t in tebang} | {'FL15'})
 json.dump({"_note": f"Peta {cfg['nama']}: '#' = sabuk hutan tertutup, '<'/'>' = gerbang. Dibuat oleh tools/lanskap/hutan_flora.py",
            "nama": cfg['nama'], "chunks": MID, "pohon": f"{MID}_pohon", "gerbang": cfg['gerbang'],
+           "petak_tanah": petak,
            "rows": [''.join(r) for r in grid]}, open(f'../../data/maps/{MID}.json', 'w'), indent=0)
 json.dump({"_note": "Sprite peta. x,y = pangkal (piksel dunia). 'tebang' = pohon yang bisa ditebang & tumbuh lagi.",
            "atlas": F['atlas'],

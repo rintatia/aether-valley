@@ -1,0 +1,128 @@
+{
+ "status_siang": {
+  "src_crop": [
+   22,
+   0
+  ],
+  "src_size": [
+   2115,
+   661
+  ],
+  "tampil": [
+   440,
+   138
+  ]
+ },
+ "status_malam": {
+  "src_crop": [
+   23,
+   0
+  ],
+  "src_size": [
+   2114,
+   666
+  ],
+  "tampil": [
+   440,
+   139
+  ]
+ },
+ "bar_shortcut": {
+  "src_crop": [
+   14,
+   178
+  ],
+  "src_size": [
+   2141,
+   379
+  ],
+  "tampil": [
+   640,
+   113
+  ]
+ },
+ "panel_tas": {
+  "src_crop": [
+   23,
+   22
+  ],
+  "src_size": [
+   1266,
+   1167
+  ],
+  "tampil": [
+   560,
+   516
+  ]
+ },
+ "ikon_setting": {
+  "src_crop": [
+   154,
+   95
+  ],
+  "src_size": [
+   972,
+   1014
+  ],
+  "tampil": [
+   84,
+   88
+  ]
+ },
+ "ikon_buku": {
+  "src_crop": [
+   59,
+   120
+  ],
+  "src_size": [
+   1136,
+   993
+  ],
+  "tampil": [
+   84,
+   73
+  ]
+ },
+ "ikon_peta": {
+  "src_crop": [
+   60,
+   88
+  ],
+  "src_size": [
+   1139,
+   1051
+  ],
+  "tampil": [
+   96,
+   89
+  ]
+ },
+ "ikon_tas": {
+  "src_crop": [
+   105,
+   105
+  ],
+  "src_size": [
+   1045,
+   1082
+  ],
+  "tampil": [
+   96,
+   99
+  ]
+ },
+ "pilih_karakter": {
+  "src_crop": [
+   22,
+   20
+  ],
+  "src_size": [
+   1381,
+   1069
+  ],
+  "tampil": [
+   820,
+   635
+  ]
+ }
+}

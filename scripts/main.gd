@@ -16,6 +16,7 @@ func _ready() -> void:
 
 
 func _title() -> void:
+	_clear()
 	layer = CanvasLayer.new()
 	layer.layer = 10
 	add_child(layer)
@@ -27,35 +28,71 @@ func _title() -> void:
 	bg.color = Color("#1E3F2B")
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_child(bg)
-	root.add_child(UIKit.version_label())
-	var v: VBoxContainer = VBoxContainer.new()
-	v.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	v.offset_left = -260
-	v.offset_right = 260
-	v.offset_top = -150
-	v.offset_bottom = 150
-	v.add_theme_constant_override("separation", 18)
-	root.add_child(v)
-	var t: Label = UIKit.label("Aether Valley", 56)
+	var vs: Vector2 = root.get_viewport_rect().size
+	var t: Label = UIKit.pixel_label("Aether Valley", 72, Color("#FFD65A"), 10, Color("#43251D"))
+	t.position = Vector2(0, vs.y * 0.24)
+	t.size = Vector2(vs.x, 90)
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(t)
-	var keys: Array = []
-	for k: String in Art.reg.keys():
-		if not k.begins_with("_"):
-			keys.append(k)
-	var have: int = 0
-	for k: String in keys:
-		if Art.has_file(k):
-			have += 1
-	var s: Label = UIKit.label("Aset terpasang: %d / %d" % [have, keys.size()], 22)
-	s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(s)
-	var b: Button = UIKit.button("Mulai", 0, 72)
-	b.pressed.connect(func() -> void:
+	root.add_child(t)
+	var sub: Label = UIKit.pixel_label("a cozy little valley", 24, Color("#C4EBF7"))
+	sub.position = Vector2(0, vs.y * 0.24 + 92)
+	sub.size = Vector2(vs.x, 30)
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(sub)
+	var b: TextureButton = UIKit.pill_button("Start", 300.0)
+	b.position = Vector2((vs.x - b.size.x) / 2.0, vs.y * 0.62)
+	b.pressed.connect(_choose_gender)
+	root.add_child(b)
+	var v: Label = UIKit.pixel_label(UIKit.version(), 16, Color(1, 1, 1, 0.75))
+	v.position = Vector2(0, vs.y - 34)
+	v.size = Vector2(vs.x - 24, 24)
+	v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	root.add_child(v)
+
+
+func _clear() -> void:
+	if layer != null:
 		layer.queue_free()
-		world = (load("res://scripts/world.gd") as GDScript).new()
-		add_child(world))
-	v.add_child(b)
+		layer = null
+	if world != null:
+		world.queue_free()
+		world = null
+
+
+func _screen(script_path: String) -> Control:
+	_clear()
+	layer = CanvasLayer.new()
+	layer.layer = 10
+	add_child(layer)
+	var c: Control = (load(script_path) as GDScript).new()
+	c.theme = UIKit.theme()
+	layer.add_child(c)
+	return c
+
+
+func _choose_gender() -> void:
+	var c: Control = _screen("res://scripts/layar_pilih.gd")
+	c.connect("confirmed", func(g: String) -> void:
+		Game.gender = g
+		Game.colors = {}
+		_customize())
+	c.connect("closed", _title)
+
+
+func _customize() -> void:
+	var c: Control = _screen("res://scripts/layar_kustom.gd")
+	c.connect("done", _start_world)
+	c.connect("back", _choose_gender)
+
+
+func _start_world() -> void:
+	_clear()
+	world = (load("res://scripts/world.gd") as GDScript).new()
+	add_child(world)
+
+
+func back_to_title() -> void:
+	_title()
 
 
 # ---------------- tangkapan layar (CI, pakai layar virtual) ----------------
@@ -72,46 +109,57 @@ func _shot(name: String) -> void:
 
 
 func _screenshots() -> void:
-	var w: Node2D = (load("res://scripts/world.gd") as GDScript).new()
-	add_child(w)
 	var pre: String = OS.get_environment("SHOT_PREFIX")
-	await _shot(pre + "ladang_x2_awal.png")
+	_title()
+	await _shot(pre + "01_judul.png")
+	_choose_gender()
+	await _shot(pre + "02_pilih.png")
+	var pil: Control = layer.get_child(0) as Control
+	pil.call("_choose", "female")
+	await get_tree().create_timer(0.2).timeout
+	await _shot(pre + "03_pilih_female.png")
+	Game.gender = "cewek"
+	_customize()
+	var kus: Control = layer.get_child(0) as Control
+	var sw: Dictionary = kus.get("swatches") as Dictionary
+	for part: String in ["hair", "shirt", "pants"]:
+		var b: Button = (sw[part] as Array)[3] as Button
+		b.emit_signal("pressed")
+	await get_tree().create_timer(0.25).timeout
+	await _shot(pre + "04_kustom.png")
+	_start_world()
+	var w: Node2D = world
+	Game.add_item("kayu", 37)
+	await get_tree().create_timer(0.3).timeout
 	w.call("_set_zoom", 2.0)
-	(w.get("player") as Node2D).position = Vector2(900, 230)
-	await _shot(pre + "ladang_tepi_hutan.png")
-	w.call("_set_zoom", 0.01)
-	await _shot(pre + "ladang_terjauh.png")
-	w.call("_set_zoom", 6.0)
-	await _shot(pre + "ladang_terdekat_x6.png")
+	await _shot(pre + "05_ladang_siang.png")
+	var petak: Array = (Art.load_json("res://data/maps/ladang.json")["petak_tanah"]) as Array
+	var p0: Dictionary = petak[0] as Dictionary
+	(w.get("player") as Node2D).position = Vector2(float(p0["x"]) + 120.0, float(p0["y"]) + 40.0)
+	await _shot(pre + "06_ladang_tanah.png")
+	var hud: CanvasLayer = w.get("hud") as CanvasLayer
+	hud.call("open_popup", "tas")
+	await get_tree().create_timer(0.2).timeout
+	await _shot(pre + "07_tas.png")
+	hud.call("open_popup", "peta")
+	await get_tree().create_timer(0.2).timeout
+	await _shot(pre + "08_peta.png")
+	hud.call("open_popup", "setting")
+	await get_tree().create_timer(0.2).timeout
+	await _shot(pre + "09_setting.png")
+	hud.call("open_popup", "buku")
+	await get_tree().create_timer(0.2).timeout
+	await _shot(pre + "10_buku.png")
+	hud.call("close_popup")
+	Game.minute = 21.0 * 60.0 + 30.0
+	await get_tree().create_timer(0.2).timeout
+	await _shot(pre + "11_ladang_malam.png")
+	Game.minute = 9.0 * 60.0
 	w.call("load_map", "hutan", "ladang")
-	w.call("_set_zoom", 2.0)
-	await _shot(pre + "hutan_x2_gerbang.png")
 	(w.get("player") as Node2D).position = Vector2(1900, 1500)
-	await _shot(pre + "hutan_x2_tengah.png")
-	# pohon terdekat ditebang -> tangkap saat tumbang ke kiri
-	var trees: Array = w.get("chop_trees") as Array
-	var bi: int = 0
-	var bd: float = 1e9
-	for i: int in range(trees.size()):
-		if int(trees[i]["size"]) < 2:
-			continue
-		var dd: float = ((trees[i]["node"] as Node2D).position - Vector2(1900, 1500)).length()
-		if dd < bd:
-			bd = dd
-			bi = i
-	(w.get("player") as Node2D).position = (trees[bi]["node"] as Node2D).position + Vector2(70, 40)
 	w.call("_set_zoom", 3.0)
-	await _shot(pre + "hutan_sebelum_tebang.png")
-	for k: int in range(3):
-		w.call("chop_hit", bi)
-	await get_tree().create_timer(0.62).timeout
-	await _shot(pre + "hutan_tumbang_jatuh.png")
-	await get_tree().create_timer(0.8).timeout
-	await _shot(pre + "hutan_tumbang.png")
-	w.call("_set_zoom", 4.0)
-	await _shot(pre + "hutan_tumbang_dekat.png")
-	w.call("_set_zoom", 0.01)
-	await _shot(pre + "hutan_terjauh.png")
+	await get_tree().create_timer(0.3).timeout
+	await _shot(pre + "12_hutan.png")
 	get_tree().quit(0)
 
 
@@ -219,5 +267,36 @@ func _selftest() -> void:
 	for g: Vector2i in world.gates.keys():
 		back = g
 	_check(world.find_path(arrive, back).size() > 0 and str(world.gates[back]) == "ladang", "jalur hutan -> gerbang ladang")
+	# --- HUD, waktu, tas ---
+	var hud: CanvasLayer = world.get("hud") as CanvasLayer
+	_check(hud != null and (hud.get("slot_nodes") as Array).size() == 10, "shortcut bar 10 slot")
+	Game.add_item("kayu", 1200)
+	_check(Game.count("kayu") >= 1200 and not (Game.bag[1] as Dictionary).is_empty(), "tas: kayu tertumpuk (maks 999/slot)")
+	hud.call("open_popup", "tas")
+	_check(bool(hud.get("modal_open")) and (hud.get("bag_slots") as Array).size() == 25, "popup tas 5x5")
+	hud.call("_bag_turn", 1)
+	_check(int(hud.get("bag_page")) == 1 and int(((hud.get("bag_slots") as Array)[0] as Dictionary)["index"]) == 25, "tas halaman 2 dari 10")
+	hud.call("_bag_turn", -2)
+	_check(int(hud.get("bag_page")) == 9, "tas berputar ke halaman 10")
+	for k: String in ["peta", "buku", "setting"]:
+		hud.call("open_popup", k)
+		_check(bool(hud.get("modal_open")), "popup %s terbuka" % k)
+	hud.call("close_popup")
+	_check(not bool(hud.get("modal_open")), "popup tertutup")
+	Game.minute = 6.0 * 60.0
+	Game.day = 1
+	_check(Game.clock_text() == "06:00" and Game.date_text() == "Mon . 1" and not Game.is_night(), "jam 06:00, Mon . 1, siang")
+	Game.tick(Game.DAY_SECONDS * 0.5)
+	_check(Game.clock_text() == "18:00" and Game.is_night(), "setengah hari = 12 jam -> 18:00 malam")
+	Game.day = 29
+	_check(Game.season_name() == "Summer" and Game.date_in_season() == 1, "hari 29 = Summer 1")
+	Game.coins = 99999999
+	Game.crystals = 999999
+	hud.call("_refresh_status", true)
+	_check((hud.get("lb_coin") as Label).text == "99999999" and (hud.get("lb_crystal") as Label).text == "999999", "koin 8 digit, kristal 6 digit")
+	Game.coins = 500
+	Game.crystals = 0
+	world.load_map("ladang", "hutan")
+	_check(world.sway_items.size() > 300, "ladang: flora bergoyang %d" % world.sway_items.size())
 	print("SELFTEST " + ("OK" if _fails == 0 else "GAGAL (%d)" % _fails))
 	get_tree().quit(0 if _fails == 0 else 1)

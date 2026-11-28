@@ -57,7 +57,8 @@ var press_pos: Vector2 = Vector2.ZERO
 var press_t: float = 0.0
 
 var hud: CanvasLayer
-var lbl_map: Label
+var map_title: String = ""
+var tint: CanvasModulate
 var toast: Label
 var toast_tw: Tween
 var fade: ColorRect
@@ -141,8 +142,7 @@ func load_map(id: String, from_gate: String) -> void:
 	cam.reset_smoothing()
 	path = PackedVector2Array()
 	pending = {}
-	lbl_map.text = str(m.get("nama", id))
-	_refresh_kayu()
+	map_title = str(m.get("nama", id))
 	ground.queue_redraw()
 	_fit_zoom()
 	_set_zoom(zoom_now)
@@ -218,7 +218,7 @@ func _place_trees(id: String) -> void:
 		var code: String = str(t["obj"])
 		if bool(t.get("goyang", false)):
 			_register_sway(holder, float((regions[code] as Array)[2]) * float(t["skala"]), float((regions[code] as Array)[3]) * float(t["skala"]))
-		if bool(blocks.get(code, true)) and not bool(t.get("goyang", false)):
+		if bool(blocks.get(code, true)) and not bool(t.get("goyang", false)) and not bool(t.get("lewat", false)):
 			_block_base(holder.position, float((regions[code] as Array)[2]) * float(t["skala"]), float(tapak.get(code, 0.4)))
 	# pohon tebang: 3 ayunan -> tumbang ke kiri & hilang -> tumbuh lagi di titik ACAK (1 hari = 5 menit)
 	chop_kinds.clear()
@@ -564,8 +564,8 @@ func _clear_fallen(ct: Dictionary) -> void:
 	ct["log_cells"] = []
 	var got: int = [2, 4, 6][int(ct["size"])] + randi() % 2
 	kayu += got
-	_refresh_kayu()
-	show_toast("+%d kayu" % got)
+	Game.add_item("kayu", got)
+	show_toast("+%d Wood" % got)
 	ct["state"] = "hilang"
 	ct["node"] = null
 	ct["regrow"] = REGROW_SECONDS
@@ -652,63 +652,16 @@ func find_path(from: Vector2i, to: Vector2i) -> PackedVector2Array:
 
 # ---------------- HUD ----------------
 func _build_hud() -> void:
-	hud = CanvasLayer.new()
-	hud.layer = 5
+	hud = (load("res://scripts/hud.gd") as GDScript).new()
+	hud.set("world", self)
 	add_child(hud)
-	var root: Control = Control.new()
-	root.theme = UIKit.theme()
-	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hud.add_child(root)
-	lbl_map = UIKit.label("", 26)
-	lbl_map.position = Vector2(16, 12)
-	lbl_kayu = UIKit.label("Kayu: 0", 22)
-	lbl_kayu.position = Vector2(16, 50)
-	root.add_child(lbl_kayu)
-	root.add_child(lbl_map)
-	root.add_child(UIKit.version_label())
-	var box: HBoxContainer = HBoxContainer.new()
-	box.anchor_left = 1.0
-	box.anchor_right = 1.0
-	box.anchor_top = 1.0
-	box.anchor_bottom = 1.0
-	box.offset_left = -160
-	box.offset_right = -16
-	box.offset_top = -84
-	box.offset_bottom = -16
-	box.alignment = BoxContainer.ALIGNMENT_END
-	box.add_theme_constant_override("separation", 10)
-	root.add_child(box)
-	var bm: Button = UIKit.button("-", 64, 64)
-	bm.pressed.connect(func() -> void: change_zoom(-1))
-	var bp: Button = UIKit.button("+", 64, 64)
-	bp.pressed.connect(func() -> void: change_zoom(1))
-	box.add_child(bm)
-	box.add_child(bp)
-	toast = UIKit.label("", 26)
-	toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	toast.anchor_right = 1.0
-	toast.offset_top = 70
-	toast.offset_bottom = 110
-	toast.modulate.a = 0.0
-	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(toast)
-	fade = ColorRect.new()
-	fade.color = Color("#2B2730")
-	fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	fade.modulate.a = 0.0
-	root.add_child(fade)
+	fade = hud.get("fade") as ColorRect
+	tint = CanvasModulate.new()
+	add_child(tint)
 
 
 func show_toast(t: String) -> void:
-	toast.text = t
-	if toast_tw != null:
-		toast_tw.kill()
-	toast.modulate.a = 1.0
-	toast_tw = create_tween()
-	toast_tw.tween_interval(1.5)
-	toast_tw.tween_property(toast, "modulate:a", 0.0, 0.4)
+	hud.call("show_toast", t)
 
 
 func _fit_zoom() -> void:
@@ -766,7 +719,7 @@ func change_zoom(d: int) -> void:
 
 # ---------------- input ----------------
 func _unhandled_input(e: InputEvent) -> void:
-	if busy:
+	if busy or bool(hud.get("modal_open")):
 		return
 	if e is InputEventScreenTouch:
 		var t: InputEventScreenTouch = e as InputEventScreenTouch
@@ -868,6 +821,7 @@ func _go(to: String) -> void:
 	await tw.finished
 	var from: String = map_id
 	load_map(to, from)
+	show_toast(map_title)
 	var tw2: Tween = create_tween()
 	tw2.tween_property(fade, "modulate:a", 0.0, 0.3)
 	await tw2.finished
@@ -876,6 +830,10 @@ func _go(to: String) -> void:
 
 # ---------------- gerak ----------------
 func _process(delta: float) -> void:
+	if bool(hud.get("modal_open")):
+		return
+	Game.tick(delta)
+	tint.color = Game.ambient()
 	_regrow(delta)
 	if busy:
 		return

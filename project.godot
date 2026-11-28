@@ -9,6 +9,7 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 [autoload]
 Art="*res://scripts/art.gd"
 UIKit="*res://scripts/uikit.gd"
+Game="*res://scripts/game.gd"
 
 [display]
 window/size/viewport_width=1280
