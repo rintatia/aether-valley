@@ -192,6 +192,7 @@ func _place_trees(id: String) -> void:
 	var atlas: ImageTexture = ImageTexture.create_from_image(img)
 	var regions: Dictionary = d["region"] as Dictionary
 	var blocks: Dictionary = d.get("menghalangi", {}) as Dictionary
+	var tapak: Dictionary = d.get("tapak", {}) as Dictionary
 	for tv: Variant in d["pohon"] as Array:
 		var t: Dictionary = tv as Dictionary
 		var code: String = str(t["obj"])
@@ -212,9 +213,14 @@ func _place_trees(id: String) -> void:
 		holder.add_child(spr)
 		ysort.add_child(holder)
 		if bool(blocks.get(code, true)):
-			var c: Vector2i = _cell(holder.position - Vector2(0, 2))
-			if astar.region.has_point(c):
-				astar.set_point_solid(c, true)
+			# tapak penghalang selebar dasar objek (batang pohon sempit, kayu/batu lebih lebar)
+			var half: float = maxf(w * sc * float(tapak.get(code, 0.4)) / 2.0, 4.0)
+			var c0: Vector2i = _cell(holder.position + Vector2(-half, -2))
+			var c1: Vector2i = _cell(holder.position + Vector2(half, -2))
+			for cx: int in range(c0.x, c1.x + 1):
+				var c: Vector2i = Vector2i(cx, c0.y)
+				if astar.region.has_point(c):
+					astar.set_point_solid(c, true)
 
 
 func _draw_ground() -> void:

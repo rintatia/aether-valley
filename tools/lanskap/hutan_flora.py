@@ -17,16 +17,18 @@ F = json.load(open('../../data/flora_semi.json'))
 A = F['aset']
 BASE = 1.0                                    # ukuran asli gambar = ukuran dunia
 
-# pohon batas: FL01-FL13 saja
-TREES = [('FL03', .13), ('FL09', .12), ('FL04', .11), ('FL10', .10), ('FL05', .09), ('FL11', .08), ('FL13', .08),
+# pohon batas: FL01-FL14
+TREES = [('FL03', .12), ('FL09', .11), ('FL04', .10), ('FL10', .09), ('FL05', .08), ('FL11', .08), ('FL13', .08), ('FL14', .05),
          ('FL01', .06), ('FL07', .05), ('FL02', .06), ('FL08', .05), ('FL06', .035), ('FL12', .035)]
 # pohon besar tampil di ukuran ASLI (tidak diperkecil); sedang & kecil sedikit lebih kecil
 SIZES = [(1.0, .30), (0.80, .42), (0.62, .28)]
 # penutup kaki pohon: SATU saja per pohon (tidak dobel)
-UNDER = [('FL36', .25), ('FL37', .30), ('FL38', .30), ('FL39', .15)]
+UNDER = [('FL35', .15), ('FL36', .22), ('FL37', .25), ('FL38', .25), ('FL39', .13)]
 UNDER_SCALE = 0.55
 ROCKS = [('FL42', .25), ('FL43', .40), ('FL44', .35)]     # batu & kerikil, tersebar di sabuk hutan
-RARE = [('FL15', .5), ('FL16', .5)]                       # tunggul & kayu berbunga, sangat jarang
+RARE = [('FL15', .2), ('FL16', .2), ('FL17', .2), ('FL18', .2), ('FL19', .2)]   # sangat jarang
+# tidak bisa ditembus karakter (selain pohon): FL15, FL16, FL18, FL19, FL42, FL43, FL44
+SOLID = {'FL15', 'FL16', 'FL18', 'FL19', 'FL42', 'FL43', 'FL44'} | {c for c, _ in TREES} | {'FL17'}
 BAND = 190
 gate = [y for y in range(R) if rows[y][C - 1] == '>']
 gy0, gy1 = (min(gate) - 3) * T, (max(gate) + 4) * T
@@ -40,7 +42,7 @@ def near(x, y, r):
     for dx in range(-2, 3):
         for dy in range(-2, 3):
             for (px, py, pr) in bucket.get((cx + dx, cy + dy), []):
-                if (px - x) ** 2 + ((py - y) * 1.3) ** 2 < (1.1 * (pr + r)) ** 2:
+                if (px - x) ** 2 + ((py - y) * 1.3) ** 2 < (0.85 * (pr + r)) ** 2:
                     return True
     return False
 
@@ -56,27 +58,36 @@ def pick(lst):
 
 
 items = []
-target = int(2 * (W + H) * BAND / 4300)
-tries = 0
-while sum(1 for t in items if t['obj'] in dict(TREES)) < target and tries < target * 80:
-    tries += 1
-    side = int(rng.integers(4))
-    u = rng.uniform(0, 1)
-    bw = BAND * (0.85 + 0.30 * wave(u, 100 + side) / 2.2)
-    d = rng.exponential(bw * 0.28) if rng.random() < 0.97 else rng.uniform(bw * 0.5, bw)
-    if d > bw:
-        continue
-    x, y = [(u * W, d), (u * W, H - d), (d, u * H), (W - d, u * H)][side]
-    y = min(max(y, 4.0), H - 1.0)
-    if x > W - BAND * 1.2 and gy0 < y < gy1:
-        continue
-    code = pick(TREES)
-    s = BASE * float(rng.choice([s for s, _ in SIZES], p=[p for _, p in SIZES])) * rng.uniform(0.94, 1.06)
-    r = A[code]['region'][2] * s * 0.40
-    if near(x, y, r):
-        continue
-    items.append({"obj": code, "x": round(float(x)), "y": round(float(y)), "skala": round(float(s), 3), "cermin": bool(rng.random() < 0.5)})
-    bucket.setdefault((int(x // CELL), int(y // CELL)), []).append((x, y, r))
+target = int(2 * (W + H) * BAND / 3300)
+
+
+def place_tree(code):
+    """coba beberapa posisi untuk jenis yang sudah dipilih -> komposisi jenis tetap sesuai bobot"""
+    for _ in range(60):
+        side = int(rng.integers(4))
+        u = rng.uniform(0, 1)
+        bw = BAND * (0.85 + 0.30 * wave(u, 100 + side) / 2.2)
+        d = rng.exponential(bw * 0.28) if rng.random() < 0.97 else rng.uniform(bw * 0.5, bw)
+        if d > bw:
+            continue
+        x, y = [(u * W, d), (u * W, H - d), (d, u * H), (W - d, u * H)][side]
+        y = min(max(y, 4.0), H - 1.0)
+        if x > W - BAND * 1.2 and gy0 < y < gy1:
+            continue
+        s_ = float(rng.choice([s for s, _ in SIZES], p=[p for _, p in SIZES])) * rng.uniform(0.94, 1.06)
+        r = A[code]['region'][2] * s_ * 0.40
+        if near(x, y, r):
+            continue
+        items.append({"obj": code, "x": round(float(x)), "y": round(float(y)), "skala": round(float(s_), 3), "cermin": bool(rng.random() < 0.5)})
+        bucket.setdefault((int(x // CELL), int(y // CELL)), []).append((x, y, r))
+        return True
+    return False
+
+
+fails = 0
+while len(items) < target and fails < 400:
+    if not place_tree(pick(TREES)):
+        fails += 1
 
 trees = list(items)
 for t in trees:
@@ -96,13 +107,13 @@ def scatter(pool, n, scale_lo, scale_hi, band_mul):
         if placed >= n:
             break
         side = int(rng.integers(4)); u = rng.uniform(0, 1)
-        d = rng.uniform(0, BAND * band_mul)
+        d = min(rng.exponential(BAND * 0.38), BAND * band_mul)
         x, y = [(u * W, d), (u * W, H - d), (d, u * H), (W - d, u * H)][side]
         y = min(max(y, 4.0), H - 1.0)
         if x > W - BAND * 1.2 and gy0 < y < gy1:
             continue
         code = pick(pool); s_ = rng.uniform(scale_lo, scale_hi)
-        r = A[code]['region'][2] * s_ * 0.45
+        r = A[code]['region'][2] * s_ * 0.30
         if near(x, y, r):
             continue
         items.append({"obj": code, "x": round(float(x)), "y": round(float(y)), "skala": round(float(s_), 3), "cermin": bool(rng.random() < 0.5)})
@@ -111,14 +122,16 @@ def scatter(pool, n, scale_lo, scale_hi, band_mul):
 
 
 scatter(ROCKS, int(len(trees) * 0.22), 0.45, 0.7, 1.05)
-scatter(RARE, max(8, int(len(trees) * 0.025)), 0.5, 0.65, 1.3)
+for code, _ in RARE:
+    scatter([(code, 1.0)], 3, 0.5, 0.65, 1.4)
 
 items.sort(key=lambda t: t["y"])
 used = sorted({t['obj'] for t in items})
 json.dump({"_note": "Hutan batas ladang dari Flora musim semi. x,y = pangkal (piksel dunia). Dibuat oleh tools/lanskap/hutan_flora.py",
            "atlas": F['atlas'],
            "region": {c: A[c]['region'] for c in used},
-           "menghalangi": {c: A[c]['menghalangi'] for c in used},
+           "menghalangi": {c: (c in SOLID) for c in used},
+           "tapak": {c: (0.25 if (c in dict(TREES) or c == 'FL17') else 0.6) for c in used},
            "pohon": items}, open('../../data/maps/ladang_pohon.json', 'w'), indent=0)
 from collections import Counter
 print(len(trees), 'pohon,', len(items) - len(trees), 'lainnya')

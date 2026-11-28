@@ -110,6 +110,16 @@ func _selftest() -> void:
 	await get_tree().process_frame
 	_check(world.mw == 155 and world.mh == 116, "peta ladang 155x116 (15x lebih luas)")
 	_check(world.chunk_root.get_child_count() == 20, "20 potongan lanskap terpasang")
+	var pd: Dictionary = Art.load_json("res://data/maps/ladang_pohon.json")
+	var solid_ok: int = 0
+	var solid_n: int = 0
+	for tv: Variant in pd["pohon"] as Array:
+		var t: Dictionary = tv as Dictionary
+		if str(t["obj"]) in ["FL15", "FL16", "FL18", "FL19", "FL42", "FL43", "FL44"]:
+			solid_n += 1
+			if world.astar.is_point_solid(world._cell(Vector2(float(t["x"]), float(t["y"]) - 2.0))):
+				solid_ok += 1
+	_check(solid_n > 0 and solid_ok == solid_n, "batu/kayu/tunggul tak bisa ditembus (%d/%d)" % [solid_ok, solid_n])
 	_check(world.ysort.get_child_count() > 500, "pohon & semak batas terpasang (%d node)" % world.ysort.get_child_count())
 	_check(world.astar.is_point_solid(Vector2i(0, 0)) and world.astar.is_point_solid(Vector2i(154, 0)), "batas peta tidak bisa dilewati")
 	var gate: Vector2i = Vector2i(-1, -1)
