@@ -3,6 +3,8 @@ from PIL import Image
 import numpy as np, json, sys
 from scipy.ndimage import gaussian_filter, distance_transform_edt
 SEED=int(sys.argv[1]) if len(sys.argv)>1 else 11
+# Padang rumput murni: tanah hanya muncul saat pemain membuat jalan / mencangkul (di dalam game)
+PURE_GRASS='--dengan-jalan' not in sys.argv
 rng=np.random.default_rng(SEED)
 W,H=1280,960          # piksel seni = 40x30 petak @32
 hx=lambda h: np.array([int(h[i:i+2],16) for i in (1,3,5)],np.uint8)
@@ -14,6 +16,9 @@ def L(role,kind='stamps'):
     for s in np.load(f'kit_{role}_{kind}.npy',allow_pickle=True):
         a=s[...,3]>0; h,w=a.shape
         if kind=='stamps' and h*w>=16 and a.mean()>0.72: continue   # buang potongan kotak penuh
+        px=s[a][:,:3].astype(int)
+        lime=((np.abs(px-[0x94,0xBD,0x1B]).sum(1)<20)|(np.abs(px-[0xBF,0xE3,0x3E]).sum(1)<20)).mean() if len(px) else 0
+        if kind=='stamps' and len(px)>=10 and lime>0.5: continue    # buang 'daun' limau polos
         out.append(s)
     return out
 ST={r:L(r) for r in ['tanah','tanah_batu','rumput_bunga','rumput_kalem','rumput_rimbun','rumput_kering','rumput_dasar','pasir']}
@@ -56,6 +61,8 @@ road=(dp+5*noise(6,4)+2.2*noise(1.6,5))<width
 field_f=(np.abs(xx-870)/215)**3+(np.abs(yy-775)/120)**3+0.30*noise(12,6)+0.10*noise(3,7)+0.04*noise(1.4,21)
 field=field_f<1.0
 dirt=road|field
+if PURE_GRASS:
+    yard[:]=False; dirt[:]=False; road[:]=False; field[:]=False
 grass=~(dirt|yard)
 # ---------------- TANAH & PASIR ----------------
 img=np.zeros((H,W,3),np.uint8)
