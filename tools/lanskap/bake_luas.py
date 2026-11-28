@@ -57,6 +57,46 @@ for f_,thr,tone in ((shade_f,0.62,G_SHADE),):
         h=int(rng.integers(2,5))
         if y-h>0: img[y-h:y,x]=tone
 del shade_f
+# ---- tekstur helai rumput rapat di seluruh permukaan (bukan polos) ----
+LADDER=np.array([[0x1E,0x3F,0x2B],[0x2F,0x6A,0x32],[0x4E,0x91,0x2F],[0x6E,0xA4,0x27],[0x94,0xBD,0x1B],[0xBF,0xE3,0x3E]],np.uint8)
+def tone_index(px):
+    d=np.abs(px[:,None,:].astype(int)-LADDER[None].astype(int)).sum(2); return d.argmin(1)
+def blades_texture(n_per_px,dark):
+    n=int(W*H*n_per_px)
+    ys=rng.integers(4,H,n); xs=rng.integers(1,W-1,n)
+    L=rng.integers(2,5 if dark else 4,n)              # panjang helai 2-4 px
+    lean=rng.choice([-1,0,0,0,1],n)                    # sebagian ujung miring
+    ti=tone_index(img[ys,xs])
+    ti=np.clip(ti+(-1 if dark else 1),0,len(LADDER)-1)
+    if dark:  # jangan pakai hijau paling gelap kecuali di area teduh pekat
+        ti=np.where(ti==0,1,ti)
+    col=LADDER[ti]
+    for k in range(4):
+        m=L>k
+        yk=ys[m]-k; xk=xs[m]+np.where(k==L[m]-1,lean[m],0)
+        img[yk,xk]=col[m]
+def tufts(n_per_px):
+    """rumpun helai: 4-7 helai mekar dari satu pangkal; helai belakang gelap, depan terang"""
+    n=int(W*H*n_per_px)
+    cy=rng.integers(6,H,n); cx=rng.integers(4,W-4,n)
+    base_t=tone_index(img[cy,cx])
+    for b in range(7):
+        use=rng.random(n)<(1.0 if b<4 else 0.5)
+        off=rng.integers(-3,4,n)                       # posisi helai di sekitar pangkal
+        L=rng.integers(2,6,n)
+        lean=np.sign(off)*(rng.random(n)<0.6)          # helai pinggir condong keluar
+        front=(np.abs(off)<=1)&(rng.random(n)<0.55)
+        ti=np.clip(base_t+np.where(front,1,-1),1,len(LADDER)-1)
+        col=LADDER[ti]
+        yb=cy-rng.integers(0,2,n)
+        for k in range(5):
+            m=use&(L>k)
+            yk=yb[m]-k; xk=cx[m]+off[m]+np.where(k>=L[m]-2,lean[m],0)
+            img[yk,np.clip(xk,0,W-1)]=col[m]
+blades_texture(1/14,True)      # sela gelap tipis di antara rumpun
+tufts(1/34)                    # rumpun-rumpun helai
+blades_texture(1/40,False)     # kilau terang sesekali
+
 def stamp(s,x,y):
     h,w=s.shape[:2]
     if x<0 or y<0 or x+w>W or y+h>H: return
