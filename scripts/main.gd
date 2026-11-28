@@ -300,7 +300,7 @@ func _selftest() -> void:
 	_check(world.find_path(arrive, back).size() > 0 and str(world.gates[back]) == "ladang", "jalur hutan -> gerbang ladang")
 	# --- HUD, waktu, tas ---
 	var hud: CanvasLayer = world.get("hud") as CanvasLayer
-	_check(hud != null and (hud.get("slot_nodes") as Array).size() == 10, "shortcut bar 10 slot")
+	_check(hud != null and (hud.get("slot_nodes") as Array).size() == 15, "shortcut bar 15 slot")
 	Game.add_item("kayu", 1200)
 	_check(Game.count("kayu") >= 1200 and not (Game.bag[1] as Dictionary).is_empty(), "tas: kayu tertumpuk (maks 999/slot)")
 	hud.call("open_popup", "tas")
@@ -414,9 +414,14 @@ func _selftest() -> void:
 			break
 	ct2 = world.chop_trees[ti2]
 	world.player.position = (ct2["node"] as Node2D).position + Vector2(20, 4)
-	var hp0: int = int(ct2["hp"])
+	var hp_sum: Callable = func() -> int:
+		var t: int = 0
+		for c: Dictionary in world.chop_trees:
+			t += int(c.get("hp", 0))
+		return t
+	var hp0: int = int(hp_sum.call())
 	world.use_tool("kapak", (ct2["node"] as Node2D).position - Vector2(0, 20))
-	_check(int(ct2["hp"]) == hp0 - 1, "Axe: mengayun ke pohon (hp %d -> %d)" % [hp0, int(ct2["hp"])])
+	_check(int(hp_sum.call()) == hp0 - 1, "Axe: mengayun ke pohon (total hp %d -> %d)" % [hp0, int(hp_sum.call())])
 	# Pickaxe memecah batu (ladang punya batu di sabuk tepi)
 	world.load_map("ladang", "hutan")
 	_check(world.rocks.size() > 0, "batu bisa dipecah: %d" % world.rocks.size())
