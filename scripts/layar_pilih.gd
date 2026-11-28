@@ -28,12 +28,12 @@ func _ready() -> void:
 		var r: Array = P[g] as Array
 		var gl: Panel = Panel.new()
 		var sb: StyleBoxFlat = StyleBoxFlat.new()
-		sb.bg_color = Color(1, 0.95, 0.7, 0.10)
+		sb.bg_color = Color(0, 0, 0, 0)
+		sb.draw_center = false
 		sb.border_color = Color("#FFD65A")
-		sb.set_border_width_all(5)
+		sb.set_border_width_all(6)
 		sb.set_corner_radius_all(18)
-		sb.shadow_color = Color(1, 0.84, 0.35, 0.6)
-		sb.shadow_size = 10
+		sb.set_expand_margin_all(4)
 		gl.add_theme_stylebox_override("panel", sb)
 		UIKit.place(gl, panel.size, r)
 		gl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -66,6 +66,8 @@ func _choose(g: String) -> void:
 	chosen = g
 	for k: String in glow.keys():
 		(glow[k] as Panel).visible = k == g
+		var other: Button = cards[k] as Button
+		other.modulate = Color.WHITE
 		var gl: Panel = glow[k] as Panel
 		gl.pivot_offset = gl.size / 2.0
 		create_tween().tween_property(gl, "scale", Vector2(1.03, 1.03) if k == g else Vector2.ONE, 0.12)

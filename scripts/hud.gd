@@ -419,7 +419,7 @@ func _popup_map() -> void:
 		var pp: Vector2 = (world.get("player") as Node2D).position / ws * ts * sc + off
 		marker.draw_circle(pp, 9.0, Color("#F8F1EA"))
 		marker.draw_circle(pp, 6.0, Color("#D8574F")))
-	var hint: Label = UIKit.pixel_label("Kamu di sini", 16, UIKit.BROWN)
+	var hint: Label = UIKit.pixel_label("You are here", 16, UIKit.BROWN)
 	hint.position = Vector2(0, inner.size.y - 40)
 	hint.size = Vector2(inner.size.x, 30)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

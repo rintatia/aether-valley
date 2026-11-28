@@ -211,7 +211,7 @@ func _selftest() -> void:
 	var solid_n: int = 0
 	for tv: Variant in pd["pohon"] as Array:
 		var t: Dictionary = tv as Dictionary
-		if str(t["obj"]) in ["FL15", "FL16", "FL18", "FL19", "FL42", "FL43", "FL44"]:
+		if str(t["obj"]) in ["FL15", "FL16", "FL18", "FL19", "FL42", "FL43", "FL44"] and not bool(t.get("lewat", false)):
 			solid_n += 1
 			if world.astar.is_point_solid(world._cell(Vector2(float(t["x"]), float(t["y"]) - 2.0))):
 				solid_ok += 1
