@@ -1205,6 +1205,19 @@ func _draw_soil() -> void:
 	_draw_dual(td, _soil_texture("tanah_olah"))
 	if not wet.is_empty():
 		_draw_dual(wet, _soil_texture("tanah_basah"))
+	# garis kotak samar antar-petak (memudahkan menanam), tipis & transparan agar tidak mengganggu
+	var line: Color = Color(0.16, 0.08, 0.04, 0.22)
+	var hi: Color = Color(1.0, 0.85, 0.6, 0.08)
+	for cv: Variant in td.keys():
+		var c: Vector2i = cv as Vector2i
+		if td.has(c + Vector2i(1, 0)):
+			var x: float = (c.x + 1) * T
+			soil.draw_line(Vector2(x, c.y * T + 2), Vector2(x, (c.y + 1) * T - 2), line, 1.0)
+			soil.draw_line(Vector2(x + 1, c.y * T + 2), Vector2(x + 1, (c.y + 1) * T - 2), hi, 1.0)
+		if td.has(c + Vector2i(0, 1)):
+			var y: float = (c.y + 1) * T
+			soil.draw_line(Vector2(c.x * T + 2, y), Vector2((c.x + 1) * T - 2, y), line, 1.0)
+			soil.draw_line(Vector2(c.x * T + 2, y + 1), Vector2((c.x + 1) * T - 2, y + 1), hi, 1.0)
 
 
 func _draw_dual(cells: Dictionary, tex: Texture2D) -> void:
