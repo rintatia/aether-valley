@@ -27,6 +27,7 @@ func _title() -> void:
 	bg.color = Color("#1E3F2B")
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_child(bg)
+	root.add_child(UIKit.version_label())
 	var v: VBoxContainer = VBoxContainer.new()
 	v.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	v.offset_left = -260

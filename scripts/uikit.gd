@@ -39,3 +39,24 @@ func button(text: String, w: float = 0.0, h: float = 60.0) -> Button:
 	b.text = text
 	b.custom_minimum_size = Vector2(w, h)
 	return b
+
+
+## Nama versi build, mis. "7.0.0.build.26" (diisi otomatis oleh GitHub Actions).
+func version() -> String:
+	var j: JSON = load("res://data/version.json") as JSON
+	if j != null and j.data is Dictionary:
+		return "Versi " + str((j.data as Dictionary).get("versi", "?"))
+	return "Versi ?"
+
+
+func version_label() -> Label:
+	var l: Label = label(version(), 18)
+	l.anchor_left = 1.0
+	l.anchor_right = 1.0
+	l.offset_left = -360
+	l.offset_right = -14
+	l.offset_top = 10
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.modulate.a = 0.8
+	return l

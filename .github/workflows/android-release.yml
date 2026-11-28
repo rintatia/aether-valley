@@ -41,6 +41,16 @@ jobs:
             echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=av"
             echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=avtemp-pass-1"
           } >> "$GITHUB_ENV"
+      - name: Set version (7.0.0.build.N)
+        shell: bash
+        run: |
+          set -euo pipefail
+          VER="7.0.0.build.$GITHUB_RUN_NUMBER"
+          echo "VER=$VER" >> "$GITHUB_ENV"
+          printf '{"versi": "%s"}\n' "$VER" > data/version.json
+          sed -i "s/^version\/name=.*/version\/name=\"$VER\"/; s/^version\/code=.*/version\/code=$((700 + GITHUB_RUN_NUMBER))/" export_presets.cfg
+          grep -E "^version/" export_presets.cfg
+          cat data/version.json
       - name: Import project
         run: godot --headless --editor --path . --quit
       - name: Selftest (headless)
@@ -62,7 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p build && touch build/.gdignore
-          APK="build/AetherValleyV7-r$GITHUB_RUN_NUMBER.apk"
+          APK="build/AetherValley-$VER.apk"
           godot --headless --path . --export-release "Android Release APK" "$APK" 2>&1 | tee build/export.log
           test -s "$APK"
           echo "APK_PATH=$APK" >> "$GITHUB_ENV"
@@ -92,9 +102,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="v7-build-$GITHUB_RUN_NUMBER"
+          TAG="v$VER"
           grep -q "SELFTEST OK" build/selftest.log || { echo "Selftest gagal - tidak dirilis"; exit 1; }
-          gh release create "$TAG" "$APK_PATH" --title "Aether Valley v7 build $GITHUB_RUN_NUMBER" --notes "APK release arm64 (kunci sementara). Selftest log: branch ci-logs." --target "$GITHUB_SHA"
+          gh release create "$TAG" "$APK_PATH" --title "Aether Valley $VER" --notes "Versi $VER - APK release arm64 (kunci sementara). Commit: $GITHUB_SHA. Selftest log: branch ci-logs." --target "$GITHUB_SHA"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

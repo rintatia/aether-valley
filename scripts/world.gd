@@ -229,6 +229,7 @@ func _build_hud() -> void:
 	lbl_map = UIKit.label("", 26)
 	lbl_map.position = Vector2(16, 12)
 	root.add_child(lbl_map)
+	root.add_child(UIKit.version_label())
 	var box: HBoxContainer = HBoxContainer.new()
 	box.anchor_left = 1.0
 	box.anchor_right = 1.0
