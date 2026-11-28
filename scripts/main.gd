@@ -591,8 +591,8 @@ func _selftest() -> void:
 	_check(world.zoom_min >= 1.5, "zoom out dibatasi (min %.2f)" % world.zoom_min)
 	fm.set_build_mode(true)
 	_check(bool(fm.build_mode) and not (hud.get("bar") as Control).visible, "Build mode: panel Build tampil")
-	var sp0: Vector2i = world._cell(world.player.position)
-	_check(_place_near(fm, "cottage", sp0 + Vector2i(0, -6)), "Build: Cottage diletakkan")
+	var farm_c: Vector2i = world._cell(world.player.position)
+	_check(_place_near(fm, "cottage", farm_c + Vector2i(0, -6)), "Build: Cottage diletakkan")
 	var ce: Dictionary = Game.placed[0] as Dictionary
 	var cells: Array[Vector2i] = fm.cells_of("cottage", ce["cell"] as Vector2i)
 	_check(world.astar.is_point_solid(cells[0]) and Game.count("cottage") == 0, "Cottage menghalangi jalan, keluar dari tas")
@@ -628,7 +628,7 @@ func _selftest() -> void:
 	_check(Game.sell("carrot", 1) > 0, "jual hasil panen di Shop")
 	# ternak: beli -> letakkan -> dewasa -> hasil harian
 	Game.buy("ternak_chicken")
-	_check(_place_near(fm, "ternak_chicken", sp0 + Vector2i(5, 2)) and Game.animals.size() == 1, "ayam diletakkan di Farm")
+	_check(_place_near(fm, "ternak_chicken", farm_c + Vector2i(5, 2)) and Game.animals.size() == 1, "ayam diletakkan di Farm")
 	var ch: Dictionary = Game.animals[0] as Dictionary
 	_check(not Game.is_adult(ch), "anak ayam belum dewasa")
 	Game.new_day()

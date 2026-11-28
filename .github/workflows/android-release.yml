@@ -57,7 +57,7 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p build
-          godot --headless --path . -- --selftest 2>&1 | tee build/selftest.log
+          timeout 900 godot --headless --path . -- --selftest 2>&1 | tee build/selftest.log
       - name: Screenshot Godot 4K (layar virtual)
         continue-on-error: true
         run: |
