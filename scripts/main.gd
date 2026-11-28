@@ -76,6 +76,9 @@ func _screenshots() -> void:
 	add_child(w)
 	var pre: String = OS.get_environment("SHOT_PREFIX")
 	await _shot(pre + "ladang_x2_awal.png")
+	w.call("_set_zoom", 2.0)
+	(w.get("player") as Node2D).position = Vector2(700, 560)
+	await _shot(pre + "ladang_tepi_hutan.png")
 	w.call("_set_zoom", 0.01)
 	await _shot(pre + "ladang_terjauh.png")
 	w.call("_set_zoom", 6.0)
@@ -107,6 +110,7 @@ func _selftest() -> void:
 	await get_tree().process_frame
 	_check(world.mw == 155 and world.mh == 116, "peta ladang 155x116 (15x lebih luas)")
 	_check(world.chunk_root.get_child_count() == 20, "20 potongan lanskap terpasang")
+	_check(world.ysort.get_child_count() > 3000, "pohon batas terpasang (%d node)" % world.ysort.get_child_count())
 	_check(world.astar.is_point_solid(Vector2i(0, 0)) and world.astar.is_point_solid(Vector2i(154, 0)), "batas peta tidak bisa dilewati")
 	var gate: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
