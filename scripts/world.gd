@@ -34,6 +34,7 @@ var chunk_root: Node2D
 const CHOP_HITS: int = 3
 const REGROW_SECONDS: float = 300.0   # 1 hari permainan = 5 menit
 var chop_trees: Array[Dictionary] = []
+var chop_kinds: Array[String] = []   # jenis pohon tebang di peta ini (untuk tumbuh acak)
 var kayu: int = 0
 var lbl_kayu: Label
 var pinch_zoom0: float = 2.0
@@ -210,6 +211,11 @@ func _place_trees(id: String) -> void:
 			_block_base(holder.position, float((regions[code] as Array)[2]) * float(t["skala"]), float(tapak.get(code, 0.4)))
 	# pohon tebang: bisa ditebang (3 ayunan) -> tunggul -> tumbuh lagi setelah 1 hari (5 menit)
 	var stump: String = str(d.get("tunggul", "FL15"))
+	chop_kinds.clear()
+	for tv: Variant in d.get("tebang", []) as Array:
+		var kind: String = str((tv as Dictionary)["obj"])
+		if not chop_kinds.has(kind):
+			chop_kinds.append(kind)
 	for tv: Variant in d.get("tebang", []) as Array:
 		var t: Dictionary = tv as Dictionary
 		var holder: Node2D = _sprite_from(atlas, regions, t)
@@ -302,7 +308,15 @@ func _regrow(delta: float) -> void:
 			continue
 		ct["regrow"] = float(ct["regrow"]) - delta
 		if float(ct["regrow"]) <= 0.0:
-			var t: Dictionary = ct["t"] as Dictionary
+			# tumbuh lagi ACAK: jenis, ukuran & arah hadap baru (titiknya tetap, tapak batang sama)
+			var t: Dictionary = (ct["t"] as Dictionary).duplicate()
+			t["obj"] = chop_kinds[randi() % chop_kinds.size()]
+			t["skala"] = randf_range(0.78, 1.0)
+			t["cermin"] = randf() < 0.5
+			var r: Array = (ct["regions"] as Dictionary)[str(t["obj"])] as Array
+			ct["w"] = float(r[2]) * float(t["skala"])
+			ct["h"] = float(r[3]) * float(t["skala"])
+			ct["t"] = t
 			ct["hp"] = CHOP_HITS
 			_set_tree_sprite(ct["node"] as Node2D, ct["atlas"] as Texture2D, ct["regions"] as Dictionary, str(t["obj"]), float(t["skala"]), bool(t["cermin"]))
 

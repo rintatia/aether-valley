@@ -166,7 +166,7 @@ func _selftest() -> void:
 		world.chop_hit(0)
 	_check(world.kayu > k0 and int(world.chop_trees[0]["hp"]) == 0, "tebang 3x -> tunggul & kayu bertambah")
 	world._regrow(301.0)
-	_check(int(world.chop_trees[0]["hp"]) == 3, "pohon tumbuh lagi setelah 1 hari")
+	_check(int(world.chop_trees[0]["hp"]) == 3, "pohon tumbuh lagi setelah 1 hari (acak: %s)" % str((world.chop_trees[0]["t"] as Dictionary)["obj"]))
 	var back: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
 		back = g
