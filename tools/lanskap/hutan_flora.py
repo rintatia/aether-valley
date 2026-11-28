@@ -31,7 +31,7 @@ UNDER_SCALE = 0.55
 ROCKS = [('FL42', .25), ('FL43', .40), ('FL44', .35)]
 RARE = [('FL15', .2), ('FL16', .2), ('FL17', .2), ('FL18', .2), ('FL19', .2)]
 SOLID = {'FL15', 'FL16', 'FL18', 'FL19', 'FL42', 'FL43', 'FL44', 'FL17'} | {c for c, _ in TREES}
-CHOP = [('FL03', .17), ('FL09', .17), ('FL04', .15), ('FL10', .13), ('FL05', .13), ('FL11', .12), ('FL13', .13)]
+CHOP = [('FL03', .12), ('FL09', .11), ('FL04', .11), ('FL10', .10), ('FL05', .09), ('FL11', .09), ('FL06', .06), ('FL12', .06), ('FL13', .09), ('FL14', .08), ('FL17', .09)]
 BAND = 190
 GY = R // 2                                   # gerbang di tengah sisi
 CORR = (GY - 1, GY + 1)                       # lorong 3 petak
@@ -193,11 +193,11 @@ if cfg['tebang']:
             continue
         if in_corridor(x, y, pad=2.5) or (x - sp[0]) ** 2 + (y - sp[1]) ** 2 < (4 * T) ** 2:
             continue
-        if clear[cy, cx] < -0.35 or rng.random() > np.clip(0.55 + 0.35 * clear[cy, cx], 0.15, 1.0):
+        if clear[cy, cx] < -0.75 or rng.random() > np.clip(0.75 + 0.30 * clear[cy, cx], 0.25, 1.0):
             continue                      # padang terbuka & kepadatan berubah-ubah (rumpun dan celah alami)
         code = pick(CHOP)
         s_ = rng.uniform(0.78, 1.0)
-        r = A[code]['region'][2] * s_ * 0.66
+        r = A[code]['region'][2] * s_ * 0.50
         if near(x, y, r, k=1.0):
             continue
         tebang.append({"obj": code, "x": round(float(x)), "y": round(float(y)), "skala": round(float(s_), 3), "cermin": bool(rng.random() < 0.5)})

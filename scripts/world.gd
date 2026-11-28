@@ -35,6 +35,9 @@ const CHOP_HITS: int = 3
 const REGROW_SECONDS: float = 300.0   # 1 hari permainan = 5 menit
 var chop_trees: Array[Dictionary] = []
 var chop_kinds: Array[String] = []   # jenis pohon tebang di peta ini (untuk tumbuh acak)
+var chop_spots: Array[Vector2i] = []
+var chop_atlas: Texture2D
+var chop_regions: Dictionary = {}
 var kayu: int = 0
 var lbl_kayu: Label
 var pinch_zoom0: float = 2.0
@@ -209,22 +212,43 @@ func _place_trees(id: String) -> void:
 		var code: String = str(t["obj"])
 		if bool(blocks.get(code, true)):
 			_block_base(holder.position, float((regions[code] as Array)[2]) * float(t["skala"]), float(tapak.get(code, 0.4)))
-	# pohon tebang: bisa ditebang (3 ayunan) -> tunggul -> tumbuh lagi setelah 1 hari (5 menit)
-	var stump: String = str(d.get("tunggul", "FL15"))
+	# pohon tebang: 3 ayunan -> tumbang ke kiri & hilang -> tumbuh lagi di titik ACAK (1 hari = 5 menit)
 	chop_kinds.clear()
-	for tv: Variant in d.get("tebang", []) as Array:
-		var kind: String = str((tv as Dictionary)["obj"])
-		if not chop_kinds.has(kind):
-			chop_kinds.append(kind)
+	chop_atlas = atlas
+	chop_regions = regions
 	for tv: Variant in d.get("tebang", []) as Array:
 		var t: Dictionary = tv as Dictionary
-		var holder: Node2D = _sprite_from(atlas, regions, t)
-		var code: String = str(t["obj"])
-		var w: float = float((regions[code] as Array)[2]) * float(t["skala"])
-		var h: float = float((regions[code] as Array)[3]) * float(t["skala"])
-		_block_base(holder.position, w, 0.25)
-		chop_trees.append({"node": holder, "t": t, "w": w, "h": h, "hp": CHOP_HITS, "regrow": 0.0,
-			"atlas": atlas, "regions": regions, "stump": stump, "cell": _cell(holder.position - Vector2(0, 2))})
+		if not chop_kinds.has(str(t["obj"])):
+			chop_kinds.append(str(t["obj"]))
+		_spawn_chop_tree(t)
+	_find_chop_spots()
+
+
+func _spawn_chop_tree(t: Dictionary) -> Dictionary:
+	var holder: Node2D = _sprite_from(chop_atlas, chop_regions, t)
+	var r: Array = chop_regions[str(t["obj"])] as Array
+	var ct: Dictionary = {"node": holder, "t": t, "w": float(r[2]) * float(t["skala"]), "h": float(r[3]) * float(t["skala"]),
+		"hp": CHOP_HITS, "regrow": 0.0, "cell": _cell(holder.position - Vector2(0, 2))}
+	astar.set_point_solid(ct["cell"] as Vector2i, true)
+	chop_trees.append(ct)
+	return ct
+
+
+## Titik-titik calon tumbuh: petak bebas di bagian dalam hutan, jauh dari sabuk & gerbang.
+func _find_chop_spots() -> void:
+	chop_spots.clear()
+	if chop_kinds.is_empty():
+		return
+	for y: int in range(3, mh - 3):
+		for x: int in range(3, mw - 3):
+			var ok: bool = true
+			for yy: int in range(y - 3, y + 4):
+				for xx: int in range(x - 3, x + 4):
+					var ch: String = grid[yy][xx]
+					if ch == "#" or ch == "<" or ch == ">":
+						ok = false
+			if ok:
+				chop_spots.append(Vector2i(x, y))
 
 
 func _sprite_from(atlas: Texture2D, regions: Dictionary, t: Dictionary) -> Node2D:
@@ -269,7 +293,7 @@ func _tree_at(wp: Vector2) -> int:
 	var best_y: float = -1.0
 	for i: int in range(chop_trees.size()):
 		var ct: Dictionary = chop_trees[i]
-		if int(ct["hp"]) <= 0:
+		if int(ct["hp"]) <= 0 or ct["node"] == null:
 			continue
 		var p: Vector2 = (ct["node"] as Node2D).position
 		var w: float = float(ct["w"])
@@ -286,20 +310,27 @@ func chop_hit(i: int) -> void:
 		return
 	ct["hp"] = int(ct["hp"]) - 1
 	var node: Node2D = ct["node"] as Node2D
-	var tw: Tween = create_tween()
-	tw.tween_property(node, "rotation", 0.06, 0.05)
-	tw.tween_property(node, "rotation", -0.04, 0.07)
-	tw.tween_property(node, "rotation", 0.0, 0.06)
 	if int(ct["hp"]) > 0:
+		var tw: Tween = create_tween()
+		tw.tween_property(node, "rotation", 0.05, 0.05)
+		tw.tween_property(node, "rotation", -0.03, 0.07)
+		tw.tween_property(node, "rotation", 0.0, 0.06)
 		show_toast("Tok! (%d lagi)" % int(ct["hp"]))
 		return
-	var t: Dictionary = ct["t"] as Dictionary
-	_set_tree_sprite(node, ct["atlas"] as Texture2D, ct["regions"] as Dictionary, str(ct["stump"]), 0.55, bool(t["cermin"]))
-	var got: int = 2 + int(float(t["skala"]) > 0.9) + randi() % 2
+	# tumbang SELALU ke kiri (berputar di pangkal batang), lalu hilang sepenuhnya
+	astar.set_point_solid(ct["cell"] as Vector2i, false)
+	var got: int = 2 + int(float((ct["t"] as Dictionary)["skala"]) > 0.9) + randi() % 2
 	kayu += got
-	ct["regrow"] = REGROW_SECONDS
 	_refresh_kayu()
 	show_toast("+%d kayu" % got)
+	ct["regrow"] = REGROW_SECONDS
+	ct["node"] = null
+	var fall: Tween = create_tween()
+	fall.tween_property(node, "rotation", -PI / 2.0, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	fall.tween_property(node, "rotation", -PI / 2.0 + 0.06, 0.08)
+	fall.tween_property(node, "rotation", -PI / 2.0, 0.08)
+	fall.tween_property(node, "modulate:a", 0.0, 0.45)
+	fall.tween_callback(node.queue_free)
 
 
 func _regrow(delta: float) -> void:
@@ -308,17 +339,40 @@ func _regrow(delta: float) -> void:
 			continue
 		ct["regrow"] = float(ct["regrow"]) - delta
 		if float(ct["regrow"]) <= 0.0:
-			# tumbuh lagi ACAK: jenis, ukuran & arah hadap baru (titiknya tetap, tapak batang sama)
-			var t: Dictionary = (ct["t"] as Dictionary).duplicate()
-			t["obj"] = chop_kinds[randi() % chop_kinds.size()]
-			t["skala"] = randf_range(0.78, 1.0)
-			t["cermin"] = randf() < 0.5
-			var r: Array = (ct["regions"] as Dictionary)[str(t["obj"])] as Array
-			ct["w"] = float(r[2]) * float(t["skala"])
-			ct["h"] = float(r[3]) * float(t["skala"])
-			ct["t"] = t
-			ct["hp"] = CHOP_HITS
-			_set_tree_sprite(ct["node"] as Node2D, ct["atlas"] as Texture2D, ct["regions"] as Dictionary, str(t["obj"]), float(t["skala"]), bool(t["cermin"]))
+			_grow_random(ct)
+
+
+## Tumbuh lagi di titik ACAK yang lapang (bukan di bekasnya), jenis/ukuran/arah acak.
+func _grow_random(ct: Dictionary) -> void:
+	var pc: Vector2i = _cell(player.position)
+	for attempt: int in range(80):
+		if chop_spots.is_empty():
+			break
+		var c: Vector2i = chop_spots[randi() % chop_spots.size()]
+		if c.distance_to(pc) < 4.0 or astar.is_point_solid(c):
+			continue
+		var crowded: bool = false
+		for o: Dictionary in chop_trees:
+			if int(o["hp"]) > 0 and (o["cell"] as Vector2i).distance_to(c) < 2.2:
+				crowded = true
+				break
+		if crowded:
+			continue
+		var t: Dictionary = {"obj": chop_kinds[randi() % chop_kinds.size()], "skala": randf_range(0.78, 1.0), "cermin": randf() < 0.5,
+			"x": (c.x + randf_range(0.25, 0.75)) * T, "y": (c.y + 1) * T - 2.0}
+		var holder: Node2D = _sprite_from(chop_atlas, chop_regions, t)
+		var r: Array = chop_regions[str(t["obj"])] as Array
+		ct["node"] = holder
+		ct["t"] = t
+		ct["w"] = float(r[2]) * float(t["skala"])
+		ct["h"] = float(r[3]) * float(t["skala"])
+		ct["cell"] = _cell(holder.position - Vector2(0, 2))
+		ct["hp"] = CHOP_HITS
+		astar.set_point_solid(ct["cell"] as Vector2i, true)
+		holder.scale = Vector2(0.2, 0.2)
+		create_tween().tween_property(holder, "scale", Vector2.ONE, 0.6).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		return
+	ct["regrow"] = 10.0   # belum ada tempat lapang (mis. pemain terlalu dekat) -> coba lagi nanti
 
 
 func _refresh_kayu() -> void:

@@ -88,6 +88,19 @@ func _screenshots() -> void:
 	await _shot(pre + "hutan_x2_gerbang.png")
 	(w.get("player") as Node2D).position = Vector2(1900, 1500)
 	await _shot(pre + "hutan_x2_tengah.png")
+	# pohon terdekat ditebang -> tangkap saat tumbang ke kiri
+	var trees: Array = w.get("chop_trees") as Array
+	var bi: int = 0
+	var bd: float = 1e9
+	for i: int in range(trees.size()):
+		var dd: float = ((trees[i]["node"] as Node2D).position - Vector2(1900, 1500)).length()
+		if dd < bd:
+			bd = dd
+			bi = i
+	for k: int in range(3):
+		w.call("chop_hit", bi)
+	await get_tree().create_timer(0.42).timeout
+	await _shot(pre + "hutan_tumbang.png")
 	w.call("_set_zoom", 0.01)
 	await _shot(pre + "hutan_terjauh.png")
 	get_tree().quit(0)
@@ -160,13 +173,15 @@ func _selftest() -> void:
 	_check(_edge_closed(), "hutan: seluruh tepi tertutup kecuali gerbang")
 	var arrive: Vector2i = world._cell(world.player.position)
 	_check(arrive.x > 100, "datang dari ladang muncul di sisi kanan hutan")
-	_check(world.chop_trees.size() > 100, "pohon tebang: %d" % world.chop_trees.size())
+	_check(world.chop_trees.size() > 400, "pohon tebang: %d" % world.chop_trees.size())
 	var k0: int = world.kayu
 	for i: int in range(3):
 		world.chop_hit(0)
-	_check(world.kayu > k0 and int(world.chop_trees[0]["hp"]) == 0, "tebang 3x -> tunggul & kayu bertambah")
+	var old_cell: Vector2i = world.chop_trees[0]["cell"] as Vector2i
+	_check(world.kayu > k0 and int(world.chop_trees[0]["hp"]) == 0 and not world.astar.is_point_solid(old_cell), "tebang 3x -> tumbang, hilang, kayu bertambah")
 	world._regrow(301.0)
-	_check(int(world.chop_trees[0]["hp"]) == 3, "pohon tumbuh lagi setelah 1 hari (acak: %s)" % str((world.chop_trees[0]["t"] as Dictionary)["obj"]))
+	var new_cell: Vector2i = world.chop_trees[0]["cell"] as Vector2i
+	_check(int(world.chop_trees[0]["hp"]) == 3 and new_cell != old_cell, "tumbuh lagi di titik acak %s -> %s (%s)" % [old_cell, new_cell, str((world.chop_trees[0]["t"] as Dictionary)["obj"])])
 	var back: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
 		back = g
