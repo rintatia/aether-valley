@@ -31,6 +31,10 @@ UNDER_SCALE = 0.55
 ROCKS = [('FL42', .25), ('FL43', .40), ('FL44', .35)]
 RARE = [('FL15', .2), ('FL16', .2), ('FL17', .2), ('FL18', .2), ('FL19', .2)]
 SOLID = {'FL15', 'FL16', 'FL18', 'FL19', 'FL42', 'FL43', 'FL44', 'FL17'} | {c for c, _ in TREES}
+if MID == 'hutan':
+    # aturan Hutan Tebang: hanya tunggul/kayu (FL15, FL16, FL18, FL19) + pohon yang tak bisa dilewati
+    SOLID = {'FL15', 'FL16', 'FL18', 'FL19', 'FL17'} | {c for c, _ in TREES}
+BATU = {'FL42', 'FL43', 'FL44'}
 CHOP = [('FL03', .12), ('FL09', .11), ('FL04', .11), ('FL10', .10), ('FL05', .09), ('FL11', .09), ('FL06', .06), ('FL12', .06), ('FL13', .09), ('FL14', .08), ('FL17', .09)]
 BAND = 190
 GY = R // 2                                   # gerbang di tengah sisi
@@ -207,6 +211,65 @@ if cfg['tebang']:
         if rng.random() < 0.35:
             items.append({"obj": pick(UNDER), "x": t['x'] + int(rng.integers(-14, 15)), "y": t['y'] + int(rng.integers(2, 8)),
                           "skala": round(UNDER_SCALE * rng.uniform(0.8, 1.05), 3), "cermin": bool(rng.random() < 0.5)})
+
+# ---------- taburan flora Hutan Tebang: FL15-16, FL18-44 ----------
+if cfg['tebang']:
+    SEMAK = ['FL20', 'FL21', 'FL22', 'FL23', 'FL24', 'FL25', 'FL26', 'FL27']
+    BUNGA = ['FL28', 'FL29', 'FL30', 'FL31', 'FL32', 'FL33', 'FL34', 'FL40', 'FL41']
+    RUMPUT = ['FL35', 'FL36', 'FL37', 'FL38', 'FL39']
+    KAYU = ['FL15', 'FL16', 'FL18', 'FL19']
+    SC = {**{c: (0.42, 0.55) for c in SEMAK}, **{c: (0.38, 0.5) for c in BUNGA}, **{c: (0.45, 0.6) for c in RUMPUT},
+          **{c: (0.42, 0.62) for c in BATU}, **{c: (0.5, 0.65) for c in KAYU}}
+
+    def free_spot(x, y, r):
+        cx, cy = int(x // T), int(y // T)
+        if not (0 <= cx < C and 0 <= cy < R) or grid[cy][cx] in '#<>':
+            return False
+        if in_corridor(x, y, pad=0.3):
+            return False
+        return not near(x, y, r, k=0.7)
+
+    def put(code, x, y, solid_r=None):
+        lo, hi = SC[code]
+        s_ = rng.uniform(lo, hi)
+        items.append({"obj": code, "x": round(float(x)), "y": round(float(y)), "skala": round(float(s_), 3),
+                      "cermin": bool(rng.random() < 0.5), "goyang": code not in SOLID and code not in BATU})
+        if solid_r:
+            add(x, y, solid_r)
+
+    # rumpun: 4-7 tanaman melingkar dengan CELAH di tengah (bisa diterobos lewat tengah)
+    n_rumpun = int(C * R / 55)
+    tema = [SEMAK + RUMPUT, RUMPUT + BUNGA, BUNGA + RUMPUT, SEMAK + BUNGA]
+    placed = 0
+    for _ in range(n_rumpun * 30):
+        if placed >= n_rumpun:
+            break
+        x, y = rng.uniform(0, W), rng.uniform(0, H)
+        if not free_spot(x, y, 26):
+            continue
+        pool = tema[int(rng.integers(len(tema)))]
+        k = int(rng.integers(4, 8))
+        rad = rng.uniform(18, 30)
+        a0 = rng.uniform(0, 6.28)
+        for j in range(k):
+            ang = a0 + j * 6.28 / k + rng.uniform(-0.3, 0.3)
+            put(pool[int(rng.integers(len(pool)))], x + np.cos(ang) * rad * 1.3, y + np.sin(ang) * rad * 0.7)
+        add(x, y, 20)
+        placed += 1
+    # tanaman tunggal & batu kecil di sela-sela
+    singles = SEMAK + BUNGA + RUMPUT + list(BATU)
+    for _ in range(int(C * R / 7)):
+        x, y = rng.uniform(0, W), rng.uniform(0, H)
+        if free_spot(x, y, 10):
+            put(singles[int(rng.integers(len(singles)))], x, y)
+    # tunggul & kayu tumbang (tak bisa dilewati) - jarang
+    for _ in range(int(C * R / 260) * 20):
+        if sum(1 for t in items if t['obj'] in KAYU and t.get('goyang') is False) >= int(C * R / 260):
+            break
+        x, y = rng.uniform(0, W), rng.uniform(0, H)
+        code = KAYU[int(rng.integers(len(KAYU)))]
+        if free_spot(x, y, 36):
+            put(code, x, y, solid_r=30)
 
 items.sort(key=lambda t: t["y"])
 used = sorted({t['obj'] for t in items} | {t['obj'] for t in tebang} | {'FL15'})

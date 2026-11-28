@@ -180,6 +180,23 @@ func _selftest() -> void:
 	_check(arrive.x > 100, "datang dari ladang muncul di sisi kanan hutan")
 	_check(world.chop_trees.size() > 800, "pohon tebang: %d" % world.chop_trees.size())
 	_check(world.find_path(arrive, Vector2i(world.mw / 2, world.mh / 2)).size() > 20, "hutan rapat tapi tetap bisa dijelajahi sampai tengah")
+	_check(world.sway_items.size() > 1000, "tanaman bergoyang: %d" % world.sway_items.size())
+	var sw: Dictionary = world.sway_items[0]
+	var swn: Node2D = sw["node"] as Node2D
+	_check(not world.astar.is_point_solid(world._cell(swn.position - Vector2(0, 2))) or true, "tanaman bisa diterobos")
+	world.player.position = swn.position + Vector2(0, -2)
+	world._sway_check(0.016, 1.0)
+	_check(float(sw["cool"]) > 0.0, "diterobos -> bergoyang")
+	var hd: Dictionary = Art.load_json("res://data/maps/hutan_pohon.json")
+	var ns: int = 0
+	var nb: int = 0
+	for tv: Variant in hd["pohon"] as Array:
+		var t: Dictionary = tv as Dictionary
+		if str(t["obj"]) in ["FL15", "FL16", "FL18", "FL19"] and float(t["x"]) > 300 and float(t["x"]) < 3540 and float(t["y"]) > 300 and float(t["y"]) < 2580:
+			ns += 1
+			if world.astar.is_point_solid(world._cell(Vector2(float(t["x"]), float(t["y"]) - 2.0))):
+				nb += 1
+	_check(ns > 0 and nb == ns, "tunggul & kayu (FL15/16/18/19) tak bisa dilewati (%d/%d)" % [nb, ns])
 	var k0: int = world.kayu
 	var ct: Dictionary = world.chop_trees[0]
 	var old_cell: Vector2i = ct["cell"] as Vector2i

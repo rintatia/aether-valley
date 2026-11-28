@@ -40,6 +40,8 @@ var chop_spots: Array[Vector2i] = []
 var chop_atlas: Texture2D
 var chop_regions: Dictionary = {}
 var cut_tex: Dictionary = {}   # jenis -> {stump, top, cut}
+var sway_items: Array[Dictionary] = []   # tanaman yang bergoyang saat diterobos
+var sway_grid: Dictionary = {}           # sel -> daftar indeks sway_items
 var kayu: int = 0
 var lbl_kayu: Label
 var pinch_zoom0: float = 2.0
@@ -100,6 +102,8 @@ func load_map(id: String, from_gate: String) -> void:
 	gates.clear()
 	buildings.clear()
 	chop_trees.clear()
+	sway_items.clear()
+	sway_grid.clear()
 	astar = AStarGrid2D.new()
 	astar.region = Rect2i(0, 0, mw, mh)
 	astar.cell_size = Vector2(T, T)
@@ -212,7 +216,9 @@ func _place_trees(id: String) -> void:
 		var t: Dictionary = tv as Dictionary
 		var holder: Node2D = _sprite_from(atlas, regions, t)
 		var code: String = str(t["obj"])
-		if bool(blocks.get(code, true)):
+		if bool(t.get("goyang", false)):
+			_register_sway(holder, float((regions[code] as Array)[2]) * float(t["skala"]), float((regions[code] as Array)[3]) * float(t["skala"]))
+		if bool(blocks.get(code, true)) and not bool(t.get("goyang", false)):
 			_block_base(holder.position, float((regions[code] as Array)[2]) * float(t["skala"]), float(tapak.get(code, 0.4)))
 	# pohon tebang: 3 ayunan -> tumbang ke kiri & hilang -> tumbuh lagi di titik ACAK (1 hari = 5 menit)
 	chop_kinds.clear()
@@ -397,6 +403,43 @@ func _block_base(pos: Vector2, width: float, frac: float) -> void:
 		var c: Vector2i = Vector2i(cx, c0.y)
 		if astar.region.has_point(c):
 			astar.set_point_solid(c, true)
+
+
+# ---------------- tanaman bergoyang ----------------
+func _register_sway(holder: Node2D, w: float, h: float) -> void:
+	var i: int = sway_items.size()
+	sway_items.append({"node": holder, "w": w, "h": h, "cool": 0.0})
+	var c: Vector2i = _cell(holder.position - Vector2(0, 2))
+	if not sway_grid.has(c):
+		sway_grid[c] = []
+	(sway_grid[c] as Array).append(i)
+
+
+## Pemain menerobos tanaman -> tanaman bergoyang (ujung atas melambai, pangkal diam).
+## Karena urutan-Y, pemain tampak di belakang tanaman saat kakinya di atas pangkal tanaman.
+func _sway_check(delta: float, vel_x: float) -> void:
+	var pp: Vector2 = player.position
+	var pc: Vector2i = _cell(pp)
+	for dy: int in range(-1, 3):
+		for dx: int in range(-2, 3):
+			var c: Vector2i = pc + Vector2i(dx, dy)
+			if not sway_grid.has(c):
+				continue
+			for iv: Variant in sway_grid[c] as Array:
+				var it: Dictionary = sway_items[int(iv)]
+				it["cool"] = maxf(float(it["cool"]) - delta, 0.0)
+				var node: Node2D = it["node"] as Node2D
+				var p: Vector2 = node.position
+				var w: float = float(it["w"])
+				if absf(pp.x - p.x) < w * 0.45 and pp.y > p.y - float(it["h"]) * 0.55 and pp.y < p.y + 6.0 and float(it["cool"]) <= 0.0:
+					it["cool"] = 0.7
+					var dir: float = signf(vel_x) if absf(vel_x) > 0.01 else (1.0 if pp.x < p.x else -1.0)
+					var tw: Tween = create_tween()
+					tw.tween_property(node, "skew", 0.32 * dir, 0.10).set_ease(Tween.EASE_OUT)
+					tw.tween_property(node, "skew", -0.20 * dir, 0.16)
+					tw.tween_property(node, "skew", 0.10 * dir, 0.14)
+					tw.tween_property(node, "skew", -0.04 * dir, 0.12)
+					tw.tween_property(node, "skew", 0.0, 0.10)
 
 
 # ---------------- menebang ----------------
@@ -810,6 +853,14 @@ func _process(delta: float) -> void:
 	_regrow(delta)
 	if busy:
 		return
+	var before: Vector2 = player.position
+	_move(delta)
+	var moved: Vector2 = player.position - before
+	if moved.length() > 0.01 and not sway_grid.is_empty():
+		_sway_check(delta, moved.x)
+
+
+func _move(delta: float) -> void:
 	var d: Vector2 = Vector2.ZERO
 	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
 		d.x += 1.0
