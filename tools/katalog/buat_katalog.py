@@ -253,7 +253,7 @@ TERNAK = {}
 for r, (s, nm, hari, harga, hasil) in enumerate(ANIM):
     for c, v in enumerate(VIEWS):
         px4(sel('hewan', 6, 5, c, r)).save(ROOT + 'assets/ternak/%s_%s.png' % (s, v))
-    TERNAK[s] = {"nama": nm, "dewasa": hari, "hasil": hasil, "k": 0.42}
+    TERNAK[s] = {"nama": nm, "dewasa": hari, "hasil": hasil, "k": {'cow': 0.5, 'sheep': 0.46, 'goose': 0.36, 'duck': 0.3, 'chicken': 0.29}[s]}
     ITEMS['ternak_' + s] = {"nama": 'Baby ' + nm, "kategori": 'Animals', "ikon": 'res://assets/ternak/%s_bayi.png' % s, "harga": harga,
                             "kristal": 0, "desk": 'A young %s. Grows up in %d days, then gives %s every day.' % (nm.lower(), hari, hasil.replace('_', ' ')),
                             "tumpuk": 9, "hewan": s}

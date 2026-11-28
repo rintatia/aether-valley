@@ -5442,31 +5442,31 @@
    "nama": "Cow",
    "dewasa": 4,
    "hasil": "milk",
-   "k": 0.42
+   "k": 0.5
   },
   "chicken": {
    "nama": "Chicken",
    "dewasa": 2,
    "hasil": "egg",
-   "k": 0.42
+   "k": 0.29
   },
   "duck": {
    "nama": "Duck",
    "dewasa": 2,
    "hasil": "duck_egg",
-   "k": 0.42
+   "k": 0.3
   },
   "sheep": {
    "nama": "Sheep",
    "dewasa": 3,
    "hasil": "wool",
-   "k": 0.42
+   "k": 0.46
   },
   "goose": {
    "nama": "Goose",
    "dewasa": 3,
    "hasil": "goose_egg",
-   "k": 0.42
+   "k": 0.36
   }
  },
  "resep": [
