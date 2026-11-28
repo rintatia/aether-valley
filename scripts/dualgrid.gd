@@ -18,22 +18,56 @@ var rows: int = 0
 var tile: int = 32
 var snow: PackedByteArray = PackedByteArray()      # per ubin tergambar: 1 = pakai atlas bersalju
 var frame_edge_snow: Array = []                     # [frame] -> [kiri, kanan, atas, bawah]
-# Isi tanpa pola: ubin isi (mask 15) diganti warna dasar polos + stempel detail ditabur acak.
-var fill_color: Color = Color(0, 0, 0, 0)
+# Tanpa pola berulang: atlas dipakai versi "bersih" (detail di dalam rumput dihapus, pinggiran tetap),
+# lalu stempel detail ditabur acak hanya di area yang diizinkan (peta "boleh"), di SEMUA ubin.
 var stamp_tex: Texture2D
 var stamp_rects: Array[Rect2] = []
+var stamp_weights: PackedFloat32Array = PackedFloat32Array()
 var stamps_per_tile: float = 0.0
+var allowed: Image
+var frame_area: PackedFloat32Array = PackedFloat32Array()   # porsi area boleh per bingkai (0..1)
 
 
-func set_scatter(base: Color, tex: Texture2D, rects: Array, per_tile: float) -> void:
-	fill_color = base
+func set_scatter(tex: Texture2D, rects: Array, weights: Array, per_tile: float, allowed_tex: Texture2D) -> void:
 	stamp_tex = tex
 	stamp_rects.clear()
-	for r: Variant in rects:
-		var a: Array = r as Array
-		stamp_rects.append(Rect2(float(a[0]), float(a[1]), float(a[2]), float(a[3])))
+	stamp_weights = PackedFloat32Array()
+	for i: int in range(rects.size()):
+		var r: Array = rects[i] as Array
+		stamp_rects.append(Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3])))
+		stamp_weights.append(float(weights[i]) if i < weights.size() else 1.0)
 	stamps_per_tile = per_tile
+	allowed = allowed_tex.get_image()
+	frame_area = PackedFloat32Array()
+	for f: int in range(16):
+		var cnt: int = 0
+		for yy: int in range(tile):
+			for xx: int in range(tile):
+				if allowed.get_pixel((f % 4) * tile + xx, (f / 4) * tile + yy).r > 0.5:
+					cnt += 1
+		frame_area.append(float(cnt) / float(tile * tile))
 	queue_redraw()
+
+
+func _pick(rng: RandomNumberGenerator) -> int:
+	var total: float = 0.0
+	for w: float in stamp_weights:
+		total += w
+	var v: float = rng.randf() * total
+	for i: int in range(stamp_weights.size()):
+		v -= stamp_weights[i]
+		if v <= 0.0:
+			return i
+	return stamp_weights.size() - 1
+
+
+func _ok(fr: int, x0: int, y0: int, w: int, h: int) -> bool:
+	var ox: int = (fr % 4) * tile
+	var oy: int = (fr / 4) * tile
+	for p: Vector2i in [Vector2i(x0, y0), Vector2i(x0 + w - 1, y0), Vector2i(x0, y0 + h - 1), Vector2i(x0 + w - 1, y0 + h - 1), Vector2i(x0 + w / 2, y0 + h / 2)]:
+		if allowed.get_pixel(ox + p.x, oy + p.y).r < 0.5:
+			return false
+	return true
 
 
 func setup(a: Texture2D, c: PackedByteArray, w: int, h: int, t: int, clean: Texture2D = null) -> void:
@@ -143,27 +177,36 @@ func _draw() -> void:
 				continue
 			var px: float = x * tile - half
 			var py: float = y * tile - half
-			if fr == 6 and stamp_tex != null:
-				_draw_scattered(x, y, px, py)
-				continue
 			var tex: Texture2D = atlas if (clean_atlas == null or snow[_idx(x, y)] == 1) else clean_atlas
 			draw_texture_rect_region(tex, Rect2(px, py, tile, tile),
 				Rect2((fr % 4) * tile, (fr / 4) * tile, tile, tile))
+			if stamp_tex != null:
+				_scatter(fr, x, y, px, py)
 
 
-func _draw_scattered(x: int, y: int, px: float, py: float) -> void:
-	draw_rect(Rect2(px, py, tile, tile), fill_color)
+func _scatter(fr: int, x: int, y: int, px: float, py: float) -> void:
+	if frame_area[fr] <= 0.02:
+		return
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = x * 7919 + y * 104729 + 17
-	# jumlah stempel bervariasi per ubin (rata-rata ~ isi aslinya), posisi bebas
-	var n: int = int(round(rng.randfn(stamps_per_tile * 0.85, 1.6)))
-	for i: int in range(maxi(n, 0)):
-		var r: Rect2 = stamp_rects[rng.randi_range(0, stamp_rects.size() - 1)]
-		var sx: float = px + float(rng.randi_range(0, tile - int(r.size.x)))
-		var sy: float = py + float(rng.randi_range(0, tile - int(r.size.y)))
+	# jumlah bervariasi per ubin, sebanding luas rumput di ubin itu; posisi bebas
+	var n: int = int(round(rng.randfn(stamps_per_tile * frame_area[fr], 1.4)))
+	var placed: int = 0
+	var tries: int = 0
+	while placed < n and tries < n * 6:
+		tries += 1
+		var i: int = _pick(rng)
+		var r: Rect2 = stamp_rects[i]
+		var w: int = int(r.size.x)
+		var h: int = int(r.size.y)
+		var lx: int = rng.randi_range(0, tile - w)
+		var ly: int = rng.randi_range(0, tile - h)
+		if not _ok(fr, lx, ly, w, h):
+			continue
+		placed += 1
 		if rng.randf() < 0.5:
-			draw_set_transform(Vector2(sx + r.size.x, sy), 0.0, Vector2(-1, 1))
+			draw_set_transform(Vector2(px + lx + w, py + ly), 0.0, Vector2(-1, 1))
 			draw_texture_rect_region(stamp_tex, Rect2(Vector2.ZERO, r.size), r)
 			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		else:
-			draw_texture_rect_region(stamp_tex, Rect2(Vector2(sx, sy), r.size), r)
+			draw_texture_rect_region(stamp_tex, Rect2(Vector2(px + lx, py + ly), r.size), r)

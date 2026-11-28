@@ -37,7 +37,7 @@ func _ready() -> void:
 		layer.call("setup", load("res://assets/uji_spritecook/%s.png" % str(ld["tex"])) as Texture2D, arr, map_w, map_h, T, clean)
 		if ld.has("scatter"):
 			var sd: Dictionary = Art.load_json("res://data/%s.json" % str(ld["scatter"]))
-			layer.call("set_scatter", Color(str(sd["base"])), load("res://assets/uji_spritecook/%s.png" % str(ld["scatter"])) as Texture2D, sd["rects"] as Array, float(sd["per_tile"]))
+			layer.call("set_scatter", load("res://assets/uji_spritecook/%s.png" % str(ld["scatter"])) as Texture2D, sd["rects"] as Array, sd.get("weights", []) as Array, float(sd["per_tile"]), load("res://assets/uji_spritecook/%s.png" % str(ld["allowed"])) as Texture2D)
 	cam = Camera2D.new()
 	cam.position = Vector2(map_w * T / 2.0, map_h * T / 2.0)
 	add_child(cam)
