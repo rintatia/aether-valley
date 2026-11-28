@@ -382,7 +382,7 @@ func _popup_bag() -> void:
 	# tombol hapus (tempat sampah) di kiri atas = cermin tombol X di kanan atas
 	# tombol hapus (pixel art) di kiri atas, cermin tombol X; agak ke dalam agar tidak menutupi hiasan bingkai
 	var tb: TextureButton = UIKit.round_button("tombol_sampah", 46.0)
-	tb.position = Vector2(14.0, 12.0)
+	tb.position = Vector2(UIKit.corner_inset(fr[0] as Control), 10.0)
 	tb.pressed.connect(_bag_ask_delete)
 	inner.add_child(tb)
 	_bag_show()

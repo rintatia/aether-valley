@@ -115,9 +115,14 @@ func frame_title(inner: Control, text: String, fs: int = 32) -> Label:
 ## Tombol tutup (X) pixel art di pojok kanan atas area isi bingkai (agak ke dalam, tidak menutupi hiasan bingkai).
 func close_button(panel: Control, inner: Control, d: float = 46.0) -> TextureButton:
 	var b: TextureButton = round_button("tombol_x", d)
-	b.position = Vector2(inner.position.x + inner.size.x - d - 14.0, inner.position.y + 12.0)
+	b.position = Vector2(inner.position.x + inner.size.x - d - corner_inset(panel), inner.position.y + 10.0)
 	panel.add_child(b)
 	return b
+
+
+## Jarak tombol pojok dari tepi area isi, agar tidak menutupi hiasan bunga/daun di pojok bingkai.
+func corner_inset(panel: Control) -> float:
+	return maxf(14.0, panel.size.x * 0.075)
 
 
 ## Tombol bulat pixel art (gambar <nama>.png & <nama>_tekan.png).
