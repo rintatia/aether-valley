@@ -328,30 +328,32 @@ func _nav_button(txt: String, d: float) -> Button:
 func _popup_bag() -> void:
 	var fr: Array = _frame("bingkai_11", 640.0, "Bag")
 	var inner: Control = fr[1] as Control
-	var top: float = 54.0
+	var top: float = 60.0
 	var nav_h: float = 40.0
-	var dots_h: float = 18.0
-	var avail: float = minf(inner.size.x - 40.0, inner.size.y - top - nav_h - dots_h - 22.0)
-	var gap: float = avail * 0.025
-	var cell: float = (avail - gap * 4.0) / 5.0
-	var gx: float = (inner.size.x - (cell * 5.0 + gap * 4.0)) / 2.0
+	var dots_h: float = 16.0
+	var side: float = 14.0
+	var gap: float = 8.0
+	# kotak mengisi seluruh area isi bingkai (lebar & tinggi), tanpa sisa ruang kosong
+	var cw: float = (inner.size.x - side * 2.0 - gap * 4.0) / 5.0
+	var chh: float = (inner.size.y - top - nav_h - dots_h - 22.0 - gap * 4.0) / 5.0
+	var gx: float = side
 	var slot_bg: StyleBoxFlat = UIKit.box(Game.theme_color().darkened(0.09), Color("#B58A2A"), 3, 8)
 	for ri: int in range(5):
 		for ci: int in range(5):
-			var x: float = gx + ci * (cell + gap)
-			var y: float = top + ri * (cell + gap)
+			var x: float = gx + ci * (cw + gap)
+			var y: float = top + ri * (chh + gap)
 			var bgp: Panel = Panel.new()
 			bgp.add_theme_stylebox_override("panel", slot_bg)
 			bgp.position = Vector2(x, y)
-			bgp.size = Vector2(cell, cell)
+			bgp.size = Vector2(cw, chh)
 			bgp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			inner.add_child(bgp)
-			var r: Array = [x / inner.size.x, y / inner.size.y, (x + cell) / inner.size.x, (y + cell) / inner.size.y]
+			var r: Array = [x / inner.size.x, y / inner.size.y, (x + cw) / inner.size.x, (y + chh) / inner.size.y]
 			bag_slots.append(_make_slot(inner, inner.size, r, 0))
-	var grid_end: float = top + cell * 5.0 + gap * 4.0
+	var grid_end: float = top + chh * 5.0 + gap * 4.0
 	bag_dots = Control.new()
 	bag_dots.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bag_dots.position = Vector2(0, grid_end + 8.0)
+	bag_dots.position = Vector2(0, grid_end + 6.0)
 	bag_dots.size = Vector2(inner.size.x, dots_h)
 	bag_dots.draw.connect(func() -> void:
 		var step: float = 20.0
@@ -361,7 +363,7 @@ func _popup_bag() -> void:
 			bag_dots.draw_circle(c, 6.0, Color("#43251D"))
 			bag_dots.draw_circle(c, 4.5, Color("#FFD65A") if k == bag_page else Color("#F8F1EA")))
 	inner.add_child(bag_dots)
-	var ny: float = grid_end + 8.0 + dots_h + 6.0
+	var ny: float = grid_end + 6.0 + dots_h + 6.0
 	var lb: Button = _nav_button("<", nav_h)
 	lb.position = Vector2(gx, ny)
 	lb.pressed.connect(func() -> void: _bag_turn(-1))
