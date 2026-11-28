@@ -31,6 +31,11 @@ var zoom_min: float = 1.0   # dihitung dari ukuran peta & layar (seluruh peta me
 var zoom_now: float = ZOOM_DEFAULT
 var busy: bool = false
 var chunk_root: Node2D
+const CHOP_HITS: int = 3
+const REGROW_SECONDS: float = 300.0   # 1 hari permainan = 5 menit
+var chop_trees: Array[Dictionary] = []
+var kayu: int = 0
+var lbl_kayu: Label
 var pinch_zoom0: float = 2.0
 var pinching: bool = false
 var snap_tw: Tween
@@ -87,6 +92,7 @@ func load_map(id: String, from_gate: String) -> void:
 			c.queue_free()
 	gates.clear()
 	buildings.clear()
+	chop_trees.clear()
 	astar = AStarGrid2D.new()
 	astar.region = Rect2i(0, 0, mw, mh)
 	astar.cell_size = Vector2(T, T)
@@ -101,7 +107,7 @@ func load_map(id: String, from_gate: String) -> void:
 			if bool(L.get("block", false)):
 				astar.set_point_solid(Vector2i(x, y), true)
 			if L.has("gate"):
-				gates[Vector2i(x, y)] = str(L["gate"])
+				gates[Vector2i(x, y)] = str((m.get("gerbang", {}) as Dictionary).get(str(L["gate"]), ""))
 			if bool(L.get("spawn", false)):
 				spawn = Vector2i(x, y)
 			if L.has("obj"):
@@ -124,7 +130,8 @@ func load_map(id: String, from_gate: String) -> void:
 	cam.reset_smoothing()
 	path = PackedVector2Array()
 	pending = {}
-	lbl_map.text = "Ladang" if id == "ladang" else "Kota"
+	lbl_map.text = str(m.get("nama", id))
+	_refresh_kayu()
 	ground.queue_redraw()
 	_fit_zoom()
 	_set_zoom(zoom_now)
@@ -195,32 +202,112 @@ func _place_trees(id: String) -> void:
 	var tapak: Dictionary = d.get("tapak", {}) as Dictionary
 	for tv: Variant in d["pohon"] as Array:
 		var t: Dictionary = tv as Dictionary
+		var holder: Node2D = _sprite_from(atlas, regions, t)
 		var code: String = str(t["obj"])
-		var r: Array = regions[code] as Array
-		var sc: float = float(t["skala"])
-		var w: float = float(r[2])
-		var h: float = float(r[3])
-		var spr: Sprite2D = Sprite2D.new()
-		spr.texture = atlas
-		spr.region_enabled = true
-		spr.region_rect = Rect2(float(r[0]), float(r[1]), w, h)
-		spr.centered = false
-		spr.flip_h = bool(t["cermin"])
-		spr.scale = Vector2(sc, sc)
-		spr.position = Vector2(-w * sc / 2.0, -h * sc)
-		var holder: Node2D = Node2D.new()
-		holder.position = Vector2(float(t["x"]), float(t["y"]))
-		holder.add_child(spr)
-		ysort.add_child(holder)
 		if bool(blocks.get(code, true)):
-			# tapak penghalang selebar dasar objek (batang pohon sempit, kayu/batu lebih lebar)
-			var half: float = maxf(w * sc * float(tapak.get(code, 0.4)) / 2.0, 4.0)
-			var c0: Vector2i = _cell(holder.position + Vector2(-half, -2))
-			var c1: Vector2i = _cell(holder.position + Vector2(half, -2))
-			for cx: int in range(c0.x, c1.x + 1):
-				var c: Vector2i = Vector2i(cx, c0.y)
-				if astar.region.has_point(c):
-					astar.set_point_solid(c, true)
+			_block_base(holder.position, float((regions[code] as Array)[2]) * float(t["skala"]), float(tapak.get(code, 0.4)))
+	# pohon tebang: bisa ditebang (3 ayunan) -> tunggul -> tumbuh lagi setelah 1 hari (5 menit)
+	var stump: String = str(d.get("tunggul", "FL15"))
+	for tv: Variant in d.get("tebang", []) as Array:
+		var t: Dictionary = tv as Dictionary
+		var holder: Node2D = _sprite_from(atlas, regions, t)
+		var code: String = str(t["obj"])
+		var w: float = float((regions[code] as Array)[2]) * float(t["skala"])
+		var h: float = float((regions[code] as Array)[3]) * float(t["skala"])
+		_block_base(holder.position, w, 0.25)
+		chop_trees.append({"node": holder, "t": t, "w": w, "h": h, "hp": CHOP_HITS, "regrow": 0.0,
+			"atlas": atlas, "regions": regions, "stump": stump, "cell": _cell(holder.position - Vector2(0, 2))})
+
+
+func _sprite_from(atlas: Texture2D, regions: Dictionary, t: Dictionary) -> Node2D:
+	var holder: Node2D = Node2D.new()
+	holder.position = Vector2(float(t["x"]), float(t["y"]))
+	_set_tree_sprite(holder, atlas, regions, str(t["obj"]), float(t["skala"]), bool(t["cermin"]))
+	ysort.add_child(holder)
+	return holder
+
+
+func _set_tree_sprite(holder: Node2D, atlas: Texture2D, regions: Dictionary, code: String, sc: float, mirror: bool) -> void:
+	for c: Node in holder.get_children():
+		c.queue_free()
+	var r: Array = regions[code] as Array
+	var w: float = float(r[2])
+	var h: float = float(r[3])
+	var spr: Sprite2D = Sprite2D.new()
+	spr.texture = atlas
+	spr.region_enabled = true
+	spr.region_rect = Rect2(float(r[0]), float(r[1]), w, h)
+	spr.centered = false
+	spr.flip_h = mirror
+	spr.scale = Vector2(sc, sc)
+	spr.position = Vector2(-w * sc / 2.0, -h * sc)
+	holder.add_child(spr)
+
+
+## tapak penghalang selebar dasar objek (batang pohon sempit, kayu/batu lebih lebar)
+func _block_base(pos: Vector2, width: float, frac: float) -> void:
+	var half: float = maxf(width * frac / 2.0, 4.0)
+	var c0: Vector2i = _cell(pos + Vector2(-half, -2))
+	var c1: Vector2i = _cell(pos + Vector2(half, -2))
+	for cx: int in range(c0.x, c1.x + 1):
+		var c: Vector2i = Vector2i(cx, c0.y)
+		if astar.region.has_point(c):
+			astar.set_point_solid(c, true)
+
+
+# ---------------- menebang ----------------
+func _tree_at(wp: Vector2) -> int:
+	var best: int = -1
+	var best_y: float = -1.0
+	for i: int in range(chop_trees.size()):
+		var ct: Dictionary = chop_trees[i]
+		if int(ct["hp"]) <= 0:
+			continue
+		var p: Vector2 = (ct["node"] as Node2D).position
+		var w: float = float(ct["w"])
+		var h: float = float(ct["h"])
+		if Rect2(p.x - w * 0.4, p.y - h, w * 0.8, h + 4).has_point(wp) and p.y > best_y:
+			best = i
+			best_y = p.y
+	return best
+
+
+func chop_hit(i: int) -> void:
+	var ct: Dictionary = chop_trees[i]
+	if int(ct["hp"]) <= 0:
+		return
+	ct["hp"] = int(ct["hp"]) - 1
+	var node: Node2D = ct["node"] as Node2D
+	var tw: Tween = create_tween()
+	tw.tween_property(node, "rotation", 0.06, 0.05)
+	tw.tween_property(node, "rotation", -0.04, 0.07)
+	tw.tween_property(node, "rotation", 0.0, 0.06)
+	if int(ct["hp"]) > 0:
+		show_toast("Tok! (%d lagi)" % int(ct["hp"]))
+		return
+	var t: Dictionary = ct["t"] as Dictionary
+	_set_tree_sprite(node, ct["atlas"] as Texture2D, ct["regions"] as Dictionary, str(ct["stump"]), 0.55, bool(t["cermin"]))
+	var got: int = 2 + int(float(t["skala"]) > 0.9) + randi() % 2
+	kayu += got
+	ct["regrow"] = REGROW_SECONDS
+	_refresh_kayu()
+	show_toast("+%d kayu" % got)
+
+
+func _regrow(delta: float) -> void:
+	for ct: Dictionary in chop_trees:
+		if int(ct["hp"]) > 0:
+			continue
+		ct["regrow"] = float(ct["regrow"]) - delta
+		if float(ct["regrow"]) <= 0.0:
+			var t: Dictionary = ct["t"] as Dictionary
+			ct["hp"] = CHOP_HITS
+			_set_tree_sprite(ct["node"] as Node2D, ct["atlas"] as Texture2D, ct["regions"] as Dictionary, str(t["obj"]), float(t["skala"]), bool(t["cermin"]))
+
+
+func _refresh_kayu() -> void:
+	if lbl_kayu != null:
+		lbl_kayu.text = "Kayu: %d" % kayu
 
 
 func _draw_ground() -> void:
@@ -271,6 +358,9 @@ func _build_hud() -> void:
 	hud.add_child(root)
 	lbl_map = UIKit.label("", 26)
 	lbl_map.position = Vector2(16, 12)
+	lbl_kayu = UIKit.label("Kayu: 0", 22)
+	lbl_kayu.position = Vector2(16, 50)
+	root.add_child(lbl_kayu)
 	root.add_child(lbl_map)
 	root.add_child(UIKit.version_label())
 	var box: HBoxContainer = HBoxContainer.new()
@@ -427,6 +517,14 @@ func tap_world(wp: Vector2) -> void:
 		if hit.has_point(c):
 			walk_to(b["door"] as Vector2i, {"type": "door", "b": b})
 			return
+	var ti: int = _tree_at(wp)
+	if ti >= 0:
+		var tc: Vector2i = chop_trees[ti]["cell"] as Vector2i
+		if _cell(player.position).distance_to(tc) <= 1.5:
+			chop_hit(ti)
+		else:
+			walk_to(tc, {"type": "chop", "i": ti})
+		return
 	if gates.has(c):
 		walk_to(c, {"type": "gate"})
 		return
@@ -451,6 +549,8 @@ func _arrived() -> void:
 	if str(a["type"]) == "door":
 		var b: Dictionary = a["b"] as Dictionary
 		show_toast("%s - segera dibuka" % str(b["label"]))
+	elif str(a["type"]) == "chop":
+		chop_hit(int(a["i"]))
 	elif str(a["type"]) == "gate":
 		var to: String = str(gates.get(_cell(player.position), ""))
 		if to != "":
@@ -472,6 +572,7 @@ func _go(to: String) -> void:
 
 # ---------------- gerak ----------------
 func _process(delta: float) -> void:
+	_regrow(delta)
 	if busy:
 		return
 	var d: Vector2 = Vector2.ZERO

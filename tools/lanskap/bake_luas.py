@@ -5,9 +5,10 @@ Pakai: python3 kit.py && python3 bake_luas.py [kolom] [baris] [seed]"""
 from PIL import Image
 import numpy as np, sys, os, json
 from scipy.ndimage import gaussian_filter, zoom as nzoom
-COLS=int(sys.argv[1]) if len(sys.argv)>1 else 155
-ROWS=int(sys.argv[2]) if len(sys.argv)>2 else 116
-SEED=int(sys.argv[3]) if len(sys.argv)>3 else 11
+MID=sys.argv[1] if len(sys.argv)>1 else 'ladang'
+MAP=json.load(open(f'../../data/maps/{MID}.json'))
+ROWS=len(MAP['rows']); COLS=len(MAP['rows'][0])
+SEED={'ladang':11,'hutan':23}.get(MID,5)
 T=32; W,H=COLS*T,ROWS*T; CH=1024
 rng=np.random.default_rng(SEED)
 hx=lambda h: np.array([int(h[i:i+2],16) for i in (1,3,5)],np.uint8)
@@ -41,10 +42,13 @@ RND=np.random.default_rng(SEED+99).random((H,W),dtype=np.float32)
 def dith(f,thr,band): return f>thr+(RND-0.5)*2*band
 yy=np.arange(H,dtype=np.float32)[:,None]; xx=np.arange(W,dtype=np.float32)[None,:]
 border=np.minimum(np.minimum(xx,W-1-xx),np.minimum(yy,H-1-yy))      # jarak ke batas peta
-edge=np.clip(1-border/420.0,0,1)                                      # pinggir hutan ~13 petak
+# sabuk hutan tertutup ('#') -> rumput lebih gelap, peralihan halus ke padang
+mask=np.array([[c=='#' for c in r] for r in MAP['rows']],np.float32)
+mask=gaussian_filter(nzoom(mask,T,order=0)[:H,:W],18)
+edge=np.clip(mask*1.15,0,1)
 img=np.empty((H,W,3),np.uint8); img[:]=G_BASE
-light_f=noise(28,16)+0.35*noise(5,17)-edge*0.3
-shade_f=noise(30,14)+0.35*noise(6,15)+edge*0.55
+light_f=noise(28,16)+0.35*noise(5,17)-edge*1.0
+shade_f=noise(30,14)+0.35*noise(6,15)+edge*1.35
 img[dith(light_f,0.55,0.10)]=G_LIGHT
 img[dith(shade_f,0.62,0.10)]=G_SHADE
 img[dith(shade_f,1.15,0.08)&(noise(4,18)>0.2)]=G_DEEP
@@ -136,7 +140,7 @@ for _ in range(int((W+H)*2*0.25)):
     elif side==2: x,y=d,rng.integers(0,H)
     else: x,y=W-1-d,rng.integers(0,H)
     s=bush[rng.integers(len(bush))]; stamp(s,int(x)-s.shape[1]//2,int(y)-s.shape[0]//2)
-out='../../assets/lanskap/ladang'
+out=f'../../assets/lanskap/{MID}'
 os.makedirs(out,exist_ok=True)
 for f in os.listdir(out):
     if f.endswith('.png'): os.remove(os.path.join(out,f))
@@ -145,6 +149,6 @@ for cy in range(ny):
     for cx in range(nx):
         Image.fromarray(img[cy*CH:(cy+1)*CH,cx*CH:(cx+1)*CH]).save(f'{out}/c_{cx}_{cy}.png',optimize=True)
 json.dump({"cols":COLS,"rows":ROWS,"tile":T,"chunk":CH,"nx":nx,"ny":ny},open(f'{out}/info.json','w'))
-Image.fromarray(img).resize((W//8,H//8),Image.BOX).save('pratinjau_ladang_luas.png')
-Image.fromarray(img[H//2-180:H//2+180,W//2-320:W//2+320]).resize((1280,720),Image.NEAREST).save('pratinjau_tengah_x2.png')
+Image.fromarray(img).resize((W//8,H//8),Image.BOX).save(f'pratinjau_{MID}.png')
+Image.fromarray(img[0:360,W//3:W//3+640]).resize((1280,720),Image.NEAREST).save(f'pratinjau_{MID}_tepi.png')
 print('selesai',W,H,'potongan',nx,ny)

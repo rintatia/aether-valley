@@ -96,6 +96,25 @@ func _check(ok: bool, msg: String) -> void:
 		_fails += 1
 
 
+## BFS dari titik pemain: tidak boleh mencapai tepi peta selain lewat sel gerbang.
+func _edge_closed() -> bool:
+	var start: Vector2i = world._cell(world.player.position)
+	var seen: Dictionary = {start: true}
+	var q: Array[Vector2i] = [start]
+	while not q.is_empty():
+		var c: Vector2i = q.pop_back()
+		var on_edge: bool = c.x == 0 or c.y == 0 or c.x == world.mw - 1 or c.y == world.mh - 1
+		if on_edge and not world.gates.has(c):
+			print("  bocor di ", c)
+			return false
+		for dlt: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var n: Vector2i = c + dlt
+			if world.astar.region.has_point(n) and not seen.has(n) and not world.astar.is_point_solid(n):
+				seen[n] = true
+				q.append(n)
+	return true
+
+
 func _selftest() -> void:
 	# semua aset menghasilkan tekstur (file asli atau placeholder) dengan ukuran benar
 	for k: String in Art.reg.keys():
@@ -122,23 +141,28 @@ func _selftest() -> void:
 	_check(solid_n > 0 and solid_ok == solid_n, "batu/kayu/tunggul tak bisa ditembus (%d/%d)" % [solid_ok, solid_n])
 	_check(world.ysort.get_child_count() > 500, "pohon & semak batas terpasang (%d node)" % world.ysort.get_child_count())
 	_check(world.astar.is_point_solid(Vector2i(0, 0)) and world.astar.is_point_solid(Vector2i(154, 0)), "batas peta tidak bisa dilewati")
+	_check(_edge_closed(), "ladang: seluruh tepi tertutup kecuali gerbang")
 	var gate: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
 		gate = g
-	var sp: Vector2i = world.spawn
-	_check(world.find_path(sp, gate).size() > 10, "jalur ladang: muncul -> gerbang kota")
-	for b: Dictionary in world.buildings:
-		_check(world.find_path(sp, b["door"] as Vector2i).size() > 1, "jalur ladang -> pintu %s" % str(b["id"]))
-	world.load_map("kota", "ladang")
-	_check(world.mw == 40 and world.mh == 24, "peta kota 40x24")
-	_check(world.buildings.size() == 4, "4 bangunan di kota")
+	_check(gate.x == 0 and str(world.gates[gate]) == "hutan", "gerbang ladang di kiri menuju hutan")
+	_check(world.find_path(world.spawn, gate).size() > 10, "jalur ladang: muncul -> gerbang hutan")
+	world.load_map("hutan", "ladang")
+	_check(world.mw == 120 and world.mh == 90, "peta hutan 120x90 (9x luas awal)")
+	_check(world.chunk_root.get_child_count() == 12, "12 potongan lanskap hutan")
+	_check(_edge_closed(), "hutan: seluruh tepi tertutup kecuali gerbang")
 	var arrive: Vector2i = world._cell(world.player.position)
-	for b: Dictionary in world.buildings:
-		var p: PackedVector2Array = world.find_path(arrive, b["door"] as Vector2i)
-		_check(p.size() > 1, "jalur kota -> pintu %s (%d langkah)" % [str(b["id"]), p.size()])
+	_check(arrive.x > 100, "datang dari ladang muncul di sisi kanan hutan")
+	_check(world.chop_trees.size() > 100, "pohon tebang: %d" % world.chop_trees.size())
+	var k0: int = world.kayu
+	for i: int in range(3):
+		world.chop_hit(0)
+	_check(world.kayu > k0 and int(world.chop_trees[0]["hp"]) == 0, "tebang 3x -> tunggul & kayu bertambah")
+	world._regrow(301.0)
+	_check(int(world.chop_trees[0]["hp"]) == 3, "pohon tumbuh lagi setelah 1 hari")
 	var back: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
 		back = g
-	_check(world.find_path(arrive, back).size() > 0, "jalur kota -> gerbang ladang")
+	_check(world.find_path(arrive, back).size() > 0 and str(world.gates[back]) == "ladang", "jalur hutan -> gerbang ladang")
 	print("SELFTEST " + ("OK" if _fails == 0 else "GAGAL (%d)" % _fails))
 	get_tree().quit(0 if _fails == 0 else 1)

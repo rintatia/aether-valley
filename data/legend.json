@@ -67,11 +67,11 @@
   },
   ">": {
     "tile": "tile_jalan",
-    "gate": "kota"
+    "gate": "kanan"
   },
   "<": {
     "tile": "tile_jalan",
-    "gate": "ladang"
+    "gate": "kiri"
   },
   "#": {
     "tile": "tile_rumput",
