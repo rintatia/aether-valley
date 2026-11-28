@@ -24,7 +24,13 @@ func _ready() -> void:
 		bg.color = Color(str(m["bg"]))
 		bg.polygon = PackedVector2Array([Vector2(0, 0), Vector2(map_w * T, 0), Vector2(map_w * T, map_h * T), Vector2(0, map_h * T)])
 		add_child(bg)
-	for L: Variant in m["layers"] as Array:
+	if m.has("baked"):
+		# peta rumput organik yang sudah dipanggang (tepi alami per piksel, bukan per petak)
+		var sp: Sprite2D = Sprite2D.new()
+		sp.texture = load("res://assets/uji_spritecook/%s.png" % str(m["baked"])) as Texture2D
+		sp.centered = false
+		add_child(sp)
+	for L: Variant in ([] if m.has("baked") else m["layers"]) as Array:
 		var ld: Dictionary = L as Dictionary
 		var arr: PackedByteArray = PackedByteArray()
 		for v: Variant in ld["cells"] as Array:
@@ -64,7 +70,7 @@ func _hud() -> void:
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(root)
-	var l: Label = UIKit.label("Uji tileset rumput Aether Valley (32 px)  -  seret untuk geser", 22)
+	var l: Label = UIKit.label("Uji rumput organik Aether Valley  -  seret untuk geser", 22)
 	l.position = Vector2(16, 12)
 	root.add_child(l)
 	var box: HBoxContainer = HBoxContainer.new()
