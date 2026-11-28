@@ -89,8 +89,7 @@ func _ready() -> void:
 	add_child(hint)
 
 
-## Kartu terpilih TIMBUL: terangkat, sedikit membesar dengan pantulan, bayangan muncul,
-## lalu melayang naik-turun pelan. Kartu lain turun kembali dan meredup.
+## Kartu terpilih sedikit terangkat (halus) + garis kuning; kartu lain sedikit meredup.
 func _choose(g: String) -> void:
 	chosen = g
 	for k: String in cards.keys():
@@ -105,28 +104,15 @@ func _choose(g: String) -> void:
 		if k == g:
 			c.modulate = Color.WHITE
 			inner.move_child(c, inner.get_child_count() - 1)
-			tw.tween_property(c, "position:y", bp.y - 12.0, 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			tw.tween_property(c, "scale", Vector2(1.05, 1.05), 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			tw.tween_property(sh, "modulate:a", 1.0, 0.25)
-			tw.tween_property(sh, "position:y", bp.y + 14.0, 0.28)
-			tw.chain().tween_callback(func() -> void: _float(k))
+			tw.tween_property(c, "position:y", bp.y - 4.0, 0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			tw.tween_property(c, "scale", Vector2(1.02, 1.02), 0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			tw.tween_property(sh, "modulate:a", 0.45, 0.15)
 		else:
 			tw.tween_property(c, "position:y", bp.y, 0.2).set_trans(Tween.TRANS_SINE)
 			tw.tween_property(c, "scale", Vector2.ONE, 0.2)
-			tw.tween_property(c, "modulate", Color(0.78, 0.78, 0.78), 0.2)
+			tw.tween_property(c, "modulate", Color(0.9, 0.9, 0.9), 0.2)
 			tw.tween_property(sh, "modulate:a", 0.0, 0.2)
 	hint.text = "%s selected - tap Confirm" % ("Male" if g == "male" else "Female")
-
-
-func _float(k: String) -> void:
-	if chosen != k:
-		return
-	var c: TextureButton = cards[k] as TextureButton
-	var bp: Vector2 = base_pos[k] as Vector2
-	var tw: Tween = create_tween().set_loops()
-	tweens[k] = tw
-	tw.tween_property(c, "position:y", bp.y - 7.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(c, "position:y", bp.y - 12.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func _confirm() -> void:
