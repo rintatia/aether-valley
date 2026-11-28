@@ -2,3 +2,4 @@ kit_*.npy
 kit.json
 lanskap_*.png
 pratinjau_*.png
+__pycache__/
