@@ -112,6 +112,10 @@ func _shot(name: String) -> void:
 
 func _screenshots() -> void:
 	var pre: String = OS.get_environment("SHOT_PREFIX")
+	# pengaman: bila ada galat di tengah jalan, tetap keluar agar CI tidak tersangkut
+	get_tree().create_timer(240.0).timeout.connect(func() -> void:
+		push_error("screenshot watchdog: keluar paksa")
+		get_tree().quit(2))
 	_title()
 	await _shot(pre + "01_judul.png")
 	_choose_gender()
@@ -212,16 +216,23 @@ func _screenshots() -> void:
 		_place_near(fm, str(it[0]), sp + (it[1] as Vector2i))
 	var crops_at: Array = [["carrot", 0], ["carrot", 1], ["carrot", 2], ["carrot", 4], ["tomato", 0], ["tomato", 2], ["tomato", 4], ["tomato", 6],
 		["sunflower", 1], ["sunflower", 3], ["sunflower", 5], ["pumpkin", 8]]
-	for i: int in range(crops_at.size()):
-		var cc: Vector2i = sp + Vector2i(-3 + i % 4, 6 + i / 4)
-		w.call("use_tool", "cangkul", Vector2((cc.x + 0.5) * 32, (cc.y + 0.5) * 32))
-		Game.add_item("bibit_" + str(crops_at[i][0]), 1)
-		fm.call("plant", "bibit_" + str(crops_at[i][0]), cc)
-		(Game.crops[cc] as Dictionary)["days"] = int(crops_at[i][1])
-		fm.call("_crop_node", cc)
+	var planted: int = 0
+	for yy: int in range(5, 14):
+		for xx: int in range(-6, 7):
+			if planted >= crops_at.size():
+				break
+			var cc: Vector2i = sp + Vector2i(xx, yy)
+			w.call("use_tool", "cangkul", Vector2((cc.x + 0.5) * 32, (cc.y + 0.5) * 32))
+			var sid: String = "bibit_" + str((crops_at[planted] as Array)[0])
+			Game.add_item(sid, 1)
+			if bool(fm.call("plant", sid, cc)):
+				(Game.crops[cc] as Dictionary)["days"] = int((crops_at[planted] as Array)[1])
+				fm.call("_crop_node", cc)
+				planted += 1
 	for an: Array in [["cow", 5], ["cow", 0], ["chicken", 3], ["chicken", 0], ["sheep", 4], ["duck", 3], ["goose", 4]]:
 		Game.add_item("ternak_" + str(an[0]), 1)
-		_place_near(fm, "ternak_" + str(an[0]), sp + Vector2i(randi_range(4, 12), randi_range(1, 6)))
+		if not _place_near(fm, "ternak_" + str(an[0]), sp + Vector2i(randi_range(4, 12), randi_range(1, 6))):
+			continue
 		var last: Dictionary = Game.animals[Game.animals.size() - 1] as Dictionary
 		last["age"] = int(an[1])
 		if Game.is_adult(last):
