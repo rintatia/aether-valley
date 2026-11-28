@@ -31,7 +31,8 @@ var zoom_min: float = 1.0   # dihitung dari ukuran peta & layar (seluruh peta me
 var zoom_now: float = ZOOM_DEFAULT
 var busy: bool = false
 var chunk_root: Node2D
-const CHOP_HITS: int = 3
+const FELL_HITS: int = 3                 # ayunan untuk menumbangkan pohon berdiri
+const CLEAR_HITS: Array[int] = [2, 3, 5]  # ayunan membersihkan tumbangan + tunggul: kecil, sedang, besar
 const REGROW_SECONDS: float = 300.0   # 1 hari permainan = 5 menit
 var chop_trees: Array[Dictionary] = []
 var chop_kinds: Array[String] = []   # jenis pohon tebang di peta ini (untuk tumbuh acak)
@@ -225,13 +226,58 @@ func _place_trees(id: String) -> void:
 
 
 func _spawn_chop_tree(t: Dictionary) -> Dictionary:
-	var holder: Node2D = _sprite_from(chop_atlas, chop_regions, t)
-	var r: Array = chop_regions[str(t["obj"])] as Array
-	var ct: Dictionary = {"node": holder, "t": t, "w": float(r[2]) * float(t["skala"]), "h": float(r[3]) * float(t["skala"]),
-		"hp": CHOP_HITS, "regrow": 0.0, "cell": _cell(holder.position - Vector2(0, 2))}
-	astar.set_point_solid(ct["cell"] as Vector2i, true)
+	var ct: Dictionary = {"t": t}
 	chop_trees.append(ct)
+	_raise_tree(ct, t)
 	return ct
+
+
+## Pohon berdiri = 2 bagian dari satu gambar: TUNGGUL (bawah) + BATANG ATAS (berputar di titik potong).
+func _raise_tree(ct: Dictionary, t: Dictionary) -> void:
+	var holder: Node2D = Node2D.new()
+	holder.position = Vector2(float(t["x"]), float(t["y"]))
+	ysort.add_child(holder)
+	var r: Array = chop_regions[str(t["obj"])] as Array
+	var sc: float = float(t["skala"])
+	var w: float = float(r[2])
+	var h: float = float(r[3])
+	var cut: float = clampf(roundf(h * 0.11), 10.0, 22.0)          # tinggi tunggul (piksel gambar)
+	var mirror: bool = bool(t["cermin"])
+	var stump: Sprite2D = _region_sprite(Rect2(float(r[0]), float(r[1]) + h - cut, w, cut), sc, mirror)
+	stump.position = Vector2(-w * sc / 2.0, -cut * sc)
+	holder.add_child(stump)
+	var pivot: Node2D = Node2D.new()
+	pivot.position = Vector2(0, -cut * sc)
+	holder.add_child(pivot)
+	var top: Sprite2D = _region_sprite(Rect2(float(r[0]), float(r[1]), w, h - cut), sc, mirror)
+	top.position = Vector2(-w * sc / 2.0, -(h - cut) * sc)
+	pivot.add_child(top)
+	var hh: float = h * sc
+	var size: int = 2 if hh >= 160.0 else (1 if hh >= 110.0 else 0)   # 0 kecil, 1 sedang, 2 besar
+	ct["t"] = t
+	ct["node"] = holder
+	ct["pivot"] = pivot
+	ct["w"] = w * sc
+	ct["h"] = hh
+	ct["len"] = (h - cut) * sc
+	ct["size"] = size
+	ct["state"] = "berdiri"
+	ct["hp"] = FELL_HITS
+	ct["regrow"] = 0.0
+	ct["cell"] = _cell(holder.position - Vector2(0, 2))
+	ct["log_cells"] = []
+	astar.set_point_solid(ct["cell"] as Vector2i, true)
+
+
+func _region_sprite(rect: Rect2, sc: float, mirror: bool) -> Sprite2D:
+	var spr: Sprite2D = Sprite2D.new()
+	spr.texture = chop_atlas
+	spr.region_enabled = true
+	spr.region_rect = rect
+	spr.centered = false
+	spr.flip_h = mirror
+	spr.scale = Vector2(sc, sc)
+	return spr
 
 
 ## Titik-titik calon tumbuh: petak bebas di bagian dalam hutan, jauh dari sabuk & gerbang.
@@ -288,54 +334,107 @@ func _block_base(pos: Vector2, width: float, frac: float) -> void:
 
 
 # ---------------- menebang ----------------
+## Pohon/batang yang diketuk: pohon berdiri (kotak tubuhnya) atau pohon tumbang (batang rebah + tunggul).
 func _tree_at(wp: Vector2) -> int:
 	var best: int = -1
 	var best_y: float = -1.0
 	for i: int in range(chop_trees.size()):
 		var ct: Dictionary = chop_trees[i]
-		if int(ct["hp"]) <= 0 or ct["node"] == null:
+		if str(ct.get("state", "")) == "hilang" or ct.get("node") == null:
 			continue
 		var p: Vector2 = (ct["node"] as Node2D).position
 		var w: float = float(ct["w"])
-		var h: float = float(ct["h"])
-		if Rect2(p.x - w * 0.4, p.y - h, w * 0.8, h + 4).has_point(wp) and p.y > best_y:
+		var hit: Rect2
+		if str(ct["state"]) == "berdiri":
+			hit = Rect2(p.x - w * 0.4, p.y - float(ct["h"]), w * 0.8, float(ct["h"]) + 4.0)
+		else:
+			var ln: float = float(ct["len"])
+			hit = Rect2(p.x - ln - 8.0, p.y - w * 0.55, ln + w * 0.25 + 8.0, w * 0.6)
+		if hit.has_point(wp) and p.y > best_y:
 			best = i
 			best_y = p.y
 	return best
 
 
+func _near_tree(ct: Dictionary) -> bool:
+	var pc: Vector2i = _cell(player.position)
+	if pc.distance_to(ct["cell"] as Vector2i) <= 1.5:
+		return true
+	for lc: Variant in ct["log_cells"] as Array:
+		if pc.distance_to(lc as Vector2i) <= 1.5:
+			return true
+	return false
+
+
 func chop_hit(i: int) -> void:
 	var ct: Dictionary = chop_trees[i]
-	if int(ct["hp"]) <= 0:
+	var node: Node2D = ct.get("node") as Node2D
+	if node == null or str(ct["state"]) == "hilang":
 		return
 	ct["hp"] = int(ct["hp"]) - 1
-	var node: Node2D = ct["node"] as Node2D
-	if int(ct["hp"]) > 0:
-		var tw: Tween = create_tween()
-		tw.tween_property(node, "rotation", 0.05, 0.05)
-		tw.tween_property(node, "rotation", -0.03, 0.07)
-		tw.tween_property(node, "rotation", 0.0, 0.06)
-		show_toast("Tok! (%d lagi)" % int(ct["hp"]))
+	if str(ct["state"]) == "berdiri":
+		if int(ct["hp"]) > 0:
+			var tw: Tween = create_tween()
+			tw.tween_property(ct["pivot"], "rotation", 0.05, 0.05)
+			tw.tween_property(ct["pivot"], "rotation", -0.03, 0.07)
+			tw.tween_property(ct["pivot"], "rotation", 0.0, 0.06)
+			show_toast("Tok! (%d lagi)" % int(ct["hp"]))
+			return
+		_fell(ct)
 		return
-	# tumbang SELALU ke kiri (berputar di pangkal batang), lalu hilang sepenuhnya
+	# membersihkan pohon tumbang + tunggul
+	var sh: Tween = create_tween()
+	sh.tween_property(node, "position:x", node.position.x + 2.0, 0.04)
+	sh.tween_property(node, "position:x", node.position.x, 0.06)
+	if int(ct["hp"]) > 0:
+		show_toast("Kapak! (%d lagi)" % int(ct["hp"]))
+		return
+	_clear_fallen(ct)
+
+
+## Batang atas tumbang SELALU ke kiri, tunggul tetap berdiri. Batang rebah menghalangi jalan.
+func _fell(ct: Dictionary) -> void:
+	ct["state"] = "tumbang"
+	ct["hp"] = CLEAR_HITS[int(ct["size"])]
+	var pivot: Node2D = ct["pivot"] as Node2D
+	var fall: Tween = create_tween()
+	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.6).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	fall.tween_property(pivot, "rotation", -PI / 2.0 + 0.07, 0.08)
+	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.09)
+	var base: Vector2 = (ct["node"] as Node2D).position
+	var cells: Array = []
+	var x: float = base.x - 6.0
+	while x > base.x - float(ct["len"]) * 0.9:
+		var c: Vector2i = _cell(Vector2(x, base.y - 2.0))
+		if astar.region.has_point(c) and not astar.is_point_solid(c) and not cells.has(c):
+			astar.set_point_solid(c, true)
+			cells.append(c)
+		x -= float(T) / 2.0
+	ct["log_cells"] = cells
+	show_toast("Pohon tumbang! Kapak %dx untuk membersihkan" % int(ct["hp"]))
+
+
+func _clear_fallen(ct: Dictionary) -> void:
+	var node: Node2D = ct["node"] as Node2D
 	astar.set_point_solid(ct["cell"] as Vector2i, false)
-	var got: int = 2 + int(float((ct["t"] as Dictionary)["skala"]) > 0.9) + randi() % 2
+	for lc: Variant in ct["log_cells"] as Array:
+		astar.set_point_solid(lc as Vector2i, false)
+	ct["log_cells"] = []
+	var got: int = [2, 4, 6][int(ct["size"])] + randi() % 2
 	kayu += got
 	_refresh_kayu()
 	show_toast("+%d kayu" % got)
-	ct["regrow"] = REGROW_SECONDS
+	ct["state"] = "hilang"
 	ct["node"] = null
-	var fall: Tween = create_tween()
-	fall.tween_property(node, "rotation", -PI / 2.0, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	fall.tween_property(node, "rotation", -PI / 2.0 + 0.06, 0.08)
-	fall.tween_property(node, "rotation", -PI / 2.0, 0.08)
-	fall.tween_property(node, "modulate:a", 0.0, 0.45)
-	fall.tween_callback(node.queue_free)
+	ct["regrow"] = REGROW_SECONDS
+	var tw: Tween = create_tween()
+	tw.tween_property(node, "modulate:a", 0.0, 0.35)
+	tw.tween_callback(node.queue_free)
 
 
 func _regrow(delta: float) -> void:
 	for ct: Dictionary in chop_trees:
-		if int(ct["hp"]) > 0:
+		if str(ct.get("state", "")) != "hilang":
 			continue
 		ct["regrow"] = float(ct["regrow"]) - delta
 		if float(ct["regrow"]) <= 0.0:
@@ -353,22 +452,15 @@ func _grow_random(ct: Dictionary) -> void:
 			continue
 		var crowded: bool = false
 		for o: Dictionary in chop_trees:
-			if int(o["hp"]) > 0 and (o["cell"] as Vector2i).distance_to(c) < 2.2:
+			if str(o.get("state", "")) != "hilang" and (o["cell"] as Vector2i).distance_to(c) < 2.2:
 				crowded = true
 				break
 		if crowded:
 			continue
 		var t: Dictionary = {"obj": chop_kinds[randi() % chop_kinds.size()], "skala": randf_range(0.78, 1.0), "cermin": randf() < 0.5,
 			"x": (c.x + randf_range(0.25, 0.75)) * T, "y": (c.y + 1) * T - 2.0}
-		var holder: Node2D = _sprite_from(chop_atlas, chop_regions, t)
-		var r: Array = chop_regions[str(t["obj"])] as Array
-		ct["node"] = holder
-		ct["t"] = t
-		ct["w"] = float(r[2]) * float(t["skala"])
-		ct["h"] = float(r[3]) * float(t["skala"])
-		ct["cell"] = _cell(holder.position - Vector2(0, 2))
-		ct["hp"] = CHOP_HITS
-		astar.set_point_solid(ct["cell"] as Vector2i, true)
+		_raise_tree(ct, t)
+		var holder: Node2D = ct["node"] as Node2D
 		holder.scale = Vector2(0.2, 0.2)
 		create_tween().tween_property(holder, "scale", Vector2.ONE, 0.6).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		return
@@ -590,7 +682,7 @@ func tap_world(wp: Vector2) -> void:
 	var ti: int = _tree_at(wp)
 	if ti >= 0:
 		var tc: Vector2i = chop_trees[ti]["cell"] as Vector2i
-		if _cell(player.position).distance_to(tc) <= 1.5:
+		if _near_tree(chop_trees[ti]):
 			chop_hit(ti)
 		else:
 			walk_to(tc, {"type": "chop", "i": ti})

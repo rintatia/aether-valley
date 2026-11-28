@@ -99,7 +99,9 @@ func _screenshots() -> void:
 			bi = i
 	for k: int in range(3):
 		w.call("chop_hit", bi)
-	await get_tree().create_timer(0.42).timeout
+	await get_tree().create_timer(0.35).timeout
+	await _shot(pre + "hutan_tumbang_jatuh.png")
+	await get_tree().create_timer(0.6).timeout
 	await _shot(pre + "hutan_tumbang.png")
 	w.call("_set_zoom", 0.01)
 	await _shot(pre + "hutan_terjauh.png")
@@ -175,13 +177,19 @@ func _selftest() -> void:
 	_check(arrive.x > 100, "datang dari ladang muncul di sisi kanan hutan")
 	_check(world.chop_trees.size() > 400, "pohon tebang: %d" % world.chop_trees.size())
 	var k0: int = world.kayu
+	var ct: Dictionary = world.chop_trees[0]
+	var old_cell: Vector2i = ct["cell"] as Vector2i
 	for i: int in range(3):
 		world.chop_hit(0)
-	var old_cell: Vector2i = world.chop_trees[0]["cell"] as Vector2i
-	_check(world.kayu > k0 and int(world.chop_trees[0]["hp"]) == 0 and not world.astar.is_point_solid(old_cell), "tebang 3x -> tumbang, hilang, kayu bertambah")
+	_check(str(ct["state"]) == "tumbang" and world.astar.is_point_solid(old_cell) and (ct["log_cells"] as Array).size() > 0, "tebang 3x -> tumbang ke kiri, tunggul tetap, batang rebah menghalangi")
+	var need: int = int(ct["hp"])
+	_check(need == [2, 3, 5][int(ct["size"])], "kapak pembersih sesuai ukuran (ukuran %d -> %dx)" % [int(ct["size"]), need])
+	for i: int in range(need):
+		world.chop_hit(0)
+	_check(str(ct["state"]) == "hilang" and world.kayu > k0 and not world.astar.is_point_solid(old_cell), "tumbangan & tunggul hilang, kayu +%d" % (world.kayu - k0))
 	world._regrow(301.0)
-	var new_cell: Vector2i = world.chop_trees[0]["cell"] as Vector2i
-	_check(int(world.chop_trees[0]["hp"]) == 3 and new_cell != old_cell, "tumbuh lagi di titik acak %s -> %s (%s)" % [old_cell, new_cell, str((world.chop_trees[0]["t"] as Dictionary)["obj"])])
+	var new_cell: Vector2i = ct["cell"] as Vector2i
+	_check(str(ct["state"]) == "berdiri" and new_cell != old_cell, "tumbuh lagi di titik acak %s -> %s (%s)" % [old_cell, new_cell, str((ct["t"] as Dictionary)["obj"])])
 	var back: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
 		back = g
