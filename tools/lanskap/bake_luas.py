@@ -83,7 +83,7 @@ def tufts(n_per_px):
     for b in range(7):
         use=rng.random(n)<(1.0 if b<4 else 0.5)
         off=rng.integers(-3,4,n)                       # posisi helai di sekitar pangkal
-        L=rng.integers(2,6,n)
+        L=rng.integers(2,5,n)
         lean=np.sign(off)*(rng.random(n)<0.6)          # helai pinggir condong keluar
         front=(np.abs(off)<=1)&(rng.random(n)<0.55)
         ti=np.clip(base_t+np.where(front,1,-1),1,len(LADDER)-1)
@@ -93,9 +93,10 @@ def tufts(n_per_px):
             m=use&(L>k)
             yk=yb[m]-k; xk=cx[m]+off[m]+np.where(k>=L[m]-2,lean[m],0)
             img[yk,np.clip(xk,0,W-1)]=col[m]
-blades_texture(1/14,True)      # sela gelap tipis di antara rumpun
-tufts(1/34)                    # rumpun-rumpun helai
-blades_texture(1/40,False)     # kilau terang sesekali
+# tekstur halus: cukup terasa sebagai rumput, tapi tidak menenggelamkan taburan detail
+blades_texture(1/60,True)      # sela gelap tipis, jarang
+tufts(1/150)                   # rumpun kecil sesekali
+blades_texture(1/170,False)    # kilau terang sesekali
 
 def stamp(s,x,y):
     h,w=s.shape[:2]
