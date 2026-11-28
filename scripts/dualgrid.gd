@@ -18,6 +18,22 @@ var rows: int = 0
 var tile: int = 32
 var snow: PackedByteArray = PackedByteArray()      # per ubin tergambar: 1 = pakai atlas bersalju
 var frame_edge_snow: Array = []                     # [frame] -> [kiri, kanan, atas, bawah]
+# Isi tanpa pola: ubin isi (mask 15) diganti warna dasar polos + stempel detail ditabur acak.
+var fill_color: Color = Color(0, 0, 0, 0)
+var stamp_tex: Texture2D
+var stamp_rects: Array[Rect2] = []
+var stamps_per_tile: float = 0.0
+
+
+func set_scatter(base: Color, tex: Texture2D, rects: Array, per_tile: float) -> void:
+	fill_color = base
+	stamp_tex = tex
+	stamp_rects.clear()
+	for r: Variant in rects:
+		var a: Array = r as Array
+		stamp_rects.append(Rect2(float(a[0]), float(a[1]), float(a[2]), float(a[3])))
+	stamps_per_tile = per_tile
+	queue_redraw()
 
 
 func setup(a: Texture2D, c: PackedByteArray, w: int, h: int, t: int, clean: Texture2D = null) -> void:
@@ -125,6 +141,29 @@ func _draw() -> void:
 			var fr: int = FRAME_BY_MASK[mask_at(x, y)]
 			if fr < 0:
 				continue
+			var px: float = x * tile - half
+			var py: float = y * tile - half
+			if fr == 6 and stamp_tex != null:
+				_draw_scattered(x, y, px, py)
+				continue
 			var tex: Texture2D = atlas if (clean_atlas == null or snow[_idx(x, y)] == 1) else clean_atlas
-			draw_texture_rect_region(tex, Rect2(x * tile - half, y * tile - half, tile, tile),
+			draw_texture_rect_region(tex, Rect2(px, py, tile, tile),
 				Rect2((fr % 4) * tile, (fr / 4) * tile, tile, tile))
+
+
+func _draw_scattered(x: int, y: int, px: float, py: float) -> void:
+	draw_rect(Rect2(px, py, tile, tile), fill_color)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = x * 7919 + y * 104729 + 17
+	# jumlah stempel bervariasi per ubin (rata-rata ~ isi aslinya), posisi bebas
+	var n: int = int(round(rng.randfn(stamps_per_tile * 0.85, 1.6)))
+	for i: int in range(maxi(n, 0)):
+		var r: Rect2 = stamp_rects[rng.randi_range(0, stamp_rects.size() - 1)]
+		var sx: float = px + float(rng.randi_range(0, tile - int(r.size.x)))
+		var sy: float = py + float(rng.randi_range(0, tile - int(r.size.y)))
+		if rng.randf() < 0.5:
+			draw_set_transform(Vector2(sx + r.size.x, sy), 0.0, Vector2(-1, 1))
+			draw_texture_rect_region(stamp_tex, Rect2(Vector2.ZERO, r.size), r)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		else:
+			draw_texture_rect_region(stamp_tex, Rect2(Vector2(sx, sy), r.size), r)
