@@ -65,3 +65,24 @@ Game membaca aset dari daftar di `data/assets.json`. Selama file belum ada, game
 4. Bangunan: rumah, toko serba ada, pandai besi, kedai, rumah tetua.
 
 Ubin yang menyambung ke ubin lain (tepi rumput ke jalan, rumput ke air) menyusul sebagai set terpisah setelah ubin dasar jadi.
+
+## Objek alam (terpasang, sudah tanpa dasar pijakan)
+
+| Kode | File | Ukuran | Sifat |
+|---|---|---|---|
+| OB01 | `assets/objek/OB01_pohon_ek.png` | 46×54 | Pohon ek, menghalangi |
+| OB02 | `assets/objek/OB02_pohon_pinus.png` | 31×54 | Pohon pinus, menghalangi |
+| OB03 | `assets/objek/OB03_pohon_birch.png` | 34×54 | Pohon birch, menghalangi |
+| OB04 | `assets/objek/OB04_pohon_muda.png` | 23×33 | Pohon muda, menghalangi |
+| OB05 | `assets/objek/OB05_semak.png` | 35×31 | Semak, menghalangi |
+| OB06 | `assets/objek/OB06_semak_beri.png` | 32×30 | Semak beri, menghalangi |
+| OB07 | `assets/objek/OB07_tunggul.png` | 29×26 | Tunggul, menghalangi |
+| OB08 | `assets/objek/OB08_kayu_lumut.png` | 39×27 | Kayu berlumut, menghalangi |
+| OB09 | `assets/objek/OB09_rumput_tinggi.png` | 27×32 | Rumput tinggi, bisa dilewati |
+| OB10 | `assets/objek/OB10_rumput_kecil.png` | 24×20 | Rumput kecil, bisa dilewati |
+| OB11 | `assets/objek/OB11_rumpun_rumput.png` | 46×32 | Rumpun lebat, bisa dilewati |
+| OB12 | `assets/objek/OB12_gandum_liar.png` | 32×32 | Gandum liar, bisa dilewati |
+| OB13 | `assets/objek/OB13_semak_bunga.png` | 40×29 | Semak bunga, bisa dilewati |
+| OB14 | `assets/objek/OB14_batu_lumut.png` | 34×27 | Batu berlumut, menghalangi |
+| OB15 | `assets/objek/OB15_jamur.png` | 22×21 | Jamur, bisa dilewati |
+| OB16 | `assets/objek/OB16_pakis.png` | 35×29 | Pakis, bisa dilewati |

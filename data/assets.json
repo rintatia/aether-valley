@@ -59,13 +59,16 @@
     ]
   },
   "obj_semak": {
-    "file": "objek/semak.png",
+    "code": "OB05",
+    "file": "objek/OB05_semak.png",
     "size": [
-      32,
-      32
+      35,
+      31
     ],
     "color": "#4E912F",
     "kind": "object",
+    "label": "Semak",
+    "block": true,
     "foot": [
       1,
       1
@@ -206,5 +209,245 @@
     "frames": 4,
     "color": "#D8574F",
     "kind": "character"
+  },
+  "obj_pohon_ek": {
+    "code": "OB01",
+    "file": "objek/OB01_pohon_ek.png",
+    "size": [
+      46,
+      54
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Pohon ek",
+    "block": true,
+    "foot": [
+      2,
+      1
+    ]
+  },
+  "obj_pohon_pinus": {
+    "code": "OB02",
+    "file": "objek/OB02_pohon_pinus.png",
+    "size": [
+      31,
+      54
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Pohon pinus",
+    "block": true,
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_pohon_birch": {
+    "code": "OB03",
+    "file": "objek/OB03_pohon_birch.png",
+    "size": [
+      34,
+      54
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Pohon birch",
+    "block": true,
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_pohon_muda": {
+    "code": "OB04",
+    "file": "objek/OB04_pohon_muda.png",
+    "size": [
+      23,
+      33
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Pohon muda",
+    "block": true,
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_semak_beri": {
+    "code": "OB06",
+    "file": "objek/OB06_semak_beri.png",
+    "size": [
+      32,
+      30
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Semak beri",
+    "block": true,
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_tunggul": {
+    "code": "OB07",
+    "file": "objek/OB07_tunggul.png",
+    "size": [
+      29,
+      26
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Tunggul",
+    "block": true,
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_kayu_lumut": {
+    "code": "OB08",
+    "file": "objek/OB08_kayu_lumut.png",
+    "size": [
+      39,
+      27
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Kayu berlumut",
+    "block": true,
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_rumput_tinggi": {
+    "code": "OB09",
+    "file": "objek/OB09_rumput_tinggi.png",
+    "size": [
+      27,
+      32
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Rumput tinggi",
+    "block": false,
+    "foot": [
+      0,
+      0
+    ]
+  },
+  "obj_rumput_kecil": {
+    "code": "OB10",
+    "file": "objek/OB10_rumput_kecil.png",
+    "size": [
+      24,
+      20
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Rumput kecil",
+    "block": false,
+    "foot": [
+      0,
+      0
+    ]
+  },
+  "obj_rumpun_rumput": {
+    "code": "OB11",
+    "file": "objek/OB11_rumpun_rumput.png",
+    "size": [
+      46,
+      32
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Rumpun lebat",
+    "block": false,
+    "foot": [
+      0,
+      0
+    ]
+  },
+  "obj_gandum_liar": {
+    "code": "OB12",
+    "file": "objek/OB12_gandum_liar.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Gandum liar",
+    "block": false,
+    "foot": [
+      0,
+      0
+    ]
+  },
+  "obj_semak_bunga": {
+    "code": "OB13",
+    "file": "objek/OB13_semak_bunga.png",
+    "size": [
+      40,
+      29
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Semak bunga",
+    "block": false,
+    "foot": [
+      0,
+      0
+    ]
+  },
+  "obj_batu_lumut": {
+    "code": "OB14",
+    "file": "objek/OB14_batu_lumut.png",
+    "size": [
+      34,
+      27
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Batu berlumut",
+    "block": true,
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_jamur": {
+    "code": "OB15",
+    "file": "objek/OB15_jamur.png",
+    "size": [
+      22,
+      21
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Jamur",
+    "block": false,
+    "foot": [
+      0,
+      0
+    ]
+  },
+  "obj_pakis": {
+    "code": "OB16",
+    "file": "objek/OB16_pakis.png",
+    "size": [
+      35,
+      29
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "label": "Pakis",
+    "block": false,
+    "foot": [
+      0,
+      0
+    ]
   }
 }
