@@ -43,8 +43,8 @@ yy=np.arange(H,dtype=np.float32)[:,None]; xx=np.arange(W,dtype=np.float32)[None,
 border=np.minimum(np.minimum(xx,W-1-xx),np.minimum(yy,H-1-yy))      # jarak ke batas peta
 edge=np.clip(1-border/420.0,0,1)                                      # pinggir hutan ~13 petak
 img=np.empty((H,W,3),np.uint8); img[:]=G_BASE
-light_f=noise(28,16)+0.35*noise(5,17)-edge*0.8
-shade_f=noise(30,14)+0.35*noise(6,15)+edge*1.4
+light_f=noise(28,16)+0.35*noise(5,17)-edge*0.3
+shade_f=noise(30,14)+0.35*noise(6,15)+edge*0.55
 img[dith(light_f,0.55,0.10)]=G_LIGHT
 img[dith(shade_f,0.62,0.10)]=G_SHADE
 img[dith(shade_f,1.15,0.08)&(noise(4,18)>0.2)]=G_DEEP
@@ -106,7 +106,7 @@ def stamp(s,x,y):
 zbest=None; zarg=None
 for i,z in enumerate(ZONES):
     f=noise(45,30+i)+0.25*noise(8,40+i)
-    if z=='rumput_rimbun': f=f+edge*1.2
+    if z=='rumput_rimbun': f=f+edge*0.6
     if z=='rumput_kering': f=f+(noise(28,16)>0.3)*0.5
     if zbest is None: zbest=f; zarg=np.zeros((H,W),np.uint8)
     else:
@@ -129,7 +129,7 @@ for i,z in enumerate(ZONES):
             stamp(s,int(x)-s.shape[1]//2,int(y)-s.shape[0]//2); placed+=1
 # batas peta: semak rimbun berlapis di tepi luar (pinggir hutan yang tak bisa dilewati)
 bush=[s for s in ST['rumput_rimbun']+ST['rumput_dasar'] if not is_flower(s) and s.shape[0]>=5 and s.shape[1]>=5]
-for _ in range(int((W+H)*2*0.9)):
+for _ in range(int((W+H)*2*0.25)):
     side=rng.integers(4); d=int(abs(rng.normal(0,40)))
     if side==0: x,y=rng.integers(0,W),d
     elif side==1: x,y=rng.integers(0,W),H-1-d

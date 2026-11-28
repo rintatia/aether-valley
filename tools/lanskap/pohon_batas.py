@@ -14,8 +14,8 @@ R, C = len(rows), len(rows[0])
 T = 32
 W, H = C * T, R * T
 TYPES = [('obj_pohon_ek', 0.40), ('obj_pohon_pinus', 0.35), ('obj_pohon_birch', 0.25)]
-SCALES = [(1, 0.28), (2, 0.50), (3, 0.22)]          # kecil / normal / besar-tinggi
-BAND = 260                                            # lebar sabuk hutan (px) dari tepi
+SCALES = [(1, 0.34), (2, 0.50), (3, 0.16)]          # kecil / normal / besar-tinggi
+BAND = 300                                            # lebar sabuk hutan (px) dari tepi
 gate = [y for y in range(R) if rows[y][C - 1] == '>']
 gy0, gy1 = (min(gate) - 3) * T, (max(gate) + 4) * T   # celah jalan ke kota
 
@@ -29,7 +29,7 @@ def near(x, y, r):
     for dx in range(-3, 4):
         for dy in range(-3, 4):
             for (px, py, pr) in bucket.get((cx + dx, cy + dy), []):
-                if (px - x) ** 2 + (py - y) ** 2 < (0.8 * (pr + r)) ** 2:
+                if (px - x) ** 2 + (py - y) ** 2 < (1.15 * (pr + r)) ** 2:
                     return True
     return False
 
@@ -47,15 +47,16 @@ def band_at(side, u):
 
 
 trees = []
-target = int(2 * (W + H) * BAND / 1250)
+target = int(2 * (W + H) * BAND / 3600)
 tries = 0
 while len(trees) < target and tries < target * 60:
     tries += 1
     side = int(rng.integers(4))
     u = rng.uniform(0, 1)
     bw = band_at(side, u)
-    d = abs(rng.normal(0, bw * 0.42))
-    if d > bw:
+    # rapat di tepi luar lalu makin jarang (eksponensial), sesekali pohon menyendiri lebih ke dalam
+    d = rng.exponential(bw * 0.30) if rng.random() < 0.93 else rng.uniform(bw * 0.6, bw * 1.6)
+    if d > bw * 1.6:
         continue
     if side == 0:
         x, y = u * W, d
@@ -66,7 +67,7 @@ while len(trees) < target and tries < target * 60:
     else:
         x, y = W - d, u * H
     y = min(max(y, 4.0), H - 1.0)
-    if x > W - BAND and gy0 < y < gy1:
+    if x > W - BAND * 1.6 and gy0 < y < gy1:
         continue
     sc = int(rng.choice([s for s, _ in SCALES], p=[p for _, p in SCALES]))
     r = 8 * sc + rng.uniform(0, 5)
@@ -76,6 +77,20 @@ while len(trees) < target and tries < target * 60:
     trees.append({"obj": key, "x": round(float(x)), "y": round(float(y)), "skala": sc, "cermin": bool(rng.random() < 0.5)})
     bucket.setdefault((int(x // CELL), int(y // CELL)), []).append((x, y, r))
 
+UNDER = [('obj_semak', 0.20), ('obj_pakis', 0.22), ('obj_rumput_tinggi', 0.22), ('obj_rumput_kecil', 0.20), ('obj_rumpun_rumput', 0.16)]
+under = []
+for t in list(trees):
+    if rng.random() > 0.65:
+        continue
+    for _ in range(int(rng.integers(1, 4))):
+        ang = rng.uniform(0, 6.28)
+        rad = rng.uniform(8, 18) * t['skala'] ** 0.7
+        ux, uy = t['x'] + np.cos(ang) * rad * 1.4, t['y'] + abs(np.sin(ang)) * rad * 0.6 + rng.uniform(-2, 6)
+        if not (0 < ux < W and 0 < uy < H):
+            continue
+        key = UNDER[int(rng.choice(len(UNDER), p=[q for _, q in UNDER]))][0]
+        under.append({"obj": key, "x": round(float(ux)), "y": round(float(uy)), "skala": 1, "cermin": bool(rng.random() < 0.5), "rendah": True})
+trees += under
 trees.sort(key=lambda t: t["y"])
 json.dump({"_note": "Pohon batas ladang (OB01-OB03). x,y = titik pangkal batang (piksel). Dibuat oleh tools/lanskap/pohon_batas.py",
            "pohon": trees}, open('../../data/maps/ladang_pohon.json', 'w'), indent=0)
@@ -88,7 +103,7 @@ reg = json.load(open('../../data/assets.json'))
 x = 0
 parts = {}
 ims = []
-for key, _ in TYPES:
+for key, _ in TYPES + UNDER:
     im = Image.open('../../assets/' + reg[key]['file']).convert('RGBA')
     parts[key] = [x, 0, im.width, im.height]
     ims.append((x, im))

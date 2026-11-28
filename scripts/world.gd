@@ -206,9 +206,11 @@ func _place_trees(id: String) -> void:
 		holder.position = Vector2(float(t["x"]), float(t["y"]))
 		holder.add_child(spr)
 		ysort.add_child(holder)
-		var c: Vector2i = _cell(holder.position - Vector2(0, 2))
-		if astar.region.has_point(c):
-			astar.set_point_solid(c, true)
+		# hanya yang bersifat menghalangi (pohon, semak) yang menutup jalan; rumput & pakis bisa dilewati
+		if bool(Art.info(str(t["obj"])).get("block", true)):
+			var c: Vector2i = _cell(holder.position - Vector2(0, 2))
+			if astar.region.has_point(c):
+				astar.set_point_solid(c, true)
 
 
 func _draw_ground() -> void:
