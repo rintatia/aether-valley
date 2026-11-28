@@ -15,7 +15,7 @@ T = 32
 W, H = C * T, R * T
 TYPES = [('obj_pohon_ek', 0.40), ('obj_pohon_pinus', 0.35), ('obj_pohon_birch', 0.25)]
 SCALES = [(1, 0.34), (2, 0.50), (3, 0.16)]          # kecil / normal / besar-tinggi
-BAND = 300                                            # lebar sabuk hutan (px) dari tepi
+BAND = 190                                            # lebar sabuk hutan (px) dari tepi
 gate = [y for y in range(R) if rows[y][C - 1] == '>']
 gy0, gy1 = (min(gate) - 3) * T, (max(gate) + 4) * T   # celah jalan ke kota
 
@@ -47,7 +47,7 @@ def band_at(side, u):
 
 
 trees = []
-target = int(2 * (W + H) * BAND / 3600)
+target = int(2 * (W + H) * BAND / 2600)
 tries = 0
 while len(trees) < target and tries < target * 60:
     tries += 1
@@ -55,8 +55,8 @@ while len(trees) < target and tries < target * 60:
     u = rng.uniform(0, 1)
     bw = band_at(side, u)
     # rapat di tepi luar lalu makin jarang (eksponensial), sesekali pohon menyendiri lebih ke dalam
-    d = rng.exponential(bw * 0.30) if rng.random() < 0.93 else rng.uniform(bw * 0.6, bw * 1.6)
-    if d > bw * 1.6:
+    d = rng.exponential(bw * 0.28) if rng.random() < 0.97 else rng.uniform(bw * 0.5, bw * 1.0)
+    if d > bw:
         continue
     if side == 0:
         x, y = u * W, d
@@ -67,7 +67,7 @@ while len(trees) < target and tries < target * 60:
     else:
         x, y = W - d, u * H
     y = min(max(y, 4.0), H - 1.0)
-    if x > W - BAND * 1.6 and gy0 < y < gy1:
+    if x > W - BAND * 1.2 and gy0 < y < gy1:
         continue
     sc = int(rng.choice([s for s, _ in SCALES], p=[p for _, p in SCALES]))
     r = 8 * sc + rng.uniform(0, 5)
