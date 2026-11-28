@@ -77,7 +77,7 @@ func _screenshots() -> void:
 	var pre: String = OS.get_environment("SHOT_PREFIX")
 	await _shot(pre + "ladang_x2_awal.png")
 	w.call("_set_zoom", 2.0)
-	(w.get("player") as Node2D).position = Vector2(700, 560)
+	(w.get("player") as Node2D).position = Vector2(900, 330)
 	await _shot(pre + "ladang_tepi_hutan.png")
 	w.call("_set_zoom", 0.01)
 	await _shot(pre + "ladang_terjauh.png")
