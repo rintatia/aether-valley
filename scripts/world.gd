@@ -432,14 +432,37 @@ func _sway_check(delta: float, vel_x: float) -> void:
 				var p: Vector2 = node.position
 				var w: float = float(it["w"])
 				if absf(pp.x - p.x) < w * 0.45 and pp.y > p.y - float(it["h"]) * 0.55 and pp.y < p.y + 6.0 and float(it["cool"]) <= 0.0:
-					it["cool"] = 0.7
 					var dir: float = signf(vel_x) if absf(vel_x) > 0.01 else (1.0 if pp.x < p.x else -1.0)
-					var tw: Tween = create_tween()
-					tw.tween_property(node, "skew", 0.32 * dir, 0.10).set_ease(Tween.EASE_OUT)
-					tw.tween_property(node, "skew", -0.20 * dir, 0.16)
-					tw.tween_property(node, "skew", 0.10 * dir, 0.14)
-					tw.tween_property(node, "skew", -0.04 * dir, 0.12)
-					tw.tween_property(node, "skew", 0.0, 0.10)
+					_rustle(it, dir, 1.0, 0.0)
+					# tetangga dalam satu rumpun ikut berdesir pelan, sedikit terlambat
+					for dy2: int in range(-1, 2):
+						for dx2: int in range(-1, 2):
+							var c2: Vector2i = c + Vector2i(dx2, dy2)
+							if not sway_grid.has(c2):
+								continue
+							for jv: Variant in sway_grid[c2] as Array:
+								var nb: Dictionary = sway_items[int(jv)]
+								var d2: float = ((nb["node"] as Node2D).position - p).length()
+								if nb != it and d2 < 46.0 and float(nb["cool"]) <= 0.0:
+									_rustle(nb, dir, 0.45, 0.06 + d2 / 400.0)
+
+
+## Desir semak: condong lembut searah langkah lalu berayun mereda (sinus, amplitudo kecil).
+func _rustle(it: Dictionary, dir: float, power: float, delay: float) -> void:
+	it["cool"] = 0.9
+	var node: Node2D = it["node"] as Node2D
+	if it.has("tw") and it["tw"] != null and (it["tw"] as Tween).is_valid():
+		(it["tw"] as Tween).kill()
+	var a: float = 0.13 * power * dir
+	var tw: Tween = create_tween()
+	it["tw"] = tw
+	if delay > 0.0:
+		tw.tween_interval(delay)
+	tw.tween_property(node, "skew", a, 0.20).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(node, "skew", -a * 0.55, 0.32).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(node, "skew", a * 0.28, 0.30).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(node, "skew", -a * 0.12, 0.28).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(node, "skew", 0.0, 0.26).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 # ---------------- menebang ----------------
@@ -513,14 +536,17 @@ func _fell(ct: Dictionary) -> void:
 	fall.tween_property(pivot, "rotation", 0.06, 0.12).set_trans(Tween.TRANS_SINE)          # sedikit condong balik
 	fall.tween_property(pivot, "rotation", -0.25, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)   # mulai miring pelan
 	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.32).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)  # jatuh makin cepat
+	# saat menghantam tanah batang terlempar sedikit ke kiri -> ada jarak dengan tunggul
+	var gap: float = 10.0 + float(ct["w"]) * 0.07
+	fall.parallel().tween_property(pivot, "position:x", -gap, 0.12).set_ease(Tween.EASE_OUT).set_delay(0.22)
 	fall.tween_property(pivot, "rotation", -PI / 2.0 + 0.09, 0.07).set_ease(Tween.EASE_OUT)  # memantul
 	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.10).set_ease(Tween.EASE_IN)
 	fall.tween_property(pivot, "rotation", -PI / 2.0 + 0.025, 0.05)
 	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.06)
 	var base: Vector2 = (ct["node"] as Node2D).position
 	var cells: Array = []
-	var x: float = base.x - 6.0
-	while x > base.x - float(ct["len"]) * 0.9:
+	var x: float = base.x - 6.0 - (10.0 + float(ct["w"]) * 0.07)
+	while x > base.x - float(ct["len"]) * 0.9 - (10.0 + float(ct["w"]) * 0.07):
 		var c: Vector2i = _cell(Vector2(x, base.y - 2.0))
 		if astar.region.has_point(c) and not astar.is_point_solid(c) and not cells.has(c):
 			astar.set_point_solid(c, true)
