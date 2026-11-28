@@ -11,8 +11,10 @@ import numpy as np
 from collections import Counter
 
 CONFIG = {
-    'ladang': dict(cols=155, rows=116, seed=7, gerbang={'kiri': 'hutan'}, nama='Ladang', tebang=False),
-    'hutan': dict(cols=120, rows=90, seed=21, gerbang={'kanan': 'ladang'}, nama='Hutan Tebang', tebang=True),
+    'ladang': dict(cols=155, rows=116, seed=7, gerbang={'kiri': 'hutan', 'bawah': 'danau'}, nama='Farm', tebang=False),
+    'hutan': dict(cols=120, rows=90, seed=21, gerbang={'kanan': 'ladang'}, nama='Woodland', tebang=True),
+    # peta danau di bawah ladang: sementara padang rumput + sabuk hutan (isi danau diatur nanti)
+    'danau': dict(cols=130, rows=96, seed=41, gerbang={'atas': 'ladang'}, nama='Lake', tebang=False),
 }
 MID = sys.argv[1] if len(sys.argv) > 1 else 'ladang'
 cfg = CONFIG[MID]
@@ -37,18 +39,25 @@ if MID == 'hutan':
 BATU = {'FL42', 'FL43', 'FL44'}
 CHOP = [('FL03', .12), ('FL09', .11), ('FL04', .11), ('FL10', .10), ('FL05', .09), ('FL11', .09), ('FL06', .06), ('FL12', .06), ('FL13', .09), ('FL14', .08), ('FL17', .09)]
 BAND = 190
-GY = R // 2                                   # gerbang di tengah sisi
+GY = R // 2                                   # gerbang kiri/kanan di tengah sisi
 CORR = (GY - 1, GY + 1)                       # lorong 3 petak
+GX = C // 2                                   # gerbang atas/bawah di tengah sisi
+CORRV = (GX - 1, GX + 1)
 
 
 def in_corridor(x, y, pad=1.0):
     gy0, gy1 = (CORR[0] - 2 * pad) * T, (CORR[1] + 1 + 2 * pad) * T
-    if not (gy0 < y < gy1):
-        return False
-    if 'kiri' in cfg['gerbang'] and x < BAND * 1.3:
-        return True
-    if 'kanan' in cfg['gerbang'] and x > W - BAND * 1.3:
-        return True
+    if gy0 < y < gy1:
+        if 'kiri' in cfg['gerbang'] and x < BAND * 1.3:
+            return True
+        if 'kanan' in cfg['gerbang'] and x > W - BAND * 1.3:
+            return True
+    gx0, gx1 = (CORRV[0] - 2 * pad) * T, (CORRV[1] + 1 + 2 * pad) * T
+    if gx0 < x < gx1:
+        if 'atas' in cfg['gerbang'] and y < BAND * 1.3:
+            return True
+        if 'bawah' in cfg['gerbang'] and y > H - BAND * 1.3:
+            return True
     return False
 
 
@@ -174,12 +183,20 @@ for side in range(4):
                 grid[y][x] = '#'
 # lorong gerbang
 for side, target_map in cfg['gerbang'].items():
-    for y in range(CORR[0], CORR[1] + 1):
-        rng_x = range(0, C // 4) if side == 'kiri' else range(C - C // 4, C)
-        for x in rng_x:
-            if grid[y][x] == '#':
-                grid[y][x] = '.'
-        grid[y][0 if side == 'kiri' else C - 1] = '<' if side == 'kiri' else '>'
+    if side in ('kiri', 'kanan'):
+        for y in range(CORR[0], CORR[1] + 1):
+            rng_x = range(0, C // 4) if side == 'kiri' else range(C - C // 4, C)
+            for x in rng_x:
+                if grid[y][x] == '#':
+                    grid[y][x] = '.'
+            grid[y][0 if side == 'kiri' else C - 1] = '<' if side == 'kiri' else '>'
+    else:
+        for x in range(CORRV[0], CORRV[1] + 1):
+            rng_y = range(0, R // 4) if side == 'atas' else range(R - R // 4, R)
+            for y in rng_y:
+                if grid[y][x] == '#':
+                    grid[y][x] = '.'
+            grid[0 if side == 'atas' else R - 1][x] = '^' if side == 'atas' else 'v'
 grid[R // 2][C // 2] = 'P'
 
 # ---------- pohon tebang (bagian dalam peta 'hutan') ----------
@@ -300,7 +317,7 @@ if cfg['tebang']:
 
 items.sort(key=lambda t: t["y"])
 used = sorted({t['obj'] for t in items} | {t['obj'] for t in tebang} | {'FL15'})
-json.dump({"_note": f"Peta {cfg['nama']}: '#' = sabuk hutan tertutup, '<'/'>' = gerbang. Dibuat oleh tools/lanskap/hutan_flora.py",
+json.dump({"_note": f"Peta {cfg['nama']}: '#' = sabuk hutan tertutup, '<' '>' '^' 'v' = gerbang. Dibuat oleh tools/lanskap/hutan_flora.py",
            "nama": cfg['nama'], "chunks": MID, "pohon": f"{MID}_pohon", "gerbang": cfg['gerbang'],
            "petak_tanah": petak,
            "rows": [''.join(r) for r in grid]}, open(f'../../data/maps/{MID}.json', 'w'), indent=0)

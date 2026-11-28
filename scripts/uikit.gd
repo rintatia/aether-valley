@@ -3,6 +3,9 @@ extends Node
 
 var font: FontFile
 var layout: Dictionary = {}
+var sfx_players: Array[AudioStreamPlayer] = []
+var sfx_cache: Dictionary = {}
+var sfx_next: int = 0
 const BROWN: Color = Color("#43251D")
 const CREAM: Color = Color("#F8F1EA")
 
@@ -12,6 +15,33 @@ func _ready() -> void:
 	var j: JSON = load("res://assets/ui/tata_letak.json") as JSON
 	if j != null:
 		layout = j.data as Dictionary
+	for i: int in range(6):
+		var ap: AudioStreamPlayer = AudioStreamPlayer.new()
+		add_child(ap)
+		sfx_players.append(ap)
+
+
+## Bunyi pendek: klik, ayun, tok, air, gali, tangkap (assets/suara/*.wav). Volume ikut pengaturan (bus Master).
+func sfx(name: String, pitch: float = 1.0) -> void:
+	if not sfx_cache.has(name):
+		var path: String = "res://assets/suara/%s.wav" % name
+		sfx_cache[name] = load(path) if ResourceLoader.exists(path) else null
+	var st: AudioStream = sfx_cache[name] as AudioStream
+	if st == null or sfx_players.is_empty():
+		return
+	var ap: AudioStreamPlayer = sfx_players[sfx_next]
+	sfx_next = (sfx_next + 1) % sfx_players.size()
+	ap.stream = st
+	ap.pitch_scale = pitch * randf_range(0.95, 1.05)
+	ap.play()
+
+
+## Material tema untuk bingkai/panel: isi krem diganti warna tema pilihan.
+func theme_material() -> ShaderMaterial:
+	var m: ShaderMaterial = ShaderMaterial.new()
+	m.shader = load("res://scripts/tema.gdshader") as Shader
+	m.set_shader_parameter("target_color", Game.theme_color())
+	return m
 
 
 ## Jarak aman dari tepi layar (poni/kamera & lengkung bingkai HP), dalam koordinat viewport.
@@ -57,6 +87,7 @@ func frame(name: String, h: float, w_max: float = 99999.0) -> Array:
 		h = w_max / ratio
 	var p: TextureRect = image("res://assets/ui/%s.png" % name, h * ratio, h)
 	p.mouse_filter = Control.MOUSE_FILTER_STOP
+	p.material = theme_material()
 	var inner: Control = Control.new()
 	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	place(inner, p.size, (layout["bingkai"] as Dictionary)[name] as Array)
@@ -91,6 +122,7 @@ func close_button(panel: Control, inner: Control, d: float = 50.0) -> Button:
 	b.size = Vector2(d, d)
 	b.custom_minimum_size = b.size
 	b.position = Vector2(inner.position.x + inner.size.x - d - 8.0, inner.position.y + 8.0)
+	b.button_down.connect(func() -> void: sfx("klik"))
 	panel.add_child(b)
 	return b
 
@@ -106,7 +138,9 @@ func icon_button(path: String, w: float) -> TextureButton:
 	b.size = Vector2(w, w * ts.y / ts.x)
 	b.custom_minimum_size = b.size
 	b.pivot_offset = b.size / 2.0
-	b.button_down.connect(func() -> void: b.scale = Vector2(0.92, 0.92))
+	b.button_down.connect(func() -> void:
+		b.scale = Vector2(0.92, 0.92)
+		sfx("klik"))
 	b.button_up.connect(func() -> void: b.scale = Vector2.ONE)
 	return b
 

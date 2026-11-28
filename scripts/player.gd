@@ -7,6 +7,8 @@ var t: float = 0.0
 var facing_left: bool = false
 var spr: Sprite2D
 var shadow: Node2D
+var tool_spr: Sprite2D
+var tool_tw: Tween
 
 
 func _ready() -> void:
@@ -49,3 +51,42 @@ func _process(delta: float) -> void:
 		spr.position = Vector2.ZERO
 		spr.rotation = 0.0
 		spr.scale = Vector2(1.0, 1.0 + idle * 0.012)
+
+
+## Alat muncul di tangan lalu diayun/ditusuk/dimiringkan sesuai jenisnya, kemudian hilang.
+func use_tool(tex: Texture2D, kind: String) -> void:
+	if tool_spr == null:
+		tool_spr = Sprite2D.new()
+		tool_spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		add_child(tool_spr)
+	if tool_tw != null and tool_tw.is_valid():
+		tool_tw.kill()
+	var dir: float = -1.0 if facing_left else 1.0
+	tool_spr.texture = tex
+	tool_spr.scale = Vector2(dir * 30.0 / 256.0, 30.0 / 256.0)
+	tool_spr.position = Vector2(dir * 9.0, -16.0)
+	tool_spr.modulate.a = 1.0
+	tool_spr.visible = true
+	tool_tw = create_tween()
+	match kind:
+		"penyiram":
+			tool_spr.rotation = 0.0
+			tool_tw.tween_property(tool_spr, "rotation", dir * 0.75, 0.18).set_ease(Tween.EASE_OUT)
+			tool_tw.tween_interval(0.3)
+			tool_tw.tween_property(tool_spr, "rotation", 0.0, 0.15)
+		"tombak", "pancing":
+			tool_spr.rotation = dir * 0.6
+			tool_tw.tween_property(tool_spr, "position:x", dir * 20.0, 0.10).set_ease(Tween.EASE_OUT)
+			tool_tw.tween_property(tool_spr, "position:x", dir * 9.0, 0.16)
+			tool_tw.tween_interval(0.1)
+		_:
+			# ayunan dari atas belakang ke bawah depan (cangkul, sekop, arit, sabit, jaring)
+			tool_spr.rotation = -dir * 1.1
+			tool_tw.tween_property(tool_spr, "rotation", dir * 0.9, 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+			tool_tw.parallel().tween_property(tool_spr, "position:y", -8.0, 0.16)
+			tool_tw.tween_interval(0.15)
+	tool_tw.tween_property(tool_spr, "modulate:a", 0.0, 0.12)
+	tool_tw.tween_callback(func() -> void: tool_spr.visible = false)
+	var hop: Tween = create_tween()
+	hop.tween_property(spr, "scale", Vector2(1.04, 0.96), 0.08)
+	hop.tween_property(spr, "scale", Vector2.ONE, 0.12)

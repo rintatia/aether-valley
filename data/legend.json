@@ -76,5 +76,13 @@
   "#": {
     "tile": "tile_rumput",
     "block": true
+  },
+  "^": {
+    "tile": "tile_jalan",
+    "gate": "atas"
+  },
+  "v": {
+    "tile": "tile_jalan",
+    "gate": "bawah"
   }
 }

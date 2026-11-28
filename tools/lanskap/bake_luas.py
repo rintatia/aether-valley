@@ -8,7 +8,7 @@ from scipy.ndimage import gaussian_filter, zoom as nzoom
 MID=sys.argv[1] if len(sys.argv)>1 else 'ladang'
 MAP=json.load(open(f'../../data/maps/{MID}.json'))
 ROWS=len(MAP['rows']); COLS=len(MAP['rows'][0])
-SEED={'ladang':11,'hutan':23}.get(MID,5)
+SEED={'ladang':11,'hutan':23,'danau':31}.get(MID,5)
 T=32; W,H=COLS*T,ROWS*T; CH=1024
 rng=np.random.default_rng(SEED)
 hx=lambda h: np.array([int(h[i:i+2],16) for i in (1,3,5)],np.uint8)

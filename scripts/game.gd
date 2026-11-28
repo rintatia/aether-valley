@@ -10,7 +10,24 @@ const BAG_PAGES: int = 10
 const BAG_PER_PAGE: int = 25
 const ITEMS: Dictionary = {
 	"kayu": {"nama": "Wood", "ikon": "res://assets/ui/item_kayu.png", "tumpuk": 999},
+	"kupu": {"nama": "Butterfly", "ikon": "res://assets/ui/item_kupu.png", "tumpuk": 99},
+	"cangkul": {"nama": "Hoe", "ikon": "res://assets/ui/alat_cangkul.png", "tumpuk": 1, "alat": true},
+	"penyiram": {"nama": "Watering Can", "ikon": "res://assets/ui/alat_penyiram.png", "tumpuk": 1, "alat": true},
+	"sekop": {"nama": "Trowel", "ikon": "res://assets/ui/alat_sekop.png", "tumpuk": 1, "alat": true},
+	"arit": {"nama": "Sickle", "ikon": "res://assets/ui/alat_arit.png", "tumpuk": 1, "alat": true},
+	"sabit": {"nama": "Scythe", "ikon": "res://assets/ui/alat_sabit.png", "tumpuk": 1, "alat": true},
+	"jaring": {"nama": "Bug Net", "ikon": "res://assets/ui/alat_jaring.png", "tumpuk": 1, "alat": true},
+	"pancing": {"nama": "Fishing Rod", "ikon": "res://assets/ui/alat_pancing.png", "tumpuk": 1, "alat": true},
+	"tombak": {"nama": "Spear", "ikon": "res://assets/ui/alat_tombak.png", "tumpuk": 1, "alat": true},
 }
+const START_TOOLS: Array[String] = ["cangkul", "penyiram", "sekop", "arit", "sabit", "jaring", "pancing", "tombak"]
+## tema warna isi bingkai/panel (nama -> warna). "Peach" = warna dasar kotak day.date
+const THEMES: Dictionary = {
+	"Peach": Color("#FADCBD"), "Cream": Color("#FBEEE3"), "Mint": Color("#D8EDCF"),
+	"Sky": Color("#D3E6F3"), "Lavender": Color("#E4DAF3"), "Rose": Color("#F7D6DC"),
+}
+const SPEEDS: Dictionary = {"Slow": 0.75, "Normal": 1.0, "Fast": 1.35}
+const SETTINGS_PATH: String = "user://settings.cfg"
 
 # karakter
 var gender: String = "cowok"
@@ -26,7 +43,15 @@ var raining: bool = false
 var coins: int = 500
 var crystals: int = 0
 var bag: Array = []                       # BAG_PAGES * BAG_PER_PAGE slot: {} atau {"id":..,"n":..}
-var selected_slot: int = 0
+var selected_slot: int = 0               # -1 = tangan kosong
+
+# pengaturan (tersimpan di user://settings.cfg)
+var volume: float = 0.8
+var speed_name: String = "Normal"
+var theme_name: String = "Peach"
+
+# tanah olahan per peta: map_id -> {Vector2i: {"wet": bool}}
+var tilled: Dictionary = {}
 
 signal day_changed
 signal bag_changed
@@ -37,6 +62,63 @@ func _ready() -> void:
 	for i: int in range(bag.size()):
 		bag[i] = {}
 	_roll_weather()
+	load_settings()
+
+
+func new_game() -> void:
+	for i: int in range(bag.size()):
+		bag[i] = {}
+	for i: int in range(START_TOOLS.size()):
+		bag[i] = {"id": START_TOOLS[i], "n": 1}
+	selected_slot = 0
+	tilled = {}
+	day = 1
+	minute = START_MINUTE
+	coins = 500
+	crystals = 0
+	_roll_weather()
+	bag_changed.emit()
+
+
+# ---------------- pengaturan ----------------
+func load_settings() -> void:
+	var cf: ConfigFile = ConfigFile.new()
+	if cf.load(SETTINGS_PATH) == OK:
+		volume = clampf(float(cf.get_value("game", "volume", volume)), 0.0, 1.0)
+		speed_name = str(cf.get_value("game", "speed", speed_name))
+		theme_name = str(cf.get_value("game", "theme", theme_name))
+	if not SPEEDS.has(speed_name):
+		speed_name = "Normal"
+	if not THEMES.has(theme_name):
+		theme_name = "Peach"
+	apply_volume()
+
+
+func save_settings() -> void:
+	var cf: ConfigFile = ConfigFile.new()
+	cf.set_value("game", "volume", volume)
+	cf.set_value("game", "speed", speed_name)
+	cf.set_value("game", "theme", theme_name)
+	cf.save(SETTINGS_PATH)
+
+
+func apply_volume() -> void:
+	AudioServer.set_bus_mute(0, volume <= 0.001)
+	AudioServer.set_bus_volume_db(0, linear_to_db(maxf(volume, 0.001)))
+
+
+func set_volume(v: float) -> void:
+	volume = clampf(snappedf(v, 0.1), 0.0, 1.0)
+	apply_volume()
+	save_settings()
+
+
+func speed_mult() -> float:
+	return float(SPEEDS[speed_name])
+
+
+func theme_color() -> Color:
+	return THEMES[theme_name] as Color
 
 
 # ---------------- waktu ----------------
@@ -46,6 +128,10 @@ func tick(delta: float) -> void:
 		minute -= 1440.0
 		day += 1
 		_roll_weather()
+		# tanah yang disiram kering lagi di hari baru
+		for mp: Variant in tilled.values():
+			for cv: Variant in (mp as Dictionary).values():
+				(cv as Dictionary)["wet"] = raining
 		day_changed.emit()
 
 
@@ -141,6 +227,26 @@ func count(id: String) -> int:
 		if not d.is_empty() and str(d["id"]) == id:
 			total += int(d["n"])
 	return total
+
+
+func is_tool(id: String) -> bool:
+	return ITEMS.has(id) and bool((ITEMS[id] as Dictionary).get("alat", false))
+
+
+## Alat yang sedang dipegang (slot terpilih), "" bila tangan kosong / bukan alat.
+func held_tool() -> String:
+	if selected_slot < 0 or selected_slot >= bag.size():
+		return ""
+	var s: Dictionary = bag[selected_slot] as Dictionary
+	if s.is_empty() or not is_tool(str(s["id"])):
+		return ""
+	return str(s["id"])
+
+
+func tilled_of(map_id: String) -> Dictionary:
+	if not tilled.has(map_id):
+		tilled[map_id] = {}
+	return tilled[map_id] as Dictionary
 
 
 func item_icon(id: String) -> Texture2D:

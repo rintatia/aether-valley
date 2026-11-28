@@ -96,11 +96,11 @@ func _build_status() -> void:
 	status.size = st_day.size
 	var L: Dictionary = UIKit.layout["status"] as Dictionary
 	var sz: Vector2 = st_day.size
-	# tanggal & jam: di tengah ruang kosong setelah ikon; koin & kristal: rata kiri setelah ikon
+	# tanggal & jam: di tengah ruang kosong setelah ikon; koin & kristal: rata kanan
 	lb_date = _field_label(L["tanggal"] as Array, sz, 20, HORIZONTAL_ALIGNMENT_CENTER)
 	lb_clock = _field_label(L["jam"] as Array, sz, 24, HORIZONTAL_ALIGNMENT_CENTER)
-	lb_coin = _field_label(L["koin"] as Array, sz, 20, HORIZONTAL_ALIGNMENT_LEFT)
-	lb_crystal = _field_label(L["kristal"] as Array, sz, 20, HORIZONTAL_ALIGNMENT_LEFT)
+	lb_coin = _field_label(L["koin"] as Array, sz, 20, HORIZONTAL_ALIGNMENT_RIGHT)
+	lb_crystal = _field_label(L["kristal"] as Array, sz, 20, HORIZONTAL_ALIGNMENT_RIGHT)
 	lb_coin.add_theme_color_override("font_color", Color("#FFEE9A"))
 	lb_crystal.add_theme_color_override("font_color", Color("#C9BFFA"))
 	# lencana musim / hujan di perisai (gambar, tanpa tulisan)
@@ -218,11 +218,18 @@ func _make_slot(parent: Control, psize: Vector2, r: Array, index: int) -> Dictio
 
 func _slot_pressed(slot: Dictionary) -> void:
 	var idx: int = int(slot["index"])
+	UIKit.sfx("klik")
+	if Game.selected_slot == idx:
+		Game.selected_slot = -1
+		_refresh_items()
+		show_toast("Hands free")
+		return
 	Game.selected_slot = idx
 	_refresh_items()
 	var s: Dictionary = Game.bag[idx] as Dictionary
 	if not s.is_empty():
-		show_toast("%s x%d" % [str((Game.ITEMS[str(s["id"])] as Dictionary)["nama"]), int(s["n"])])
+		var nm: String = str((Game.ITEMS[str(s["id"])] as Dictionary)["nama"])
+		show_toast(nm if Game.is_tool(str(s["id"])) else "%s x%d" % [nm, int(s["n"])])
 
 
 func _fill_slot(slot: Dictionary) -> void:
@@ -314,6 +321,7 @@ func _nav_button(txt: String, d: float) -> Button:
 	for st: String in ["normal", "hover", "pressed"]:
 		(b.get_theme_stylebox(st) as StyleBoxFlat).set_content_margin_all(0)
 	b.size = Vector2(d * 1.2, d)
+	b.button_down.connect(func() -> void: UIKit.sfx("klik"))
 	return b
 
 
@@ -327,7 +335,7 @@ func _popup_bag() -> void:
 	var gap: float = avail * 0.025
 	var cell: float = (avail - gap * 4.0) / 5.0
 	var gx: float = (inner.size.x - (cell * 5.0 + gap * 4.0)) / 2.0
-	var slot_bg: StyleBoxFlat = UIKit.box(Color("#EBCFA8"), Color("#B58A2A"), 3, 8)
+	var slot_bg: StyleBoxFlat = UIKit.box(Game.theme_color().darkened(0.09), Color("#B58A2A"), 3, 8)
 	for ri: int in range(5):
 		for ci: int in range(5):
 			var x: float = gx + ci * (cell + gap)
@@ -434,30 +442,122 @@ func _popup_book() -> void:
 func _popup_settings() -> void:
 	var pi: Array = _blank_panel("Settings")
 	var inner: Control = pi[1] as Control
-	var col: VBoxContainer = VBoxContainer.new()
-	col.add_theme_constant_override("separation", 14)
-	col.alignment = BoxContainer.ALIGNMENT_CENTER
-	col.position = Vector2(0, 56)
-	col.size = Vector2(inner.size.x, inner.size.y - 100)
-	inner.add_child(col)
-	var items: Array = [["Resume", close_popup],
-		["Zoom In", func() -> void: world.call("change_zoom", 1)],
-		["Zoom Out", func() -> void: world.call("change_zoom", -1)],
-		["Main Menu", func() -> void:
-			close_popup()
-			world.get_parent().call("back_to_title")]]
-	for it: Array in items:
-		var b: TextureButton = UIKit.pill_button(str(it[0]), 260.0)
-		b.pressed.connect(it[1] as Callable)
-		var wrap: CenterContainer = CenterContainer.new()
-		wrap.custom_minimum_size = Vector2(inner.size.x, b.size.y)
-		wrap.add_child(b)
-		col.add_child(wrap)
+	var lx: float = 60.0
+	var cx: float = inner.size.x * 0.40
+	var cw: float = inner.size.x - cx - 60.0
+	var rh: float = 46.0
+	var y: float = 70.0
+	# --- Volume: [-] batang [+] persen
+	_setting_label(inner, "Volume", lx, y, rh)
+	var minus: Button = _nav_button("-", rh)
+	minus.position = Vector2(cx, y)
+	inner.add_child(minus)
+	var plus: Button = _nav_button("+", rh)
+	plus.position = Vector2(cx + cw - plus.size.x, y)
+	inner.add_child(plus)
+	var bar_bg: Panel = Panel.new()
+	bar_bg.add_theme_stylebox_override("panel", UIKit.box(Color("#43251D"), Color("#7F442C"), 3, 8))
+	bar_bg.position = Vector2(cx + minus.size.x + 14.0, y + 9.0)
+	bar_bg.size = Vector2(cw - minus.size.x * 2.0 - 28.0, rh - 18.0)
+	bar_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(bar_bg)
+	var fill: Panel = Panel.new()
+	fill.add_theme_stylebox_override("panel", UIKit.box(Color("#FFD65A"), Color("#FFD65A"), 0, 5))
+	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fill.position = Vector2(4, 4)
+	bar_bg.add_child(fill)
+	var pct: Label = UIKit.pixel_label("", 20, UIKit.CREAM, 4, Color("#43251D"))
+	pct.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	pct.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pct.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	bar_bg.add_child(pct)
+	var show_vol: Callable = func() -> void:
+		fill.size = Vector2((bar_bg.size.x - 8.0) * Game.volume, bar_bg.size.y - 8.0)
+		fill.visible = Game.volume > 0.0
+		pct.text = "%d%%" % roundi(Game.volume * 100.0)
+	show_vol.call()
+	minus.pressed.connect(func() -> void:
+		Game.set_volume(Game.volume - 0.1)
+		show_vol.call())
+	plus.pressed.connect(func() -> void:
+		Game.set_volume(Game.volume + 0.1)
+		show_vol.call())
+	# --- Walk Speed: Slow / Normal / Fast
+	y += rh + 26.0
+	_setting_label(inner, "Walk Speed", lx, y, rh)
+	var bw: float = (cw - 20.0) / 3.0
+	var i: int = 0
+	for sp: String in ["Slow", "Normal", "Fast"]:
+		var b2: Button = _nav_button(sp, rh)
+		b2.add_theme_font_size_override("font_size", 20)
+		b2.size = Vector2(bw, rh)
+		b2.position = Vector2(cx + i * (bw + 10.0), y)
+		if sp == Game.speed_name:
+			b2.add_theme_stylebox_override("normal", UIKit.box(Color("#7DBE5A"), Color("#2F6A32"), 4, 10))
+			b2.add_theme_color_override("font_color", UIKit.CREAM)
+		b2.pressed.connect(func() -> void:
+			Game.speed_name = sp
+			Game.save_settings()
+			open_popup("setting"))
+		inner.add_child(b2)
+		i += 1
+	# --- Theme: [<] contoh warna + nama [>]
+	y += rh + 26.0
+	_setting_label(inner, "Theme", lx, y, rh)
+	var names: Array = Game.THEMES.keys()
+	var prev: Button = _nav_button("<", rh)
+	prev.position = Vector2(cx, y)
+	inner.add_child(prev)
+	var next: Button = _nav_button(">", rh)
+	next.position = Vector2(cx + cw - next.size.x, y)
+	inner.add_child(next)
+	var sw: Panel = Panel.new()
+	sw.add_theme_stylebox_override("panel", UIKit.box(Game.theme_color(), Color("#7F442C"), 3, 8))
+	sw.position = Vector2(cx + prev.size.x + 14.0, y + 4.0)
+	sw.size = Vector2(cw - prev.size.x * 2.0 - 28.0, rh - 8.0)
+	sw.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(sw)
+	var tn: Label = UIKit.pixel_label(Game.theme_name, 22, UIKit.BROWN)
+	tn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	tn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tn.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	sw.add_child(tn)
+	for pair: Array in [[prev, -1], [next, 1]]:
+		var d: int = int(pair[1])
+		(pair[0] as Button).pressed.connect(func() -> void:
+			var k: int = names.find(Game.theme_name)
+			Game.theme_name = str(names[(k + d + names.size()) % names.size()])
+			Game.save_settings()
+			open_popup("setting"))
+	# --- Resume / Main Menu
+	y += rh + 34.0
+	var row: HBoxContainer = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 30)
+	row.position = Vector2(0, y)
+	row.size = Vector2(inner.size.x, 64)
+	inner.add_child(row)
+	var res: TextureButton = UIKit.pill_button("Resume", 240.0)
+	res.pressed.connect(close_popup)
+	row.add_child(res)
+	var mm: TextureButton = UIKit.pill_button("Main Menu", 240.0)
+	mm.pressed.connect(func() -> void:
+		close_popup()
+		world.get_parent().call("back_to_title"))
+	row.add_child(mm)
 	var v: Label = UIKit.pixel_label(UIKit.version(), 18, Color("#7F442C"))
 	v.position = Vector2(0, inner.size.y - 32)
 	v.size = Vector2(inner.size.x, 24)
 	v.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	inner.add_child(v)
+
+
+func _setting_label(inner: Control, text: String, x: float, y: float, h: float) -> void:
+	var l: Label = UIKit.pixel_label(text, 24, UIKit.BROWN)
+	l.position = Vector2(x, y)
+	l.size = Vector2(inner.size.x * 0.4 - x, h)
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	inner.add_child(l)
 
 
 # ---------------- lain-lain ----------------

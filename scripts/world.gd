@@ -58,6 +58,11 @@ var press_t: float = 0.0
 
 var hud: CanvasLayer
 var map_title: String = ""
+var soil: Node2D                          # tanah olahan (digambar di atas lanskap)
+var bugs: Node2D                          # kupu-kupu
+var bug_list: Array[Dictionary] = []
+const REACH: float = 1.6                  # jangkauan alat (petak) dari kaki pemain
+const BUG_COUNT: int = 12
 var tint: CanvasModulate
 var toast: Label
 var toast_tw: Tween
@@ -71,6 +76,9 @@ func _ready() -> void:
 	add_child(ground)
 	chunk_root = Node2D.new()
 	ground.add_child(chunk_root)
+	soil = Node2D.new()
+	soil.draw.connect(_draw_soil)
+	add_child(soil)
 	ysort = Node2D.new()
 	ysort.y_sort_enabled = true
 	add_child(ysort)
@@ -79,6 +87,10 @@ func _ready() -> void:
 	ysort.add_child(player)
 	cam = Camera2D.new()
 	player.add_child(cam)
+	bugs = Node2D.new()
+	bugs.z_index = 5
+	add_child(bugs)
+	Game.day_changed.connect(func() -> void: soil.queue_redraw())
 	_build_hud()
 	get_viewport().size_changed.connect(func() -> void:
 		_fit_zoom()
@@ -144,6 +156,8 @@ func load_map(id: String, from_gate: String) -> void:
 	pending = {}
 	map_title = str(m.get("nama", id))
 	ground.queue_redraw()
+	soil.queue_redraw()
+	_spawn_bugs()
 	_fit_zoom()
 	_set_zoom(zoom_now)
 
@@ -442,6 +456,8 @@ func _sway_check(delta: float, vel_x: float) -> void:
 								continue
 							for jv: Variant in sway_grid[c2] as Array:
 								var nb: Dictionary = sway_items[int(jv)]
+								if bool(nb.get("dead", false)):
+									continue
 								var d2: float = ((nb["node"] as Node2D).position - p).length()
 								if nb != it and d2 < 46.0 and float(nb["cool"]) <= 0.0:
 									_rustle(nb, dir, 0.45, 0.06 + d2 / 400.0)
@@ -504,6 +520,7 @@ func chop_hit(i: int) -> void:
 	if node == null or str(ct["state"]) == "hilang":
 		return
 	ct["hp"] = int(ct["hp"]) - 1
+	UIKit.sfx("tok", 1.0 if str(ct["state"]) == "berdiri" else 1.2)
 	if str(ct["state"]) == "berdiri":
 		if int(ct["hp"]) > 0:
 			var tw: Tween = create_tween()
@@ -782,6 +799,9 @@ func tap_world(wp: Vector2) -> void:
 		else:
 			walk_to(tc, {"type": "chop", "i": ti})
 		return
+	var tool: String = Game.held_tool()
+	if tool != "" and _tool_tap(tool, wp):
+		return
 	if gates.has(c):
 		walk_to(c, {"type": "gate"})
 		return
@@ -835,6 +855,7 @@ func _process(delta: float) -> void:
 	Game.tick(delta)
 	tint.color = Game.ambient()
 	_regrow(delta)
+	_move_bugs(delta)
 	if busy:
 		return
 	var before: Vector2 = player.position
@@ -854,7 +875,7 @@ func _move(delta: float) -> void:
 		d.y += 1.0
 	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
 		d.y -= 1.0
-	var step: float = SPEED * delta
+	var step: float = SPEED * Game.speed_mult() * delta
 	if d != Vector2.ZERO:
 		path = PackedVector2Array()
 		pending = {}
@@ -885,3 +906,268 @@ func _check_gate() -> void:
 	var c: Vector2i = _cell(player.position)
 	if gates.has(c):
 		_go(str(gates[c]))
+
+
+# ---------------- alat ----------------
+## Ketuk dengan alat di tangan. Dekat (<= REACH petak) -> langsung dipakai.
+## Jauh -> berjalan dulu lalu dipakai, HANYA bila sasarannya cocok untuk alat itu; selain itu cukup berjalan.
+func _tool_tap(tool: String, wp: Vector2) -> bool:
+	var c: Vector2i = _cell(wp)
+	var near: bool = _cell(player.position).distance_to(c) <= REACH or player.position.distance_to(wp) <= REACH * T
+	if tool == "jaring":
+		var bi: int = _bug_at(wp, 30.0)
+		if bi >= 0 and player.position.distance_to(wp) <= 2.6 * T:
+			use_tool(tool, (bug_list[bi]["node"] as Node2D).position)
+			return true
+		if bi < 0 and not near:
+			return false
+	if near:
+		use_tool(tool, wp)
+		return true
+	if _tool_target_ok(tool, wp):
+		walk_to(c, {"type": "tool", "tool": tool, "wp": wp})
+		return true
+	return false
+
+
+func _tool_target_ok(tool: String, wp: Vector2) -> bool:
+	var c: Vector2i = _cell(wp)
+	match tool:
+		"cangkul":
+			return _can_till(c)
+		"penyiram", "sekop":
+			return Game.tilled_of(map_id).has(c)
+		"arit", "sabit":
+			return not _flora_near(wp, 26.0 if tool == "arit" else 48.0).is_empty()
+		"jaring":
+			return _bug_at(wp, 30.0) >= 0
+	return false
+
+
+func _can_till(c: Vector2i) -> bool:
+	if map_id != "ladang" or not astar.region.has_point(c) or astar.is_point_solid(c):
+		return false
+	if gates.has(c) or Game.tilled_of(map_id).has(c):
+		return false
+	var ch: String = grid[c.y][c.x]
+	return ch != "#" and not "<>^v".contains(ch)
+
+
+## Pakai alat ke titik dunia wp: animasi di tangan, bunyi, lalu efeknya.
+func use_tool(tool: String, wp: Vector2) -> void:
+	player.call("face", wp - player.position)
+	player.call("use_tool", Game.item_icon(tool), tool)
+	var c: Vector2i = _cell(wp)
+	var td: Dictionary = Game.tilled_of(map_id)
+	match tool:
+		"cangkul":
+			if _can_till(c):
+				td[c] = {"wet": Game.raining}
+				soil.queue_redraw()
+				UIKit.sfx("gali")
+				_dust(_center(c), Color("#8A5A3C"))
+			else:
+				UIKit.sfx("ayun")
+				show_toast("Only farm grass can be tilled" if map_id != "ladang" else "Can't till here")
+		"sekop":
+			if td.has(c):
+				td.erase(c)
+				soil.queue_redraw()
+				UIKit.sfx("gali", 1.2)
+				_dust(_center(c), Color("#6EA427"))
+			else:
+				UIKit.sfx("ayun")
+				show_toast("Use the Trowel to flatten tilled soil")
+		"penyiram":
+			UIKit.sfx("air")
+			_splash(_center(c))
+			if td.has(c):
+				(td[c] as Dictionary)["wet"] = true
+				soil.queue_redraw()
+			else:
+				show_toast("Water the tilled soil")
+		"arit", "sabit":
+			UIKit.sfx("ayun", 1.1 if tool == "arit" else 0.85)
+			var cut: Array[Dictionary] = _flora_near(wp, 26.0 if tool == "arit" else 48.0)
+			if tool == "arit" and cut.size() > 1:
+				cut.resize(1)
+			for it: Dictionary in cut:
+				_cut_flora(it)
+			if cut.is_empty():
+				show_toast("Nothing to cut here")
+		"jaring":
+			UIKit.sfx("ayun", 1.3)
+			var bi: int = _bug_at(wp, 34.0)
+			if bi >= 0:
+				_catch_bug(bi)
+		"pancing":
+			UIKit.sfx("ayun", 0.9)
+			show_toast("No water here - the Lake is coming soon")
+		"tombak":
+			UIKit.sfx("ayun", 1.2)
+			for it: Dictionary in _flora_near(wp, 30.0):
+				_rustle(it, signf(wp.x - player.position.x) if wp.x != player.position.x else 1.0, 1.0, 0.0)
+
+
+## Semak/bunga/rumput yang bergoyang di dekat titik (terdekat dulu).
+func _flora_near(wp: Vector2, r: float) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var c: Vector2i = _cell(wp)
+	for dy: int in range(-2, 3):
+		for dx: int in range(-2, 3):
+			var cc: Vector2i = c + Vector2i(dx, dy)
+			if not sway_grid.has(cc):
+				continue
+			for iv: Variant in sway_grid[cc] as Array:
+				var it: Dictionary = sway_items[int(iv)]
+				if bool(it.get("dead", false)):
+					continue
+				var p: Vector2 = (it["node"] as Node2D).position
+				if p.distance_to(wp) <= r or Vector2(p.x, p.y - float(it["h"]) * 0.4).distance_to(wp) <= r:
+					out.append(it)
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return (a["node"] as Node2D).position.distance_to(wp) < (b["node"] as Node2D).position.distance_to(wp))
+	return out
+
+
+func _cut_flora(it: Dictionary) -> void:
+	it["dead"] = true
+	var node: Node2D = it["node"] as Node2D
+	if it.has("tw") and it["tw"] != null and (it["tw"] as Tween).is_valid():
+		(it["tw"] as Tween).kill()
+	_dust(node.position - Vector2(0, 6), Color("#6EA427"))
+	var tw: Tween = create_tween().set_parallel(true)
+	tw.tween_property(node, "scale", Vector2(1.15, 0.2), 0.18).set_ease(Tween.EASE_IN)
+	tw.tween_property(node, "modulate:a", 0.0, 0.2)
+	tw.chain().tween_callback(node.queue_free)
+
+
+func _dust(p: Vector2, col: Color) -> void:
+	for i: int in range(6):
+		var d: Node2D = Node2D.new()
+		var sz: float = randf_range(2.0, 3.5)
+		d.draw.connect(func() -> void: d.draw_rect(Rect2(-sz / 2.0, -sz / 2.0, sz, sz), col))
+		d.position = p + Vector2(randf_range(-6, 6), randf_range(-4, 2))
+		d.z_index = 4
+		add_child(d)
+		var tw: Tween = create_tween().set_parallel(true)
+		tw.tween_property(d, "position", d.position + Vector2(randf_range(-14, 14), randf_range(-16, -6)), 0.35).set_ease(Tween.EASE_OUT)
+		tw.tween_property(d, "modulate:a", 0.0, 0.35)
+		tw.chain().tween_callback(d.queue_free)
+
+
+func _splash(p: Vector2) -> void:
+	for i: int in range(8):
+		var d: Node2D = Node2D.new()
+		d.draw.connect(func() -> void: d.draw_circle(Vector2.ZERO, 1.8, Color("#7EC8F0")))
+		d.position = p + Vector2(randf_range(-10, 10), -18.0)
+		d.z_index = 4
+		add_child(d)
+		var tw: Tween = create_tween()
+		tw.tween_interval(i * 0.03)
+		tw.tween_property(d, "position:y", p.y + randf_range(-4, 6), 0.25).set_ease(Tween.EASE_IN)
+		tw.tween_property(d, "modulate:a", 0.0, 0.15)
+		tw.tween_callback(d.queue_free)
+
+
+## Tanah olahan: petak cokelat dengan alur; basah = lebih gelap.
+func _draw_soil() -> void:
+	var td: Dictionary = Game.tilled_of(map_id)
+	for cv: Variant in td.keys():
+		var c: Vector2i = cv as Vector2i
+		var wet: bool = bool((td[cv] as Dictionary).get("wet", false))
+		var r: Rect2 = Rect2(c.x * T + 1, c.y * T + 1, T - 2, T - 2)
+		var base: Color = Color("#5E3B26") if wet else Color("#9A6741")
+		var edge: Color = Color("#3E2617") if wet else Color("#6F4429")
+		var lite: Color = Color("#7A5034") if wet else Color("#B5824F")
+		soil.draw_rect(r, edge)
+		soil.draw_rect(r.grow(-2.0), base)
+		for k: int in range(3):
+			var y: float = r.position.y + 7.0 + k * 9.0
+			soil.draw_rect(Rect2(r.position.x + 4, y, r.size.x - 8, 2), edge)
+			soil.draw_rect(Rect2(r.position.x + 4, y + 2, r.size.x - 8, 1), lite)
+
+
+# ---------------- kupu-kupu ----------------
+const BUG_COLORS: Array = [[Color("#FFD65A"), Color("#E87C34")], [Color("#F7C6E0"), Color("#D8574F")], [Color("#BFE3F7"), Color("#2480BE")], [Color("#F8F1EA"), Color("#9C8CF0")]]
+
+
+func _spawn_bugs() -> void:
+	for b: Dictionary in bug_list:
+		(b["node"] as Node2D).queue_free()
+	bug_list.clear()
+	for i: int in range(BUG_COUNT):
+		_add_bug()
+
+
+func _free_spot() -> Vector2:
+	for k: int in range(60):
+		var c: Vector2i = Vector2i(randi_range(4, mw - 5), randi_range(4, mh - 5))
+		if not astar.is_point_solid(c) and grid[c.y][c.x] != "#":
+			return _center(c)
+	return player.position
+
+
+func _add_bug() -> void:
+	var col: Array = BUG_COLORS[randi() % BUG_COLORS.size()]
+	var n: Node2D = Node2D.new()
+	var b: Dictionary = {"node": n, "home": _free_spot(), "t": randf() * 10.0, "spd": randf_range(0.6, 1.0)}
+	n.position = b["home"] as Vector2
+	n.draw.connect(func() -> void:
+		var f: float = absf(sin(float(b["t"]) * 14.0))
+		var w: float = 3.0 + 3.0 * f
+		var c1: Color = col[0] as Color
+		var c2: Color = col[1] as Color
+		n.draw_circle(Vector2(0, 14), 3.0, Color(0, 0, 0, 0.18))
+		for sx: float in [-1.0, 1.0]:
+			n.draw_rect(Rect2(Vector2(minf(0.0, sx * w), -4.0), Vector2(w, 4.5)), c2)
+			n.draw_rect(Rect2(Vector2(minf(0.0, sx * w * 0.75), 0.0), Vector2(w * 0.75, 3.5)), c1)
+		n.draw_rect(Rect2(-0.75, -4.5, 1.5, 8.0), Color("#43251D")))
+	bugs.add_child(n)
+	bug_list.append(b)
+
+
+func _move_bugs(delta: float) -> void:
+	var day: bool = not Game.is_night() and not Game.raining
+	bugs.visible = day
+	for b: Dictionary in bug_list:
+		b["t"] = float(b["t"]) + delta * float(b["spd"])
+		var t: float = float(b["t"])
+		var home: Vector2 = b["home"] as Vector2
+		var n: Node2D = b["node"] as Node2D
+		n.position = home + Vector2(sin(t * 0.7) * 46.0 + sin(t * 1.9) * 12.0, cos(t * 0.53) * 30.0 + sin(t * 2.7) * 6.0 - 18.0)
+		n.queue_redraw()
+		if day and n.position.distance_to(player.position) < 40.0 and float(b.get("flee", 0.0)) <= 0.0:
+			b["home"] = home + (home - player.position).normalized() * 60.0
+			b["flee"] = 1.5
+		b["flee"] = maxf(float(b.get("flee", 0.0)) - delta, 0.0)
+
+
+func _bug_at(wp: Vector2, r: float) -> int:
+	if not bugs.visible:
+		return -1
+	var best: int = -1
+	var bd: float = r
+	for i: int in range(bug_list.size()):
+		var d: float = (bug_list[i]["node"] as Node2D).position.distance_to(wp)
+		if d <= bd:
+			bd = d
+			best = i
+	return best
+
+
+func _catch_bug(i: int) -> void:
+	var b: Dictionary = bug_list[i]
+	bug_list.remove_at(i)
+	var n: Node2D = b["node"] as Node2D
+	UIKit.sfx("tangkap")
+	Game.add_item("kupu", 1)
+	show_toast("+1 Butterfly")
+	var tw: Tween = create_tween().set_parallel(true)
+	tw.tween_property(n, "scale", Vector2(0.2, 0.2), 0.25)
+	tw.tween_property(n, "position", player.position - Vector2(0, 20), 0.25)
+	tw.chain().tween_callback(n.queue_free)
+	# kupu-kupu baru muncul lagi di tempat lain sebentar kemudian
+	get_tree().create_timer(30.0).timeout.connect(func() -> void:
+		if is_inside_tree():
+			_add_bug())

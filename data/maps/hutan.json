@@ -1,6 +1,6 @@
 {
 "_note": "Peta Hutan Tebang: '#' = sabuk hutan tertutup, '<'/'>' = gerbang. Dibuat oleh tools/lanskap/hutan_flora.py",
-"nama": "Hutan Tebang",
+"nama": "Woodland",
 "chunks": "hutan",
 "pohon": "hutan_pohon",
 "gerbang": {

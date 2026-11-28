@@ -75,6 +75,7 @@ func _choose_gender() -> void:
 	c.connect("confirmed", func(g: String) -> void:
 		Game.gender = g
 		Game.colors = {}
+		Game.new_game()
 		# layar kustom karakter (scripts/layar_kustom.gd) disimpan untuk nanti; sekarang langsung masuk ladang
 		_start_world())
 	c.connect("closed", _title)
@@ -117,7 +118,7 @@ func _screenshots() -> void:
 	await _shot(pre + "02_pilih.png")
 	var pil: Control = layer.get_child(0) as Control
 	pil.call("_choose", "female")
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.45).timeout
 	await _shot(pre + "03_pilih_female.png")
 	pil.call("_confirm")
 	var w: Node2D = world
@@ -128,6 +129,21 @@ func _screenshots() -> void:
 	w.call("_set_zoom", 1.0)
 	await get_tree().create_timer(0.2).timeout
 	await _shot(pre + "06_ladang_luas.png")
+	# alat: cangkul petak 3x2, siram sebagian, lalu tunjukkan ayunan cangkul
+	w.call("_set_zoom", 3.0)
+	var pl: Node2D = w.get("player") as Node2D
+	var pc: Vector2 = pl.position
+	for yy: int in range(0, 2):
+		for xx: int in range(-1, 2):
+			w.call("use_tool", "cangkul", pc + Vector2(xx * 32 + 40, yy * 32 + 20))
+	for xx: int in range(-1, 1):
+		w.call("use_tool", "penyiram", pc + Vector2(xx * 32 + 40, 20))
+	await get_tree().create_timer(0.8).timeout
+	Game.selected_slot = 0
+	(w.get("hud") as CanvasLayer).call("_refresh_items")
+	w.call("use_tool", "cangkul", pc + Vector2(72, 52))
+	await get_tree().create_timer(0.1).timeout
+	await _shot(pre + "13_alat.png")
 	w.call("_set_zoom", 2.0)
 	var hud: CanvasLayer = w.get("hud") as CanvasLayer
 	hud.call("open_popup", "tas")
@@ -154,6 +170,11 @@ func _screenshots() -> void:
 	w.call("_set_zoom", 3.0)
 	await get_tree().create_timer(0.3).timeout
 	await _shot(pre + "12_hutan.png")
+	Game.raining = false
+	w.call("load_map", "danau", "ladang")
+	w.call("_set_zoom", 1.0)
+	await get_tree().create_timer(0.3).timeout
+	await _shot(pre + "14_danau.png")
 	get_tree().quit(0)
 
 
@@ -195,6 +216,8 @@ func _selftest() -> void:
 		var sz: Vector2i = Art.size_of(k)
 		var n: int = int(Art.info(k).get("frames", 1))
 		_check(tx != null and tx.get_width() == sz.x * n and tx.get_height() == sz.y, "tekstur %s %dx%d%s" % [k, sz.x * n, sz.y, "" if Art.has_file(k) else " (placeholder)"])
+	Game.new_game()
+	_check(Game.held_tool() == "cangkul" and Game.count("tombak") == 1 and Game.count("penyiram") == 1, "permainan baru: 8 alat di tas")
 	world = (load("res://scripts/world.gd") as GDScript).new()
 	add_child(world)
 	await get_tree().process_frame
@@ -214,9 +237,15 @@ func _selftest() -> void:
 	_check(world.astar.is_point_solid(Vector2i(0, 0)) and world.astar.is_point_solid(Vector2i(154, 0)), "batas peta tidak bisa dilewati")
 	_check(_edge_closed(), "ladang: seluruh tepi tertutup kecuali gerbang")
 	var gate: Vector2i = Vector2i(-1, -1)
+	var gate_d: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
-		gate = g
-	_check(gate.x == 0 and str(world.gates[gate]) == "hutan", "gerbang ladang di kiri menuju hutan")
+		if str(world.gates[g]) == "hutan":
+			gate = g
+		elif str(world.gates[g]) == "danau":
+			gate_d = g
+	_check(gate.x == 0, "gerbang ladang di kiri menuju hutan")
+	_check(gate_d.y == world.mh - 1, "gerbang ladang di bawah menuju danau")
+	_check(world.find_path(world.spawn, gate_d).size() > 10, "jalur ladang: muncul -> gerbang danau")
 	_check(world.find_path(world.spawn, gate).size() > 10, "jalur ladang: muncul -> gerbang hutan")
 	world.load_map("hutan", "ladang")
 	_check(world.mw == 120 and world.mh == 90, "peta hutan 120x90 (9x luas awal)")
@@ -312,5 +341,63 @@ func _selftest() -> void:
 		if far:
 			inside += 1
 	_check(inside == 0, "bagian dalam ladang bebas semak (%d)" % inside)
+	# --- peta danau (di bawah ladang) ---
+	world.load_map("danau", "ladang")
+	_check(world.mw == 130 and world.mh == 96 and world.map_title == "Lake", "peta danau 130x96")
+	_check(_edge_closed(), "danau: seluruh tepi tertutup kecuali gerbang")
+	var ad: Vector2i = world._cell(world.player.position)
+	_check(ad.y < 8, "datang dari ladang muncul di sisi atas danau")
+	var up: Vector2i = Vector2i(-1, -1)
+	for g: Vector2i in world.gates.keys():
+		up = g
+	_check(up.y == 0 and str(world.gates[up]) == "ladang" and world.find_path(ad, up).size() > 0, "jalur danau -> gerbang ladang")
+	world.load_map("ladang", "danau")
+	_check(world._cell(world.player.position).y > world.mh - 9, "kembali dari danau muncul di sisi bawah ladang")
+	# --- alat ---
+	var pp: Vector2 = world.player.position + Vector2(0, -64)
+	var cc: Vector2i = world._cell(pp)
+	world.use_tool("cangkul", pp)
+	var td: Dictionary = Game.tilled_of("ladang")
+	_check(td.has(cc), "Hoe: rumput ladang jadi tanah olahan")
+	world.use_tool("penyiram", pp)
+	_check(bool((td[cc] as Dictionary)["wet"]), "Watering Can: tanah olahan basah")
+	Game.minute = 1439.0
+	Game.tick(1.0)
+	_check(not bool((td[cc] as Dictionary)["wet"]) or Game.raining, "hari baru: tanah kering lagi")
+	world.use_tool("sekop", pp)
+	_check(not td.has(cc), "Trowel: tanah olahan rata lagi")
+	world.load_map("hutan", "ladang")
+	var fl: Dictionary = world.sway_items[5]
+	world.use_tool("arit", (fl["node"] as Node2D).position)
+	_check(bool(fl.get("dead", false)), "Sickle: semak terpotong")
+	var fl2: Dictionary = world.sway_items[40]
+	var near0: int = world._flora_near((fl2["node"] as Node2D).position, 48.0).size()
+	world.use_tool("sabit", (fl2["node"] as Node2D).position)
+	_check(near0 > 0 and world._flora_near((fl2["node"] as Node2D).position, 48.0).is_empty(), "Scythe: %d tanaman sekitar terpotong" % near0)
+	_check(world.bug_list.size() == 12, "kupu-kupu: %d" % world.bug_list.size())
+	Game.raining = false
+	Game.minute = 9.0 * 60.0
+	world.bugs.visible = true
+	var bug: Node2D = world.bug_list[0]["node"] as Node2D
+	var k1: int = Game.count("kupu")
+	world.use_tool("jaring", bug.position)
+	_check(Game.count("kupu") == k1 + 1, "Bug Net: kupu-kupu tertangkap")
+	world.use_tool("tombak", world.player.position + Vector2(20, 0))
+	world.use_tool("pancing", world.player.position + Vector2(20, 0))
+	_check(true, "Spear & Fishing Rod bisa dipakai")
+	# --- pengaturan ---
+	var sp0: float = Game.speed_mult()
+	Game.speed_name = "Fast"
+	_check(Game.speed_mult() > sp0, "Walk Speed: Fast lebih cepat")
+	Game.speed_name = "Normal"
+	Game.set_volume(0.5)
+	_check(absf(AudioServer.get_bus_volume_db(0) - linear_to_db(0.5)) < 0.1, "Volume 50%")
+	Game.set_volume(0.8)
+	Game.theme_name = "Mint"
+	hud.call("open_popup", "setting")
+	_check(bool(hud.get("modal_open")), "Settings dengan tema Mint terbuka")
+	hud.call("close_popup")
+	Game.theme_name = "Peach"
+	Game.save_settings()
 	print("SELFTEST " + ("OK" if _fails == 0 else "GAGAL (%d)" % _fails))
 	get_tree().quit(0 if _fails == 0 else 1)

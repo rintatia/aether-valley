@@ -10,6 +10,9 @@ var cards: Dictionary = {}
 var glow: Dictionary = {}
 var chosen: String = ""
 var hint: Label
+var base_pos: Dictionary = {}
+var shadows: Dictionary = {}
+var tweens: Dictionary = {}
 
 
 func _ready() -> void:
@@ -42,8 +45,23 @@ func _ready() -> void:
 		b.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		b.position = Vector2(x0 + i * (card_w + gap), top)
 		b.size = Vector2(card_w, card_h)
-		b.pivot_offset = b.size / 2.0
-		b.pressed.connect(func() -> void: _choose(g))
+		b.pivot_offset = Vector2(b.size.x / 2.0, b.size.y)
+		b.pressed.connect(func() -> void:
+			UIKit.sfx("klik")
+			_choose(g))
+		# bayangan di bawah kartu: makin jelas saat kartu terangkat
+		var sh: Panel = Panel.new()
+		var ssb: StyleBoxFlat = StyleBoxFlat.new()
+		ssb.bg_color = Color(0.10, 0.06, 0.04, 0.38)
+		ssb.set_corner_radius_all(18)
+		sh.add_theme_stylebox_override("panel", ssb)
+		sh.position = b.position + Vector2(card_w * 0.06, card_h * 0.05)
+		sh.size = Vector2(card_w * 0.88, card_h * 0.95)
+		sh.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		sh.modulate.a = 0.0
+		inner.add_child(sh)
+		shadows[g] = sh
+		base_pos[g] = b.position
 		var gl: Panel = Panel.new()
 		var sb: StyleBoxFlat = StyleBoxFlat.new()
 		sb.draw_center = false
@@ -71,14 +89,44 @@ func _ready() -> void:
 	add_child(hint)
 
 
+## Kartu terpilih TIMBUL: terangkat, sedikit membesar dengan pantulan, bayangan muncul,
+## lalu melayang naik-turun pelan. Kartu lain turun kembali dan meredup.
 func _choose(g: String) -> void:
 	chosen = g
 	for k: String in cards.keys():
-		(glow[k] as Panel).visible = k == g
 		var c: TextureButton = cards[k] as TextureButton
-		c.modulate = Color.WHITE if k == g else Color(0.82, 0.82, 0.82)
-		create_tween().tween_property(c, "scale", Vector2(1.04, 1.04) if k == g else Vector2.ONE, 0.12)
+		var sh: Panel = shadows[k] as Panel
+		var bp: Vector2 = base_pos[k] as Vector2
+		(glow[k] as Panel).visible = k == g
+		if tweens.has(k) and (tweens[k] as Tween).is_valid():
+			(tweens[k] as Tween).kill()
+		var tw: Tween = create_tween().set_parallel(true)
+		tweens[k] = tw
+		if k == g:
+			c.modulate = Color.WHITE
+			inner.move_child(c, inner.get_child_count() - 1)
+			tw.tween_property(c, "position:y", bp.y - 18.0, 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tw.tween_property(c, "scale", Vector2(1.07, 1.07), 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tw.tween_property(sh, "modulate:a", 1.0, 0.25)
+			tw.tween_property(sh, "position:y", bp.y + 14.0, 0.28)
+			tw.chain().tween_callback(func() -> void: _float(k))
+		else:
+			tw.tween_property(c, "position:y", bp.y, 0.2).set_trans(Tween.TRANS_SINE)
+			tw.tween_property(c, "scale", Vector2.ONE, 0.2)
+			tw.tween_property(c, "modulate", Color(0.78, 0.78, 0.78), 0.2)
+			tw.tween_property(sh, "modulate:a", 0.0, 0.2)
 	hint.text = "%s selected - tap Confirm" % ("Male" if g == "male" else "Female")
+
+
+func _float(k: String) -> void:
+	if chosen != k:
+		return
+	var c: TextureButton = cards[k] as TextureButton
+	var bp: Vector2 = base_pos[k] as Vector2
+	var tw: Tween = create_tween().set_loops()
+	tweens[k] = tw
+	tw.tween_property(c, "position:y", bp.y - 12.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(c, "position:y", bp.y - 18.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func _confirm() -> void:
