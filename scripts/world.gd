@@ -521,6 +521,8 @@ func chop_hit(i: int) -> void:
 		return
 	ct["hp"] = int(ct["hp"]) - 1
 	UIKit.sfx("tok", 1.0 if str(ct["state"]) == "berdiri" else 1.2)
+	player.call("face", (ct["node"] as Node2D).position - player.position)
+	player.call("use_tool", null, "kapak")
 	if str(ct["state"]) == "berdiri":
 		if int(ct["hp"]) > 0:
 			var tw: Tween = create_tween()

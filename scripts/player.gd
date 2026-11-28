@@ -1,6 +1,13 @@
 extends Node2D
-## Pemain v7. Posisi = titik kaki. Sprite karakter pilihan (cowok/cewek) dengan warna kustom.
-## Animasi jalan: langkah memantul + sedikit berayun; menghadap kiri/kanan dengan membalik sprite.
+## Pemain v7. Posisi = titik kaki.
+## Female: animasi bingkai (jalan, diam, kapak, cangkul, ayun, pancing, siram) dari assets/karakter_v7/anim_cewek,
+## alat kita digambar di tangan per bingkai (pose di anim.json, titik genggam alat di alat.json).
+## Male: sprite tunggal dengan langkah memantul (animasi menyusul).
+
+const ANIM_DIR: String = "res://assets/karakter_v7/anim_cewek/"
+## alat -> animasi yang dipakai
+const TOOL_ANIM: Dictionary = {"cangkul": "cangkul", "sekop": "cangkul", "arit": "cangkul", "sabit": "cangkul",
+	"jaring": "ayun", "tombak": "ayun", "pancing": "pancing", "penyiram": "siram", "kapak": "kapak"}
 
 var walking: bool = false
 var t: float = 0.0
@@ -9,6 +16,16 @@ var spr: Sprite2D
 var shadow: Node2D
 var tool_spr: Sprite2D
 var tool_tw: Tween
+
+# mode animasi bingkai
+var animated: bool = false
+var anim: Dictionary = {}
+var alat: Dictionary = {}
+var tex_cache: Dictionary = {}
+var cur_anim: String = ""
+var anim_t: float = 0.0
+var acting: String = ""          # animasi aksi yang sedang diputar sekali ("" = tidak ada)
+var act_tool: String = ""
 
 
 func _ready() -> void:
@@ -21,10 +38,33 @@ func _ready() -> void:
 	spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	spr.centered = false
 	add_child(spr)
+	tool_spr = Sprite2D.new()
+	tool_spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	tool_spr.centered = false
+	tool_spr.visible = false
+	add_child(tool_spr)
 	refresh_look()
 
 
 func refresh_look() -> void:
+	animated = Game.gender == "cewek" and ResourceLoader.exists(ANIM_DIR + "anim.json")
+	spr.rotation = 0.0
+	spr.position = Vector2.ZERO
+	spr.scale = Vector2.ONE
+	if animated:
+		anim = Art.load_json(ANIM_DIR + "anim.json")
+		alat = Art.load_json(ANIM_DIR + "alat.json")
+		spr.material = null
+		spr.hframes = 8
+		var k: Array = anim["kaki"] as Array
+		spr.offset = Vector2(-float(k[0]), -float(k[1]))
+		var s: float = float(anim["skala"])
+		spr.scale = Vector2(s, s)
+		cur_anim = ""
+		_set_anim("diam")
+		return
+	spr.hframes = 1
+	spr.frame = 0
 	spr.texture = Game.char_texture("kecil")
 	spr.material = Game.char_material("kecil")
 	var sz: Vector2 = spr.texture.get_size()
@@ -37,7 +77,25 @@ func face(v: Vector2) -> void:
 		spr.flip_h = facing_left
 
 
+func _tex(name: String) -> Texture2D:
+	if not tex_cache.has(name):
+		tex_cache[name] = load(ANIM_DIR + name + ".png")
+	return tex_cache[name] as Texture2D
+
+
+func _set_anim(name: String) -> void:
+	if name == cur_anim:
+		return
+	cur_anim = name
+	anim_t = 0.0
+	spr.texture = _tex("pancing" if name == "siram" else name)
+	spr.frame = 0
+
+
 func _process(delta: float) -> void:
+	if animated:
+		_process_anim(delta)
+		return
 	if walking:
 		t += delta
 		var ph: float = t * 11.0
@@ -53,16 +111,86 @@ func _process(delta: float) -> void:
 		spr.scale = Vector2(1.0, 1.0 + idle * 0.012)
 
 
-## Alat muncul di tangan lalu diayun/ditusuk/dimiringkan sesuai jenisnya, kemudian hilang.
+func _process_anim(delta: float) -> void:
+	if acting != "" and walking:
+		_end_act()   # berjalan membatalkan aksi
+	var want: String = acting if acting != "" else ("jalan" if walking else "diam")
+	_set_anim(want)
+	anim_t += delta
+	var fps: float = float((anim["fps"] as Dictionary).get(cur_anim, 10))
+	var f: int = int(anim_t * fps)
+	if acting != "":
+		if f >= 8:
+			_end_act()
+			_set_anim("diam")
+			f = 0
+	else:
+		f = f % 8
+	spr.frame = f if cur_anim != "siram" else 1
+	_place_tool(f)
+
+
+func _end_act() -> void:
+	acting = ""
+	act_tool = ""
+	tool_spr.visible = false
+
+
+## Alat kita di tangan pada bingkai f: titik genggam alat -> titik genggam pose, diputar ke arah pose.
+func _place_tool(f: int) -> void:
+	if acting == "" or act_tool == "" or not alat.has(act_tool):
+		tool_spr.visible = false
+		return
+	var poses: Array = (anim["pose"] as Dictionary).get(cur_anim, []) as Array
+	if f >= poses.size() or poses[f] == null:
+		tool_spr.visible = false
+		return
+	var p: Dictionary = poses[f] as Dictionary
+	var a: Dictionary = alat[act_tool] as Dictionary
+	var g: Vector2 = _v(a["g"])
+	var h: Vector2 = _v(a["h"])
+	var pg: Vector2 = _v(p["g"])
+	var pt: Vector2 = _v(p["t"])
+	var k: Vector2 = _v(anim["kaki"])
+	var sk: float = float(anim["skala"])
+	var length: float = float(p["l"]) if float(p["l"]) > 0.0 else float(a["l"])
+	var s: float = length * sk / maxf(g.distance_to(h), 1.0)
+	var rot: float = (pt - pg).angle() - (h - g).angle()
+	var dir: float = -1.0 if facing_left else 1.0
+	tool_spr.centered = false
+	tool_spr.flip_h = bool(a.get("cermin", false))
+	tool_spr.offset = -g
+	tool_spr.position = Vector2((pg.x - k.x) * sk * dir, (pg.y - k.y) * sk)
+	tool_spr.rotation = rot * dir
+	tool_spr.scale = Vector2(s * dir, s)
+	tool_spr.modulate.a = 1.0
+	tool_spr.visible = true
+
+
+func _v(x: Variant) -> Vector2:
+	var arr: Array = x as Array
+	return Vector2(float(arr[0]), float(arr[1]))
+
+
+## Alat dipakai. Female: animasi aksi + alat kita di tangan. Male: alat diayun sederhana.
 func use_tool(tex: Texture2D, kind: String) -> void:
-	if tool_spr == null:
-		tool_spr = Sprite2D.new()
-		tool_spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-		add_child(tool_spr)
+	if animated:
+		acting = str(TOOL_ANIM.get(kind, "ayun"))
+		act_tool = kind if kind != "kapak" else ""
+		if tex != null:
+			tool_spr.texture = tex
+		cur_anim = ""
+		_set_anim(acting)
+		return
+	if tex == null:
+		return
 	if tool_tw != null and tool_tw.is_valid():
 		tool_tw.kill()
 	var dir: float = -1.0 if facing_left else 1.0
 	tool_spr.texture = tex
+	tool_spr.centered = true
+	tool_spr.offset = Vector2.ZERO
+	tool_spr.flip_h = false
 	tool_spr.scale = Vector2(dir * 30.0 / 256.0, 30.0 / 256.0)
 	tool_spr.position = Vector2(dir * 9.0, -16.0)
 	tool_spr.modulate.a = 1.0
@@ -80,13 +208,9 @@ func use_tool(tex: Texture2D, kind: String) -> void:
 			tool_tw.tween_property(tool_spr, "position:x", dir * 9.0, 0.16)
 			tool_tw.tween_interval(0.1)
 		_:
-			# ayunan dari atas belakang ke bawah depan (cangkul, sekop, arit, sabit, jaring)
 			tool_spr.rotation = -dir * 1.1
 			tool_tw.tween_property(tool_spr, "rotation", dir * 0.9, 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 			tool_tw.parallel().tween_property(tool_spr, "position:y", -8.0, 0.16)
 			tool_tw.tween_interval(0.15)
 	tool_tw.tween_property(tool_spr, "modulate:a", 0.0, 0.12)
 	tool_tw.tween_callback(func() -> void: tool_spr.visible = false)
-	var hop: Tween = create_tween()
-	hop.tween_property(spr, "scale", Vector2(1.04, 0.96), 0.08)
-	hop.tween_property(spr, "scale", Vector2.ONE, 0.12)

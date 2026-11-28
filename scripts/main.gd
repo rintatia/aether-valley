@@ -141,9 +141,20 @@ func _screenshots() -> void:
 	await get_tree().create_timer(0.8).timeout
 	Game.selected_slot = 0
 	(w.get("hud") as CanvasLayer).call("_refresh_items")
+	w.call("_set_zoom", 4.0)
 	w.call("use_tool", "cangkul", pc + Vector2(72, 52))
-	await get_tree().create_timer(0.1).timeout
+	await get_tree().create_timer(0.32).timeout
 	await _shot(pre + "13_alat.png")
+	w.call("use_tool", "pancing", pc + Vector2(60, 0))
+	await get_tree().create_timer(0.62).timeout
+	await _shot(pre + "15_pancing.png")
+	w.call("use_tool", "jaring", pc + Vector2(60, 0))
+	await get_tree().create_timer(0.2).timeout
+	await _shot(pre + "16_jaring.png")
+	w.call("use_tool", "penyiram", pc + Vector2(40, 20))
+	await get_tree().create_timer(0.45).timeout
+	await _shot(pre + "17_siram.png")
+	await get_tree().create_timer(0.8).timeout
 	w.call("_set_zoom", 2.0)
 	var hud: CanvasLayer = w.get("hud") as CanvasLayer
 	hud.call("open_popup", "tas")
@@ -396,6 +407,22 @@ func _selftest() -> void:
 	world.use_tool("tombak", world.player.position + Vector2(20, 0))
 	world.use_tool("pancing", world.player.position + Vector2(20, 0))
 	_check(true, "Spear & Fishing Rod bisa dipakai")
+	# --- animasi female + alat kita di tangan ---
+	Game.gender = "cewek"
+	var pl: Node2D = world.player
+	pl.call("refresh_look")
+	_check(bool(pl.get("animated")) and (pl.get("spr") as Sprite2D).hframes == 8, "female memakai animasi bingkai (8 frame)")
+	pl.call("use_tool", Game.item_icon("cangkul"), "cangkul")
+	pl.call("_process_anim", 0.30)
+	_check(str(pl.get("cur_anim")) == "cangkul" and (pl.get("tool_spr") as Sprite2D).visible, "Hoe: animasi cangkul + Hoe kita di tangan")
+	pl.call("_process_anim", 1.0)
+	_check(str(pl.get("acting")) == "" and str(pl.get("cur_anim")) == "diam", "selesai aksi -> kembali diam")
+	pl.set("walking", true)
+	pl.call("_process_anim", 0.05)
+	_check(str(pl.get("cur_anim")) == "jalan", "berjalan -> animasi jalan")
+	pl.set("walking", false)
+	Game.gender = "cowok"
+	pl.call("refresh_look")
 	# --- pengaturan ---
 	var sp0: float = Game.speed_mult()
 	Game.speed_name = "Fast"
