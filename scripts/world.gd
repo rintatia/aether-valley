@@ -41,7 +41,9 @@ var chop_atlas: Texture2D
 var chop_regions: Dictionary = {}
 var cut_tex: Dictionary = {}   # jenis -> {stump, top, cut}
 var sway_items: Array[Dictionary] = []   # tanaman yang bergoyang saat diterobos
-var sway_grid: Dictionary = {}           # sel -> daftar indeks sway_items
+var sway_grid: Dictionary = {}
+var rocks: Array[Dictionary] = []          # batu yang bisa dipecah dengan Pickaxe
+const ROCK_CODES: Array[String] = ["FL42", "FL43", "FL44"]           # sel -> daftar indeks sway_items
 var kayu: int = 0
 var lbl_kayu: Label
 var pinch_zoom0: float = 2.0
@@ -117,6 +119,7 @@ func load_map(id: String, from_gate: String) -> void:
 	chop_trees.clear()
 	sway_items.clear()
 	sway_grid.clear()
+	rocks.clear()
 	astar = AStarGrid2D.new()
 	astar.region = Rect2i(0, 0, mw, mh)
 	astar.cell_size = Vector2(T, T)
@@ -239,8 +242,12 @@ func _place_trees(id: String) -> void:
 		var code: String = str(t["obj"])
 		if bool(t.get("goyang", false)):
 			_register_sway(holder, float((regions[code] as Array)[2]) * float(t["skala"]), float((regions[code] as Array)[3]) * float(t["skala"]))
+		var cells: Array = []
 		if bool(blocks.get(code, true)) and not bool(t.get("goyang", false)) and not bool(t.get("lewat", false)):
-			_block_base(holder.position, float((regions[code] as Array)[2]) * float(t["skala"]), float(tapak.get(code, 0.4)))
+			cells = _block_base(holder.position, float((regions[code] as Array)[2]) * float(t["skala"]), float(tapak.get(code, 0.4)))
+		if ROCK_CODES.has(code):
+			rocks.append({"node": holder, "cells": cells, "hp": 3, "w": float((regions[code] as Array)[2]) * float(t["skala"]),
+				"h": float((regions[code] as Array)[3]) * float(t["skala"])})
 	# pohon tebang: 3 ayunan -> tumbang ke kiri & hilang -> tumbuh lagi di titik ACAK (1 hari = 5 menit)
 	chop_kinds.clear()
 	chop_atlas = atlas
@@ -416,14 +423,17 @@ func _set_tree_sprite(holder: Node2D, atlas: Texture2D, regions: Dictionary, cod
 
 
 ## tapak penghalang selebar dasar objek (batang pohon sempit, kayu/batu lebih lebar)
-func _block_base(pos: Vector2, width: float, frac: float) -> void:
+func _block_base(pos: Vector2, width: float, frac: float) -> Array:
 	var half: float = maxf(width * frac / 2.0, 4.0)
 	var c0: Vector2i = _cell(pos + Vector2(-half, -2))
 	var c1: Vector2i = _cell(pos + Vector2(half, -2))
+	var out: Array = []
 	for cx: int in range(c0.x, c1.x + 1):
 		var c: Vector2i = Vector2i(cx, c0.y)
-		if astar.region.has_point(c):
+		if astar.region.has_point(c) and not astar.is_point_solid(c):
 			astar.set_point_solid(c, true)
+			out.append(c)
+	return out
 
 
 # ---------------- tanaman bergoyang ----------------
@@ -529,7 +539,7 @@ func chop_hit(i: int) -> void:
 	ct["hp"] = int(ct["hp"]) - 1
 	UIKit.sfx("tok", 1.0 if str(ct["state"]) == "berdiri" else 1.2)
 	player.call("face", (ct["node"] as Node2D).position - player.position)
-	player.call("use_tool", null, "kapak")
+	player.call("use_tool", Game.item_icon("kapak"), "kapak")
 	if str(ct["state"]) == "berdiri":
 		if int(ct["hp"]) > 0:
 			var tw: Tween = create_tween()
@@ -703,6 +713,9 @@ func _set_zoom(z: float) -> void:
 	# kamera jauh (< x1): beberapa piksel peta jadi satu piksel layar -> pakai mipmap agar tidak berkedip
 	ground.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS if zoom_now < 1.0 else CanvasItem.TEXTURE_FILTER_NEAREST
 	ysort.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	# karakter pixel art: tajam (NEAREST) di zoom >= x2 (1 piksel seni = 1 piksel layar atau lebih), halus bila lebih jauh
+	if player != null:
+		player.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if zoom_now >= 1.95 else CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 
 
 func _apply_zoom() -> void:
@@ -800,7 +813,9 @@ func tap_world(wp: Vector2) -> void:
 		if hit.has_point(c):
 			walk_to(b["door"] as Vector2i, {"type": "door", "b": b})
 			return
-	var ti: int = _tree_at(wp)
+	var ti: int = _tree_at(wp) if Game.held_tool() == "kapak" else -1
+	if ti < 0 and Game.held_tool() == "" and _tree_at(wp) >= 0:
+		show_toast("Hold the Axe to chop trees")
 	if ti >= 0:
 		var tc: Vector2i = chop_trees[ti]["cell"] as Vector2i
 		if _near_tree(chop_trees[ti]):
@@ -946,8 +961,12 @@ func _tool_target_ok(tool: String, wp: Vector2) -> bool:
 			return _can_till(c)
 		"penyiram", "sekop":
 			return Game.tilled_of(map_id).has(c)
-		"arit", "sabit":
-			return not _flora_near(wp, 26.0 if tool == "arit" else 48.0).is_empty()
+		"pisau", "arit":
+			return not _flora_near(wp, 26.0 if tool == "pisau" else 48.0).is_empty()
+		"beliung":
+			return _rock_at(wp) >= 0
+		"kapak":
+			return _tree_at(wp) >= 0
 		"jaring":
 			return _bug_at(wp, 30.0) >= 0
 	return false
@@ -965,7 +984,8 @@ func _can_till(c: Vector2i) -> bool:
 ## Pakai alat ke titik dunia wp: animasi di tangan, bunyi, lalu efeknya.
 func use_tool(tool: String, wp: Vector2) -> void:
 	player.call("face", wp - player.position)
-	player.call("use_tool", Game.item_icon(tool), tool)
+	if tool != "kapak":
+		player.call("use_tool", Game.item_icon(tool), tool)
 	var c: Vector2i = _cell(wp)
 	var td: Dictionary = Game.tilled_of(map_id)
 	match tool:
@@ -995,10 +1015,11 @@ func use_tool(tool: String, wp: Vector2) -> void:
 				soil.queue_redraw()
 			else:
 				show_toast("Water the tilled soil")
-		"arit", "sabit":
-			UIKit.sfx("ayun", 1.1 if tool == "arit" else 0.85)
-			var cut: Array[Dictionary] = _flora_near(wp, 26.0 if tool == "arit" else 48.0)
-			if tool == "arit" and cut.size() > 1:
+		"pisau", "arit":
+			# Knife: satu tanaman; Sickle: semua tanaman di sekitar sasaran
+			UIKit.sfx("ayun", 1.2 if tool == "pisau" else 0.9)
+			var cut: Array[Dictionary] = _flora_near(wp, 26.0 if tool == "pisau" else 48.0)
+			if tool == "pisau" and cut.size() > 1:
 				cut.resize(1)
 			for it: Dictionary in cut:
 				_cut_flora(it)
@@ -1012,10 +1033,88 @@ func use_tool(tool: String, wp: Vector2) -> void:
 		"pancing":
 			UIKit.sfx("ayun", 0.9)
 			show_toast("No water here - the Lake is coming soon")
-		"tombak":
+		"pedang":
 			UIKit.sfx("ayun", 1.2)
-			for it: Dictionary in _flora_near(wp, 30.0):
+			for it: Dictionary in _flora_near(wp, 34.0):
 				_rustle(it, signf(wp.x - player.position.x) if wp.x != player.position.x else 1.0, 1.0, 0.0)
+		"kapak":
+			var ti: int = _tree_at(wp)
+			if ti < 0:
+				ti = _nearest_tree(wp)
+			if ti >= 0:
+				chop_hit(ti)
+			else:
+				player.call("use_tool", Game.item_icon(tool), tool)
+				UIKit.sfx("ayun", 0.8)
+		"beliung":
+			var ri: int = _rock_at(wp)
+			if ri >= 0:
+				rock_hit(ri)
+			else:
+				UIKit.sfx("ayun", 0.8)
+				show_toast("Use the Pickaxe on rocks")
+
+
+## Pohon tebang terdekat dalam jangkauan (untuk Axe bila ketukan tidak tepat di pohon).
+func _nearest_tree(wp: Vector2) -> int:
+	var best: int = -1
+	var bd: float = REACH * T + 20.0
+	for i: int in range(chop_trees.size()):
+		var ct: Dictionary = chop_trees[i]
+		if str(ct.get("state", "")) == "hilang" or ct.get("node") == null:
+			continue
+		var d: float = (ct["node"] as Node2D).position.distance_to(wp)
+		if d < bd and _near_tree(ct):
+			bd = d
+			best = i
+	return best
+
+
+# ---------------- batu (Pickaxe) ----------------
+func _rock_at(wp: Vector2) -> int:
+	var best: int = -1
+	var bd: float = 1e9
+	for i: int in range(rocks.size()):
+		var r: Dictionary = rocks[i]
+		if r.get("node") == null:
+			continue
+		var p: Vector2 = (r["node"] as Node2D).position
+		var hit: Rect2 = Rect2(p.x - float(r["w"]) * 0.5 - 6.0, p.y - float(r["h"]) - 4.0, float(r["w"]) + 12.0, float(r["h"]) + 14.0)
+		var d: float = p.distance_to(wp)
+		if hit.has_point(wp) and d < bd:
+			bd = d
+			best = i
+	return best
+
+
+## Pickaxe: 3 pukulan -> batu pecah, jalan terbuka, dapat Stone.
+func rock_hit(i: int) -> void:
+	var r: Dictionary = rocks[i]
+	var node: Node2D = r.get("node") as Node2D
+	if node == null:
+		return
+	player.call("face", node.position - player.position)
+	player.call("use_tool", Game.item_icon("beliung"), "beliung")
+	UIKit.sfx("tok", 1.7)
+	_dust(node.position - Vector2(0, 8), Color("#B5B0A6"))
+	r["hp"] = int(r["hp"]) - 1
+	var x0: float = node.position.x
+	var sh: Tween = create_tween()
+	sh.tween_property(node, "position:x", x0 + 2.0, 0.04)
+	sh.tween_property(node, "position:x", x0 - 2.0, 0.05)
+	sh.tween_property(node, "position:x", x0, 0.04)
+	if int(r["hp"]) > 0:
+		return
+	r["node"] = null
+	for cv: Variant in r["cells"] as Array:
+		astar.set_point_solid(cv as Vector2i, false)
+	var got: int = 1 + randi() % 2
+	Game.add_item("batu", got)
+	show_toast("+%d Stone" % got)
+	var tw: Tween = create_tween().set_parallel(true)
+	tw.tween_property(node, "scale", Vector2(1.2, 0.3), 0.2)
+	tw.tween_property(node, "modulate:a", 0.0, 0.22)
+	tw.chain().tween_callback(node.queue_free)
 
 
 ## Semak/bunga/rumput yang bergoyang di dekat titik (terdekat dulu).

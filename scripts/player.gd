@@ -1,13 +1,14 @@
 extends Node2D
 ## Pemain v7. Posisi = titik kaki.
-## Female: animasi bingkai (jalan, diam, kapak, cangkul, ayun, pancing, siram) dari assets/karakter_v7/anim_cewek,
-## alat kita digambar di tangan per bingkai (pose di anim.json, titik genggam alat di alat.json).
+## Female: animasi bingkai (diam, jalan, ngantuk, cangkul, siram, panen, tebang, tambang, serang, pancing)
+## dari assets/karakter_v7/anim_cewek (pixel art 178 px, digambar 0.5x). Animasi dipakai apa adanya (dengan alat
+## bawaannya); alat kita TIDAK digambar selama animasi agar tidak campur aduk.
 ## Male: sprite tunggal dengan langkah memantul (animasi menyusul).
 
 const ANIM_DIR: String = "res://assets/karakter_v7/anim_cewek/"
 ## alat -> animasi yang dipakai
-const TOOL_ANIM: Dictionary = {"cangkul": "cangkul", "sekop": "cangkul", "arit": "cangkul", "sabit": "cangkul",
-	"jaring": "ayun", "tombak": "ayun", "pancing": "pancing", "penyiram": "siram", "kapak": "kapak"}
+const TOOL_ANIM: Dictionary = {"cangkul": "cangkul", "sekop": "cangkul", "penyiram": "siram", "arit": "panen",
+	"pisau": "panen", "kapak": "tebang", "beliung": "tambang", "pedang": "serang", "jaring": "serang", "pancing": "pancing"}
 
 var walking: bool = false
 var t: float = 0.0
@@ -37,16 +38,13 @@ func _ready() -> void:
 		shadow.draw_circle(Vector2.ZERO, 15.0, Color(0.10, 0.16, 0.06, 0.28)))
 	add_child(shadow)
 	spr = Sprite2D.new()
-	spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	spr.centered = false
 	add_child(spr)
 	tool_spr = Sprite2D.new()
-	tool_spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	tool_spr.centered = false
 	tool_spr.visible = false
 	add_child(tool_spr)
 	hand_spr = Sprite2D.new()
-	hand_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	hand_spr.centered = false
 	hand_spr.hframes = 8
 	hand_spr.visible = false
@@ -61,7 +59,6 @@ func refresh_look() -> void:
 	spr.scale = Vector2.ONE
 	if animated:
 		anim = Art.load_json(ANIM_DIR + "anim.json")
-		alat = Art.load_json(ANIM_DIR + "alat.json")
 		spr.material = null
 		spr.hframes = 8
 		var k: Array = anim["kaki"] as Array
@@ -98,7 +95,7 @@ func _set_anim(name: String) -> void:
 		return
 	cur_anim = name
 	anim_t = 0.0
-	spr.texture = _tex("pancing" if name == "siram" else name)
+	spr.texture = _tex(name)
 	spr.frame = 0
 
 
@@ -124,7 +121,8 @@ func _process(delta: float) -> void:
 func _process_anim(delta: float) -> void:
 	if acting != "" and walking:
 		_end_act()   # berjalan membatalkan aksi
-	var want: String = acting if acting != "" else ("jalan" if walking else "diam")
+	var sleepy: bool = Game.minute >= 22.0 * 60.0 or Game.minute < 5.0 * 60.0
+	var want: String = acting if acting != "" else ("jalan" if walking else ("ngantuk" if sleepy else "diam"))
 	_set_anim(want)
 	if not hold_anim:
 		anim_t += delta
@@ -137,7 +135,7 @@ func _process_anim(delta: float) -> void:
 			f = 0
 	else:
 		f = f % 8
-	spr.frame = f if cur_anim != "siram" else 1
+	spr.frame = f
 	_place_tool(f)
 
 
@@ -197,8 +195,8 @@ func _v(x: Variant) -> Vector2:
 ## Alat dipakai. Female: animasi aksi + alat kita di tangan. Male: alat diayun sederhana.
 func use_tool(tex: Texture2D, kind: String) -> void:
 	if animated:
-		acting = str(TOOL_ANIM.get(kind, "ayun"))
-		act_tool = kind if kind != "kapak" else ""
+		acting = str(TOOL_ANIM.get(kind, "serang"))
+		act_tool = ""   # alat kita tidak digambar; animasi sudah membawa alatnya sendiri
 		if tex != null:
 			tool_spr.texture = tex
 		cur_anim = ""

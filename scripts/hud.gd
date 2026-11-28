@@ -3,9 +3,9 @@ extends CanvasLayer
 ## popup tas (5x5, 10 halaman), peta, buku, setting. Semua tombol bisa ditekan.
 
 const STATUS_W: float = 430.0
-const BAR_W: float = 500.0
-const ICON_SET: float = 60.0
-const ICON_BIG: float = 72.0
+const BAR_W: float = 780.0     # shortcut 15 slot
+const ICON_SET: float = 70.0
+const ICON_BIG: float = 76.0
 
 var world: Node2D
 var root: Control
@@ -33,6 +33,7 @@ var bag_page: int = 0
 var bag_slots: Array[Dictionary] = []
 var bag_page_label: Label
 var bag_dots: Control
+var bag_title: Label             # nama + jumlah barang terpilih (pengganti tulisan "Bag")
 var last_minute: int = -1
 
 
@@ -67,8 +68,10 @@ func _layout() -> void:
 	var vs: Vector2 = root.get_viewport_rect().size
 	var m: Vector4 = UIKit.safe_margin(root)
 	status.position = Vector2(vs.x - m.z - STATUS_W, m.y)
-	btn_set.position = Vector2(m.x, m.y)
-	btn_book.position = Vector2(m.x, m.y + btn_set.size.y + 8.0)
+	# setting & buku: hampir mepet kiri (tetap di luar poni/lengkung layar), sedikit turun
+	var lx: float = maxf(14.0, m.x - 30.0)
+	btn_set.position = Vector2(lx, m.y + 18.0)
+	btn_book.position = Vector2(lx, btn_set.position.y + btn_set.size.y + 12.0)
 	var total: float = btn_map.size.x + 8.0 + BAR_W + 8.0 + btn_bag.size.x
 	var x0: float = (vs.x - total) / 2.0
 	var bar_h: float = bar.size.y
@@ -107,7 +110,7 @@ func _build_status() -> void:
 	badge = TextureRect.new()
 	badge.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	badge.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	badge.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	badge.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UIKit.place(badge, sz, L["lencana"] as Array)
 	status.add_child(badge)
@@ -159,12 +162,9 @@ func _build_bottom() -> void:
 	root.add_child(bar)
 	bar.size = bar.custom_minimum_size
 	var L: Dictionary = UIKit.layout["shortcut"] as Dictionary
-	var sy: Array = L["slot_y"] as Array
 	var i: int = 0
-	for sxv: Variant in L["slot_x"] as Array:
-		var sx: Array = sxv as Array
-		var slot: Dictionary = _make_slot(bar, bar.size, [sx[0], sy[0], sx[1], sy[1]], i)
-		slot_nodes.append(slot)
+	for rv: Variant in L["slot"] as Array:
+		slot_nodes.append(_make_slot(bar, bar.size, rv as Array, i))
 		i += 1
 	btn_map = UIKit.icon_button("res://assets/ui/ikon_peta.png", ICON_BIG)
 	btn_map.pressed.connect(func() -> void: open_popup("peta"))
@@ -183,12 +183,7 @@ func _make_slot(parent: Control, psize: Vector2, r: Array, index: int) -> Dictio
 	UIKit.place(b, psize, r)
 	parent.add_child(b)
 	var hl: Panel = Panel.new()
-	var sb: StyleBoxFlat = StyleBoxFlat.new()
-	sb.bg_color = Color(1, 0.93, 0.6, 0.18)
-	sb.border_color = Color("#FFD65A")
-	sb.set_border_width_all(3)
-	sb.set_corner_radius_all(6)
-	hl.add_theme_stylebox_override("panel", sb)
+	hl.add_theme_stylebox_override("panel", UIKit.box(Color(1, 0.93, 0.6, 0.22), Color("#FFD65A"), 2))
 	hl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	hl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hl.visible = false
@@ -196,15 +191,15 @@ func _make_slot(parent: Control, psize: Vector2, r: Array, index: int) -> Dictio
 	var ic: TextureRect = TextureRect.new()
 	ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	ic.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	ic.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	ic.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	ic.offset_left = 5
-	ic.offset_top = 5
-	ic.offset_right = -5
-	ic.offset_bottom = -5
+	ic.offset_left = 4
+	ic.offset_top = 4
+	ic.offset_right = -4
+	ic.offset_bottom = -4
 	ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(ic)
-	var n: Label = UIKit.pixel_label("", 13, UIKit.CREAM, 4, Color("#43251D"))
+	var n: Label = UIKit.pixel_label("", 16, UIKit.CREAM, 4, Color("#43251D"))
 	n.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	n.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	n.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
@@ -219,17 +214,19 @@ func _make_slot(parent: Control, psize: Vector2, r: Array, index: int) -> Dictio
 func _slot_pressed(slot: Dictionary) -> void:
 	var idx: int = int(slot["index"])
 	UIKit.sfx("klik")
-	if Game.selected_slot == idx:
-		Game.selected_slot = -1
-		_refresh_items()
-		show_toast("Hands free")
-		return
-	Game.selected_slot = idx
+	# memilih barang tidak memunculkan nama di layar; nama + jumlah hanya tampil di judul Bag
+	Game.selected_slot = -1 if Game.selected_slot == idx else idx
 	_refresh_items()
-	var s: Dictionary = Game.bag[idx] as Dictionary
-	if not s.is_empty():
-		var nm: String = str((Game.ITEMS[str(s["id"])] as Dictionary)["nama"])
-		show_toast(nm if Game.is_tool(str(s["id"])) else "%s x%d" % [nm, int(s["n"])])
+
+
+## Judul popup Bag = nama barang terpilih (+ jumlah). Kosong bila belum ada yang dipilih.
+func _bag_title_text() -> String:
+	var idx: int = Game.selected_slot
+	if idx < 0 or idx >= Game.bag.size() or (Game.bag[idx] as Dictionary).is_empty():
+		return ""
+	var it: Dictionary = Game.bag[idx] as Dictionary
+	var nm: String = str((Game.ITEMS[str(it["id"])] as Dictionary)["nama"])
+	return nm if int(it["n"]) <= 1 else "%s  x%d" % [nm, int(it["n"])]
 
 
 func _fill_slot(slot: Dictionary) -> void:
@@ -251,6 +248,8 @@ func _refresh_items() -> void:
 		_fill_slot(s)
 	for s: Dictionary in bag_slots:
 		_fill_slot(s)
+	if bag_title != null and is_instance_valid(bag_title):
+		bag_title.text = _bag_title_text()
 
 
 # ---------------- popup ----------------
@@ -319,16 +318,15 @@ func _nav_button(txt: String, d: float) -> Button:
 	b.add_theme_stylebox_override("hover", UIKit.box(Color("#FFD65A"), Color("#7F442C"), 4, 10))
 	b.add_theme_stylebox_override("pressed", UIKit.box(Color("#DE9A4C"), Color("#7F442C"), 4, 10))
 	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	for st: String in ["normal", "hover", "pressed"]:
-		(b.get_theme_stylebox(st) as StyleBoxFlat).set_content_margin_all(0)
 	b.size = Vector2(d * 1.2, d)
 	b.button_down.connect(func() -> void: UIKit.sfx("klik"))
 	return b
 
 
 func _popup_bag() -> void:
-	var fr: Array = _frame("bingkai_11", 640.0, "Bag")
+	var fr: Array = _frame("bingkai_11", 640.0, "")
 	var inner: Control = fr[1] as Control
+	bag_title = inner.get_child(0) as Label
 	var top: float = 60.0
 	var nav_h: float = 40.0
 	var dots_h: float = 16.0
@@ -338,7 +336,7 @@ func _popup_bag() -> void:
 	var cw: float = (inner.size.x - side * 2.0 - gap * 4.0) / 5.0
 	var chh: float = (inner.size.y - top - nav_h - dots_h - 22.0 - gap * 4.0) / 5.0
 	var gx: float = side
-	var slot_bg: StyleBoxFlat = UIKit.box(Game.theme_color().darkened(0.09), Color("#B58A2A"), 3, 8)
+	var slot_bg: StyleBox = UIKit.box(Game.theme_color().darkened(0.09), Color("#B58A2A"), 3, 8)
 	for ri: int in range(5):
 		for ci: int in range(5):
 			var x: float = gx + ci * (cw + gap)
@@ -382,34 +380,12 @@ func _popup_bag() -> void:
 	rb.pressed.connect(func() -> void: _bag_turn(1))
 	inner.add_child(rb)
 	# tombol hapus (tempat sampah) di kiri atas = cermin tombol X di kanan atas
-	var tb: Button = _trash_button(50.0)
-	tb.position = Vector2(8.0, 8.0)
+	# tombol hapus (pixel art) di kiri atas, cermin tombol X; agak ke dalam agar tidak menutupi hiasan bingkai
+	var tb: TextureButton = UIKit.round_button("tombol_sampah", 46.0)
+	tb.position = Vector2(14.0, 12.0)
 	tb.pressed.connect(_bag_ask_delete)
 	inner.add_child(tb)
 	_bag_show()
-
-
-func _trash_button(d: float) -> Button:
-	var b: Button = Button.new()
-	b.add_theme_stylebox_override("normal", UIKit.box(Color("#B58A2A"), UIKit.BROWN, 4, int(d / 2.0)))
-	b.add_theme_stylebox_override("hover", UIKit.box(Color("#C99B3A"), UIKit.BROWN, 4, int(d / 2.0)))
-	b.add_theme_stylebox_override("pressed", UIKit.box(Color("#8F6A1F"), UIKit.BROWN, 4, int(d / 2.0)))
-	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	b.size = Vector2(d, d)
-	b.button_down.connect(func() -> void: UIKit.sfx("klik"))
-	var ic: Control = Control.new()
-	ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ic.size = b.size
-	ic.draw.connect(func() -> void:
-		var c: Color = UIKit.CREAM
-		var u: float = d / 50.0
-		ic.draw_rect(Rect2(15 * u, 13 * u, 20 * u, 4 * u), c)          # tutup
-		ic.draw_rect(Rect2(21 * u, 9 * u, 8 * u, 4 * u), c)            # pegangan
-		ic.draw_rect(Rect2(17 * u, 19 * u, 16 * u, 20 * u), c)         # badan
-		for k: int in range(3):
-			ic.draw_rect(Rect2((20.0 + k * 4.5) * u, 22 * u, 2 * u, 14 * u), Color("#B58A2A")))
-	b.add_child(ic)
-	return b
 
 
 ## Hapus barang di slot terpilih: minta konfirmasi dulu.

@@ -63,7 +63,7 @@ func _ready() -> void:
 	preview.texture = Game.char_texture("besar")
 	preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	preview.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	preview.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	mat = Game.char_material("besar")
 	preview.material = mat
 	preview.position = Vector2(16, 16)
@@ -128,7 +128,7 @@ func _ready() -> void:
 	var spacer: Control = Control.new()
 	spacer.custom_minimum_size = Vector2(0, 6)
 	col.add_child(spacer)
-	var ok: TextureButton = UIKit.icon_button("res://assets/ui/tombol_confirm.png", 250.0)
+	var ok: TextureButton = UIKit.pill_button("Confirm", 250.0)
 	ok.pressed.connect(_finish)
 	var wrap: CenterContainer = CenterContainer.new()
 	wrap.custom_minimum_size = Vector2(col.size.x, ok.size.y)

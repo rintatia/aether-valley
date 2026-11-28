@@ -1,17 +1,24 @@
 extends Node
-## Autoload "UIKit": tema, font pixel (Tiny5, OFL — angka jelas di ukuran kecil), tombol bergambar, tata letak aset UI.
+## Autoload "UIKit": tema, font pixel (Jersey 15, OFL — tebal & jelas), kotak/tombol bergaya piksel, tata letak aset UI.
+## Semua gambar UI = pixel art asli (grid kecil) yang ditampilkan NEAREST -> tajam.
 
 var font: FontFile
 var layout: Dictionary = {}
 var sfx_players: Array[AudioStreamPlayer] = []
 var sfx_cache: Dictionary = {}
 var sfx_next: int = 0
+var box_cache: Dictionary = {}
+const PX: int = 3   # satu "piksel" kotak UI = 3 piksel layar
 const BROWN: Color = Color("#43251D")
 const CREAM: Color = Color("#F8F1EA")
 
 
 func _ready() -> void:
-	font = load("res://assets/font/Tiny5.ttf") as FontFile
+	font = load("res://assets/font/Jersey15.ttf") as FontFile
+	# font pixel: tanpa penghalusan -> tepi huruf tegas & mudah dibaca
+	font.antialiasing = TextServer.FONT_ANTIALIASING_NONE
+	font.hinting = TextServer.HINTING_NONE
+	font.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_DISABLED
 	var j: JSON = load("res://assets/ui/tata_letak.json") as JSON
 	if j != null:
 		layout = j.data as Dictionary
@@ -68,7 +75,7 @@ func image(path: String, w: float, h: float = -1.0) -> TextureRect:
 	tr.texture = load(path) as Texture2D
 	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	tr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	tr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	if h < 0.0:
 		var ts: Vector2 = tr.texture.get_size()
 		h = w * ts.y / ts.x
@@ -105,25 +112,25 @@ func frame_title(inner: Control, text: String, fs: int = 32) -> Label:
 	return t
 
 
-## Tombol tutup bulat (X) di pojok kanan atas area isi bingkai.
-func close_button(panel: Control, inner: Control, d: float = 50.0) -> Button:
-	var b: Button = Button.new()
-	b.text = "X"
-	b.add_theme_font_override("font", font)
-	b.add_theme_font_size_override("font_size", int(d * 0.5))
-	for c: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
-		b.add_theme_color_override(c, CREAM)
-	b.add_theme_stylebox_override("normal", box(Color("#D8574F"), BROWN, 4, int(d / 2.0)))
-	b.add_theme_stylebox_override("hover", box(Color("#E8706A"), BROWN, 4, int(d / 2.0)))
-	b.add_theme_stylebox_override("pressed", box(Color("#B4433C"), BROWN, 4, int(d / 2.0)))
-	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	for st: String in ["normal", "hover", "pressed"]:
-		(b.get_theme_stylebox(st) as StyleBoxFlat).set_content_margin_all(0)
+## Tombol tutup (X) pixel art di pojok kanan atas area isi bingkai (agak ke dalam, tidak menutupi hiasan bingkai).
+func close_button(panel: Control, inner: Control, d: float = 46.0) -> TextureButton:
+	var b: TextureButton = round_button("tombol_x", d)
+	b.position = Vector2(inner.position.x + inner.size.x - d - 14.0, inner.position.y + 12.0)
+	panel.add_child(b)
+	return b
+
+
+## Tombol bulat pixel art (gambar <nama>.png & <nama>_tekan.png).
+func round_button(name: String, d: float) -> TextureButton:
+	var b: TextureButton = TextureButton.new()
+	b.texture_normal = load("res://assets/ui/%s.png" % name) as Texture2D
+	b.texture_pressed = load("res://assets/ui/%s_tekan.png" % name) as Texture2D
+	b.ignore_texture_size = true
+	b.stretch_mode = TextureButton.STRETCH_SCALE
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	b.size = Vector2(d, d)
 	b.custom_minimum_size = b.size
-	b.position = Vector2(inner.position.x + inner.size.x - d - 8.0, inner.position.y + 8.0)
 	b.button_down.connect(func() -> void: sfx("klik"))
-	panel.add_child(b)
 	return b
 
 
@@ -133,7 +140,7 @@ func icon_button(path: String, w: float) -> TextureButton:
 	b.texture_normal = load(path) as Texture2D
 	b.ignore_texture_size = true
 	b.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	b.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var ts: Vector2 = b.texture_normal.get_size()
 	b.size = Vector2(w, w * ts.y / ts.x)
 	b.custom_minimum_size = b.size
@@ -175,14 +182,35 @@ func place(c: Control, parent_size: Vector2, r: Array) -> void:
 	c.size = Vector2((float(r[2]) - float(r[0])) * parent_size.x, (float(r[3]) - float(r[1])) * parent_size.y)
 
 
-func box(bg: Color, border: Color, bw: int = 2, r: int = 8) -> StyleBoxFlat:
-	var b: StyleBoxFlat = StyleBoxFlat.new()
-	b.bg_color = bg
-	b.border_color = border
-	b.set_border_width_all(bw)
-	b.set_corner_radius_all(r)
-	b.set_content_margin_all(10)
-	return b
+## Kotak/tombol bergaya piksel: garis tepi 1 piksel, sudut terpotong, sorot atas-kiri & bayang bawah-kanan.
+## (r diabaikan; tetap ada agar pemanggil lama cocok). Dibuat sekali per warna lalu disimpan.
+func box(bg: Color, border: Color, bw: int = 2, r: int = 8) -> StyleBox:
+	var key: String = "%s|%s" % [bg.to_html(), border.to_html()]
+	if box_cache.has(key):
+		return box_cache[key] as StyleBox
+	var n: int = 8
+	var img: Image = Image.create(n * PX, n * PX, false, Image.FORMAT_RGBA8)
+	for y: int in range(n):
+		for x: int in range(n):
+			var c: Color = bg
+			var edge: bool = x == 0 or y == 0 or x == n - 1 or y == n - 1
+			if (x == 0 or x == n - 1) and (y == 0 or y == n - 1):
+				c = Color(0, 0, 0, 0)
+			elif edge:
+				c = border
+			elif x == 1 and y == 1 or x == n - 2 and y == n - 2 or x == 1 and y == n - 2 or x == n - 2 and y == 1:
+				c = border if bw > 2 else bg
+			elif y == 1 or x == 1:
+				c = Color(bg.lightened(0.22), bg.a)
+			elif y == n - 2 or x == n - 2:
+				c = Color(bg.darkened(0.14), bg.a)
+			img.fill_rect(Rect2i(x * PX, y * PX, PX, PX), c)
+	var sb: StyleBoxTexture = StyleBoxTexture.new()
+	sb.texture = ImageTexture.create_from_image(img)
+	sb.set_texture_margin_all(3 * PX)
+	sb.set_content_margin_all(10)
+	box_cache[key] = sb
+	return sb
 
 
 func theme() -> Theme:

@@ -145,7 +145,8 @@ func _screenshots() -> void:
 	pl.set("hold_anim", true)
 	for sh: Array in [["cangkul", Vector2(72, 52), 6.0 / 14.0, "13_alat"], ["pancing", Vector2(60, 0), 6.0 / 10.0, "15_pancing"],
 			["jaring", Vector2(60, 0), 2.0 / 14.0, "16_jaring"], ["penyiram", Vector2(40, 20), 4.0 / 8.0, "17_siram"],
-			["sabit", Vector2(50, 30), 7.0 / 14.0, "18_sabit"], ["tombak", Vector2(60, 0), 5.0 / 14.0, "19_tombak"]]:
+			["arit", Vector2(50, 30), 4.0 / 14.0, "18_arit"], ["pedang", Vector2(60, 0), 4.0 / 14.0, "19_pedang"],
+			["kapak", Vector2(60, 0), 4.0 / 14.0, "20_kapak"], ["beliung", Vector2(60, 0), 4.0 / 14.0, "21_beliung"]]:
 		w.call("use_tool", str(sh[0]), pc + (sh[1] as Vector2))
 		pl.set("anim_t", float(sh[2]) + 0.01)
 		await _shot(pre + str(sh[3]) + ".png")
@@ -224,7 +225,7 @@ func _selftest() -> void:
 		var n: int = int(Art.info(k).get("frames", 1))
 		_check(tx != null and tx.get_width() == sz.x * n and tx.get_height() == sz.y, "tekstur %s %dx%d%s" % [k, sz.x * n, sz.y, "" if Art.has_file(k) else " (placeholder)"])
 	Game.new_game()
-	_check(Game.held_tool() == "cangkul" and Game.count("tombak") == 1 and Game.count("penyiram") == 1, "permainan baru: 8 alat di tas")
+	_check(Game.held_tool() == "cangkul" and Game.count("kapak") == 1 and Game.count("beliung") == 1 and Game.count("pancing") == 1, "permainan baru: 10 alat di tas")
 	world = (load("res://scripts/world.gd") as GDScript).new()
 	add_child(world)
 	await get_tree().process_frame
@@ -387,12 +388,12 @@ func _selftest() -> void:
 	_check(not td.has(cc), "Trowel: tanah olahan rata lagi")
 	world.load_map("hutan", "ladang")
 	var fl: Dictionary = world.sway_items[5]
-	world.use_tool("arit", (fl["node"] as Node2D).position)
-	_check(bool(fl.get("dead", false)), "Sickle: semak terpotong")
+	world.use_tool("pisau", (fl["node"] as Node2D).position)
+	_check(bool(fl.get("dead", false)), "Knife: satu semak terpotong")
 	var fl2: Dictionary = world.sway_items[40]
 	var near0: int = world._flora_near((fl2["node"] as Node2D).position, 48.0).size()
-	world.use_tool("sabit", (fl2["node"] as Node2D).position)
-	_check(near0 > 0 and world._flora_near((fl2["node"] as Node2D).position, 48.0).is_empty(), "Scythe: %d tanaman sekitar terpotong" % near0)
+	world.use_tool("arit", (fl2["node"] as Node2D).position)
+	_check(near0 > 0 and world._flora_near((fl2["node"] as Node2D).position, 48.0).is_empty(), "Sickle: %d tanaman sekitar terpotong" % near0)
 	_check(world.bug_list.size() == 12, "kupu-kupu: %d" % world.bug_list.size())
 	Game.raining = false
 	Game.minute = 9.0 * 60.0
@@ -401,9 +402,31 @@ func _selftest() -> void:
 	var k1: int = Game.count("kupu")
 	world.use_tool("jaring", bug.position)
 	_check(Game.count("kupu") == k1 + 1, "Bug Net: kupu-kupu tertangkap")
-	world.use_tool("tombak", world.player.position + Vector2(20, 0))
+	world.use_tool("pedang", world.player.position + Vector2(20, 0))
 	world.use_tool("pancing", world.player.position + Vector2(20, 0))
-	_check(true, "Spear & Fishing Rod bisa dipakai")
+	_check(true, "Sword & Fishing Rod bisa dipakai")
+	# Axe menebang pohon terdekat
+	var ct2: Dictionary = {}
+	var ti2: int = -1
+	for i: int in range(world.chop_trees.size()):
+		if str(world.chop_trees[i]["state"]) == "berdiri":
+			ti2 = i
+			break
+	ct2 = world.chop_trees[ti2]
+	world.player.position = (ct2["node"] as Node2D).position + Vector2(20, 4)
+	var hp0: int = int(ct2["hp"])
+	world.use_tool("kapak", (ct2["node"] as Node2D).position - Vector2(0, 20))
+	_check(int(ct2["hp"]) == hp0 - 1, "Axe: mengayun ke pohon (hp %d -> %d)" % [hp0, int(ct2["hp"])])
+	# Pickaxe memecah batu (ladang punya batu di sabuk tepi)
+	world.load_map("ladang", "hutan")
+	_check(world.rocks.size() > 0, "batu bisa dipecah: %d" % world.rocks.size())
+	var rk: Dictionary = world.rocks[0]
+	var rp: Vector2 = (rk["node"] as Node2D).position
+	var cells_r: Array = rk["cells"] as Array
+	var s0: int = Game.count("batu")
+	for i: int in range(3):
+		world.use_tool("beliung", rp - Vector2(0, 6))
+	_check(rk.get("node") == null and Game.count("batu") > s0 and (cells_r.is_empty() or not world.astar.is_point_solid(cells_r[0] as Vector2i)), "Pickaxe: batu pecah, +Stone, jalan terbuka")
 	# --- animasi female + alat kita di tangan ---
 	Game.gender = "cewek"
 	var pl: Node2D = world.player
@@ -411,9 +434,14 @@ func _selftest() -> void:
 	_check(bool(pl.get("animated")) and (pl.get("spr") as Sprite2D).hframes == 8, "female memakai animasi bingkai (8 frame)")
 	pl.call("use_tool", Game.item_icon("cangkul"), "cangkul")
 	pl.call("_process_anim", 0.30)
-	_check(str(pl.get("cur_anim")) == "cangkul" and (pl.get("tool_spr") as Sprite2D).visible, "Hoe: animasi cangkul + Hoe kita di tangan")
+	_check(str(pl.get("cur_anim")) == "cangkul" and not (pl.get("tool_spr") as Sprite2D).visible, "Hoe: animasi cangkul apa adanya, alat kita tidak digambar")
+	for kv: Array in [["kapak", "tebang"], ["beliung", "tambang"], ["penyiram", "siram"], ["arit", "panen"], ["pedang", "serang"], ["pancing", "pancing"]]:
+		pl.call("use_tool", Game.item_icon(str(kv[0])), str(kv[0]))
+		pl.call("_process_anim", 0.01)
+		_check(str(pl.get("cur_anim")) == str(kv[1]), "%s -> animasi %s" % [kv[0], kv[1]])
+	pl.call("_process_anim", 2.0)
 	pl.call("_process_anim", 1.0)
-	_check(str(pl.get("acting")) == "" and str(pl.get("cur_anim")) == "diam", "selesai aksi -> kembali diam")
+	_check(str(pl.get("acting")) == "" and ["diam", "ngantuk"].has(str(pl.get("cur_anim"))), "selesai aksi -> kembali diam")
 	pl.set("walking", true)
 	pl.call("_process_anim", 0.05)
 	_check(str(pl.get("cur_anim")) == "jalan", "berjalan -> animasi jalan")

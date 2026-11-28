@@ -11,16 +11,19 @@ const BAG_PER_PAGE: int = 25
 const ITEMS: Dictionary = {
 	"kayu": {"nama": "Wood", "ikon": "res://assets/ui/item_kayu.png", "tumpuk": 999},
 	"kupu": {"nama": "Butterfly", "ikon": "res://assets/ui/item_kupu.png", "tumpuk": 99},
+	"batu": {"nama": "Stone", "ikon": "res://assets/ui/item_batu.png", "tumpuk": 999},
 	"cangkul": {"nama": "Hoe", "ikon": "res://assets/ui/alat_cangkul.png", "tumpuk": 1, "alat": true},
 	"penyiram": {"nama": "Watering Can", "ikon": "res://assets/ui/alat_penyiram.png", "tumpuk": 1, "alat": true},
 	"sekop": {"nama": "Trowel", "ikon": "res://assets/ui/alat_sekop.png", "tumpuk": 1, "alat": true},
 	"arit": {"nama": "Sickle", "ikon": "res://assets/ui/alat_arit.png", "tumpuk": 1, "alat": true},
-	"sabit": {"nama": "Scythe", "ikon": "res://assets/ui/alat_sabit.png", "tumpuk": 1, "alat": true},
+	"pisau": {"nama": "Knife", "ikon": "res://assets/ui/alat_pisau.png", "tumpuk": 1, "alat": true},
+	"kapak": {"nama": "Axe", "ikon": "res://assets/ui/alat_kapak.png", "tumpuk": 1, "alat": true},
+	"beliung": {"nama": "Pickaxe", "ikon": "res://assets/ui/alat_beliung.png", "tumpuk": 1, "alat": true},
+	"pedang": {"nama": "Sword", "ikon": "res://assets/ui/alat_pedang.png", "tumpuk": 1, "alat": true},
 	"jaring": {"nama": "Bug Net", "ikon": "res://assets/ui/alat_jaring.png", "tumpuk": 1, "alat": true},
 	"pancing": {"nama": "Fishing Rod", "ikon": "res://assets/ui/alat_pancing.png", "tumpuk": 1, "alat": true},
-	"tombak": {"nama": "Spear", "ikon": "res://assets/ui/alat_tombak.png", "tumpuk": 1, "alat": true},
 }
-const START_TOOLS: Array[String] = ["cangkul", "penyiram", "sekop", "arit", "sabit", "jaring", "pancing", "tombak"]
+const START_TOOLS: Array[String] = ["cangkul", "penyiram", "sekop", "arit", "pisau", "kapak", "beliung", "pedang", "jaring", "pancing"]
 ## tema warna isi bingkai/panel (nama -> warna). "Peach" = warna dasar kotak day.date
 const THEMES: Dictionary = {
 	"Peach": Color("#FADCBD"), "Cream": Color("#FBEEE3"), "Mint": Color("#D8EDCF"),
@@ -172,8 +175,8 @@ func is_night() -> bool:
 func ambient() -> Color:
 	var h: float = minute / 60.0
 	var dayc: Color = Color(1, 1, 1)
-	var dusk: Color = Color(1.0, 0.86, 0.74)
-	var night: Color = Color(0.70, 0.74, 0.92)
+	var dusk: Color = Color(0.96, 0.78, 0.66)
+	var night: Color = Color(0.40, 0.45, 0.70)   # malam gelap kebiruan, tetap terlihat
 	var c: Color
 	if h >= 6.0 and h < 17.0:
 		c = dayc

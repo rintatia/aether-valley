@@ -42,7 +42,7 @@ func _ready() -> void:
 		b.texture_normal = load("res://assets/ui/kartu_%s.png" % g) as Texture2D
 		b.ignore_texture_size = true
 		b.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-		b.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		b.position = Vector2(x0 + i * (card_w + gap), top)
 		b.size = Vector2(card_w, card_h)
 		b.pivot_offset = b.size / 2.0
@@ -62,13 +62,27 @@ func _ready() -> void:
 		inner.add_child(sh)
 		shadows[g] = sh
 		base_pos[g] = b.position
+		# karakter female baru (pixel art) di dalam kartu
+		if g == "female":
+			var at: AtlasTexture = AtlasTexture.new()
+			at.atlas = load("res://assets/karakter_v7/anim_cewek/diam.png") as Texture2D
+			at.region = Rect2(40, 6, 100, 168)
+			var fig: TextureRect = TextureRect.new()
+			fig.texture = at
+			fig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			fig.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			fig.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			UIKit.place(fig, b.size, [0.12, 0.11, 0.88, 0.80])
+			b.add_child(fig)
+		# nama di papan bawah kartu (teks font, bukan bagian gambar)
+		var nm: Label = UIKit.pixel_label("Male" if g == "male" else "Female", int(card_h * 0.075), UIKit.BROWN)
+		UIKit.place(nm, b.size, [0.2, 0.855, 0.8, 0.975] if g == "male" else [0.2, 0.86, 0.8, 0.965])
+		nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nm.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		b.add_child(nm)
 		var gl: Panel = Panel.new()
-		var sb: StyleBoxFlat = StyleBoxFlat.new()
-		sb.draw_center = false
-		sb.border_color = Color("#FFD65A")
-		sb.set_border_width_all(6)
-		sb.set_corner_radius_all(14)
-		sb.set_expand_margin_all(6)
+		var sb: StyleBox = UIKit.box(Color(0, 0, 0, 0), Color("#FFD65A"), 2).duplicate() as StyleBox
+		(sb as StyleBoxTexture).set_expand_margin_all(6)
 		gl.add_theme_stylebox_override("panel", sb)
 		gl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		gl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -78,7 +92,7 @@ func _ready() -> void:
 		cards[g] = b
 		glow[g] = gl
 		i += 1
-	var ok: TextureButton = UIKit.icon_button("res://assets/ui/tombol_confirm.png", ok_h * 3.2)
+	var ok: TextureButton = UIKit.pill_button("Confirm", ok_h * 3.4)
 	ok.position = Vector2((inner.size.x - ok.size.x) / 2.0, inner.size.y - ok.size.y - 4.0)
 	ok.pressed.connect(_confirm)
 	inner.add_child(ok)
