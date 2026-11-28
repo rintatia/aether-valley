@@ -39,6 +39,7 @@ var chop_kinds: Array[String] = []   # jenis pohon tebang di peta ini (untuk tum
 var chop_spots: Array[Vector2i] = []
 var chop_atlas: Texture2D
 var chop_regions: Dictionary = {}
+var cut_tex: Dictionary = {}   # jenis -> {stump, top, cut}
 var kayu: int = 0
 var lbl_kayu: Label
 var pinch_zoom0: float = 2.0
@@ -217,12 +218,60 @@ func _place_trees(id: String) -> void:
 	chop_kinds.clear()
 	chop_atlas = atlas
 	chop_regions = regions
+	chop_kinds.clear()
+	for tv: Variant in d.get("tebang", []) as Array:
+		var kd: String = str((tv as Dictionary)["obj"])
+		if not chop_kinds.has(kd):
+			chop_kinds.append(kd)
+	_build_cut_textures(img, regions)
 	for tv: Variant in d.get("tebang", []) as Array:
 		var t: Dictionary = tv as Dictionary
 		if not chop_kinds.has(str(t["obj"])):
 			chop_kinds.append(str(t["obj"]))
 		_spawn_chop_tree(t)
 	_find_chop_spots()
+
+
+## Untuk tiap jenis pohon tebang: dua gambar dari gambar aslinya, dibelah garis BERGERIGI
+## (zigzag tak beraturan seperti bekas kapak). Permukaan tunggul diberi warna kayu terang.
+func _build_cut_textures(img: Image, regions: Dictionary) -> void:
+	cut_tex.clear()
+	for code: String in chop_kinds:
+		var r: Array = regions[code] as Array
+		var w: int = int(r[2])
+		var h: int = int(r[3])
+		var src: Image = img.get_region(Rect2i(int(r[0]), int(r[1]), w, h))
+		src.convert(Image.FORMAT_RGBA8)
+		var cut: int = clampi(int(roundf(h * 0.11)), 10, 22)
+		var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+		rng.seed = hash(code)
+		var line: PackedInt32Array = PackedInt32Array()
+		var off: int = 0
+		for x: int in range(w):
+			if x % 2 == 0:
+				off = clampi(off + rng.randi_range(-2, 2), -4, 3)
+			line.append(h - cut + off + (2 if x % 4 < 2 else 0))
+		var stump: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+		var top: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+		var wood_a: Color = Color("#E8B28A")
+		var wood_b: Color = Color("#C68672")
+		for x: int in range(w):
+			var first: bool = true
+			for y: int in range(h):
+				var c: Color = src.get_pixel(x, y)
+				if c.a == 0.0:
+					continue
+				if y < line[x]:
+					top.set_pixel(x, y, c)
+				else:
+					if first and y <= line[x] + 1:
+						# permukaan potong: kayu terang (selang-seling dua nada seperti serat)
+						stump.set_pixel(x, y, wood_a if (x + y) % 3 != 0 else wood_b)
+						first = false
+					else:
+						stump.set_pixel(x, y, c)
+						first = false
+		cut_tex[code] = {"stump": ImageTexture.create_from_image(stump), "top": ImageTexture.create_from_image(top), "cut": cut}
 
 
 func _spawn_chop_tree(t: Dictionary) -> Dictionary:
@@ -241,16 +290,17 @@ func _raise_tree(ct: Dictionary, t: Dictionary) -> void:
 	var sc: float = float(t["skala"])
 	var w: float = float(r[2])
 	var h: float = float(r[3])
-	var cut: float = clampf(roundf(h * 0.11), 10.0, 22.0)          # tinggi tunggul (piksel gambar)
+	var ctx: Dictionary = cut_tex[str(t["obj"])] as Dictionary
+	var cut: float = float(ctx["cut"])
 	var mirror: bool = bool(t["cermin"])
-	var stump: Sprite2D = _region_sprite(Rect2(float(r[0]), float(r[1]) + h - cut, w, cut), sc, mirror)
-	stump.position = Vector2(-w * sc / 2.0, -cut * sc)
+	var stump: Sprite2D = _tex_sprite(ctx["stump"] as Texture2D, sc, mirror)
+	stump.position = Vector2(-w * sc / 2.0, -h * sc)
 	holder.add_child(stump)
 	var pivot: Node2D = Node2D.new()
 	pivot.position = Vector2(0, -cut * sc)
 	holder.add_child(pivot)
-	var top: Sprite2D = _region_sprite(Rect2(float(r[0]), float(r[1]), w, h - cut), sc, mirror)
-	top.position = Vector2(-w * sc / 2.0, -(h - cut) * sc)
+	var top: Sprite2D = _tex_sprite(ctx["top"] as Texture2D, sc, mirror)
+	top.position = Vector2(-w * sc / 2.0, -h * sc + cut * sc)
 	pivot.add_child(top)
 	var hh: float = h * sc
 	var size: int = 2 if hh >= 160.0 else (1 if hh >= 110.0 else 0)   # 0 kecil, 1 sedang, 2 besar
@@ -267,6 +317,15 @@ func _raise_tree(ct: Dictionary, t: Dictionary) -> void:
 	ct["cell"] = _cell(holder.position - Vector2(0, 2))
 	ct["log_cells"] = []
 	astar.set_point_solid(ct["cell"] as Vector2i, true)
+
+
+func _tex_sprite(tex: Texture2D, sc: float, mirror: bool) -> Sprite2D:
+	var spr: Sprite2D = Sprite2D.new()
+	spr.texture = tex
+	spr.centered = false
+	spr.flip_h = mirror
+	spr.scale = Vector2(sc, sc)
+	return spr
 
 
 func _region_sprite(rect: Rect2, sc: float, mirror: bool) -> Sprite2D:
@@ -398,9 +457,13 @@ func _fell(ct: Dictionary) -> void:
 	ct["hp"] = CLEAR_HITS[int(ct["size"])]
 	var pivot: Node2D = ct["pivot"] as Node2D
 	var fall: Tween = create_tween()
-	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.6).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	fall.tween_property(pivot, "rotation", -PI / 2.0 + 0.07, 0.08)
-	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.09)
+	fall.tween_property(pivot, "rotation", 0.06, 0.12).set_trans(Tween.TRANS_SINE)          # sedikit condong balik
+	fall.tween_property(pivot, "rotation", -0.25, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)   # mulai miring pelan
+	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.32).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)  # jatuh makin cepat
+	fall.tween_property(pivot, "rotation", -PI / 2.0 + 0.09, 0.07).set_ease(Tween.EASE_OUT)  # memantul
+	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.10).set_ease(Tween.EASE_IN)
+	fall.tween_property(pivot, "rotation", -PI / 2.0 + 0.025, 0.05)
+	fall.tween_property(pivot, "rotation", -PI / 2.0, 0.06)
 	var base: Vector2 = (ct["node"] as Node2D).position
 	var cells: Array = []
 	var x: float = base.x - 6.0
