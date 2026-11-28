@@ -106,7 +106,6 @@ func _choose(g: String) -> void:
 			inner.move_child(c, inner.get_child_count() - 1)
 			tw.tween_property(c, "position:y", bp.y - 4.0, 0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 			tw.tween_property(c, "scale", Vector2(1.02, 1.02), 0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-			tw.tween_property(sh, "modulate:a", 0.45, 0.15)
 		else:
 			tw.tween_property(c, "position:y", bp.y, 0.2).set_trans(Tween.TRANS_SINE)
 			tw.tween_property(c, "scale", Vector2.ONE, 0.2)

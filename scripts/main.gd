@@ -301,6 +301,17 @@ func _selftest() -> void:
 	_check(int(hud.get("bag_page")) == 1 and int(((hud.get("bag_slots") as Array)[0] as Dictionary)["index"]) == 25, "tas halaman 2 dari 10")
 	hud.call("_bag_turn", -2)
 	_check(int(hud.get("bag_page")) == 9, "tas berputar ke halaman 10")
+	var ki: int = -1
+	for i: int in range(Game.bag.size()):
+		if not (Game.bag[i] as Dictionary).is_empty() and str((Game.bag[i] as Dictionary)["id"]) == "kayu":
+			ki = i
+			break
+	var kb: int = Game.count("kayu")
+	var del_n: int = int((Game.bag[ki] as Dictionary)["n"])
+	Game.selected_slot = ki
+	hud.call("_bag_ask_delete")
+	hud.call("bag_delete", ki)
+	_check((Game.bag[ki] as Dictionary).is_empty() and Game.count("kayu") == kb - del_n, "hapus barang dari tas (-%d Wood)" % del_n)
 	for k: String in ["peta", "buku", "setting"]:
 		hud.call("open_popup", k)
 		_check(bool(hud.get("modal_open")), "popup %s terbuka" % k)

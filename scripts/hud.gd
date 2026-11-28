@@ -262,6 +262,7 @@ func open_popup(kind: String) -> void:
 	modal.mouse_filter = Control.MOUSE_FILTER_STOP
 	root.add_child(modal)
 	root.move_child(modal, fade.get_index())
+	root.move_child(toast, fade.get_index())   # pesan singkat tetap terlihat di atas popup
 	var dim: ColorRect = ColorRect.new()
 	dim.color = Color(0.08, 0.06, 0.05, 0.55)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -364,21 +365,100 @@ func _popup_bag() -> void:
 			bag_dots.draw_circle(c, 4.5, Color("#FFD65A") if k == bag_page else Color("#F8F1EA")))
 	inner.add_child(bag_dots)
 	var ny: float = grid_end + 6.0 + dots_h + 6.0
-	var lb: Button = _nav_button("<", nav_h)
-	lb.position = Vector2(gx, ny)
-	lb.pressed.connect(func() -> void: _bag_turn(-1))
-	inner.add_child(lb)
-	var rb: Button = _nav_button(">", nav_h)
-	rb.position = Vector2(inner.size.x - gx - rb.size.x, ny)
-	rb.pressed.connect(func() -> void: _bag_turn(1))
-	inner.add_child(rb)
+	# navigasi di tengah, simetris: <  Page 1 / 10  >
+	var lw: float = 190.0
 	bag_page_label = UIKit.pixel_label("", 22, UIKit.BROWN)
-	bag_page_label.position = Vector2(0, ny)
-	bag_page_label.size = Vector2(inner.size.x, nav_h)
+	bag_page_label.position = Vector2((inner.size.x - lw) / 2.0, ny)
+	bag_page_label.size = Vector2(lw, nav_h)
 	bag_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	bag_page_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	inner.add_child(bag_page_label)
+	var lb: Button = _nav_button("<", nav_h)
+	lb.position = Vector2(bag_page_label.position.x - lb.size.x - 10.0, ny)
+	lb.pressed.connect(func() -> void: _bag_turn(-1))
+	inner.add_child(lb)
+	var rb: Button = _nav_button(">", nav_h)
+	rb.position = Vector2(bag_page_label.position.x + lw + 10.0, ny)
+	rb.pressed.connect(func() -> void: _bag_turn(1))
+	inner.add_child(rb)
+	# tombol hapus (tempat sampah) di kiri atas = cermin tombol X di kanan atas
+	var tb: Button = _trash_button(50.0)
+	tb.position = Vector2(8.0, 8.0)
+	tb.pressed.connect(_bag_ask_delete)
+	inner.add_child(tb)
 	_bag_show()
+
+
+func _trash_button(d: float) -> Button:
+	var b: Button = Button.new()
+	b.add_theme_stylebox_override("normal", UIKit.box(Color("#B58A2A"), UIKit.BROWN, 4, int(d / 2.0)))
+	b.add_theme_stylebox_override("hover", UIKit.box(Color("#C99B3A"), UIKit.BROWN, 4, int(d / 2.0)))
+	b.add_theme_stylebox_override("pressed", UIKit.box(Color("#8F6A1F"), UIKit.BROWN, 4, int(d / 2.0)))
+	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	b.size = Vector2(d, d)
+	b.button_down.connect(func() -> void: UIKit.sfx("klik"))
+	var ic: Control = Control.new()
+	ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ic.size = b.size
+	ic.draw.connect(func() -> void:
+		var c: Color = UIKit.CREAM
+		var u: float = d / 50.0
+		ic.draw_rect(Rect2(15 * u, 13 * u, 20 * u, 4 * u), c)          # tutup
+		ic.draw_rect(Rect2(21 * u, 9 * u, 8 * u, 4 * u), c)            # pegangan
+		ic.draw_rect(Rect2(17 * u, 19 * u, 16 * u, 20 * u), c)         # badan
+		for k: int in range(3):
+			ic.draw_rect(Rect2((20.0 + k * 4.5) * u, 22 * u, 2 * u, 14 * u), Color("#B58A2A")))
+	b.add_child(ic)
+	return b
+
+
+## Hapus barang di slot terpilih: minta konfirmasi dulu.
+func _bag_ask_delete() -> void:
+	var idx: int = Game.selected_slot
+	if idx < 0 or (Game.bag[idx] as Dictionary).is_empty():
+		show_toast("Select an item first")
+		return
+	var it: Dictionary = Game.bag[idx] as Dictionary
+	var nm: String = str((Game.ITEMS[str(it["id"])] as Dictionary)["nama"])
+	var cover: ColorRect = ColorRect.new()
+	cover.color = Color(0.08, 0.06, 0.05, 0.45)
+	cover.size = modal.size
+	cover.mouse_filter = Control.MOUSE_FILTER_STOP
+	modal.add_child(cover)
+	var fr: Array = UIKit.frame("bingkai_21", 250.0)
+	var p: TextureRect = fr[0] as TextureRect
+	var inner: Control = fr[1] as Control
+	p.position = ((modal.size - p.size) / 2.0).round()
+	cover.add_child(p)
+	var q: Label = UIKit.pixel_label("Delete %s%s?" % [nm, (" x%d" % int(it["n"])) if int(it["n"]) > 1 else ""], 26, UIKit.BROWN)
+	q.position = Vector2(0, 18)
+	q.size = Vector2(inner.size.x, 40)
+	q.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	inner.add_child(q)
+	var row: HBoxContainer = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 30)
+	row.position = Vector2(0, inner.size.y - 74)
+	row.size = Vector2(inner.size.x, 60)
+	inner.add_child(row)
+	var yes: TextureButton = UIKit.pill_button("Delete", 190.0)
+	yes.pressed.connect(func() -> void:
+		bag_delete(idx)
+		cover.queue_free())
+	row.add_child(yes)
+	var no: TextureButton = UIKit.pill_button("Cancel", 190.0)
+	no.pressed.connect(cover.queue_free)
+	row.add_child(no)
+
+
+func bag_delete(idx: int) -> void:
+	var it: Dictionary = Game.bag[idx] as Dictionary
+	if it.is_empty():
+		return
+	var nm: String = str((Game.ITEMS[str(it["id"])] as Dictionary)["nama"])
+	Game.bag[idx] = {}
+	Game.bag_changed.emit()
+	show_toast("%s deleted" % nm)
 
 
 func _bag_turn(d: int) -> void:
