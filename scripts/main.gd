@@ -93,17 +93,21 @@ func _screenshots() -> void:
 	var bi: int = 0
 	var bd: float = 1e9
 	for i: int in range(trees.size()):
+		if int(trees[i]["size"]) < 2:
+			continue
 		var dd: float = ((trees[i]["node"] as Node2D).position - Vector2(1900, 1500)).length()
 		if dd < bd:
 			bd = dd
 			bi = i
+	(w.get("player") as Node2D).position = (trees[bi]["node"] as Node2D).position + Vector2(70, 40)
+	w.call("_set_zoom", 3.0)
+	await _shot(pre + "hutan_sebelum_tebang.png")
 	for k: int in range(3):
 		w.call("chop_hit", bi)
 	await get_tree().create_timer(0.62).timeout
 	await _shot(pre + "hutan_tumbang_jatuh.png")
 	await get_tree().create_timer(0.8).timeout
 	await _shot(pre + "hutan_tumbang.png")
-	(w.get("player") as Node2D).position = (trees[bi]["node"] as Node2D).position + Vector2(-40, 30)
 	w.call("_set_zoom", 4.0)
 	await _shot(pre + "hutan_tumbang_dekat.png")
 	w.call("_set_zoom", 0.01)
