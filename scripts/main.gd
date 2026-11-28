@@ -55,7 +55,7 @@ func _title() -> void:
 		world = (load("res://scripts/world.gd") as GDScript).new()
 		add_child(world))
 	v.add_child(b)
-	var bt: Button = UIKit.button("Uji Tileset SpriteCook", 0, 64)
+	var bt: Button = UIKit.button("Lihat Lanskap Starter", 0, 64)
 	bt.pressed.connect(func() -> void:
 		layer.queue_free()
 		add_child((load("res://scripts/tiletest.gd") as GDScript).new()))
@@ -79,7 +79,7 @@ func _screenshots() -> void:
 	var tt: Node2D = (load("res://scripts/tiletest.gd") as GDScript).new()
 	add_child(tt)
 	await _shot("uji_tileset_zoom1.png")
-	tt.call("set_zoom", 3, Vector2(20 * 32, 9 * 32))
+	tt.call("set_zoom", 3, Vector2(430, 330))
 	await _shot("uji_tileset_zoom4.png")
 	get_tree().quit(0)
 

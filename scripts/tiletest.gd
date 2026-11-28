@@ -27,7 +27,7 @@ func _ready() -> void:
 	if m.has("baked"):
 		# peta rumput organik yang sudah dipanggang (tepi alami per piksel, bukan per petak)
 		var sp: Sprite2D = Sprite2D.new()
-		sp.texture = load("res://assets/uji_spritecook/%s.png" % str(m["baked"])) as Texture2D
+		sp.texture = load("res://assets/lanskap/%s.png" % str(m["baked"])) as Texture2D
 		sp.centered = false
 		add_child(sp)
 	for L: Variant in ([] if m.has("baked") else m["layers"]) as Array:
@@ -70,7 +70,7 @@ func _hud() -> void:
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(root)
-	var l: Label = UIKit.label("Uji rumput organik Aether Valley  -  seret untuk geser", 22)
+	var l: Label = UIKit.label("Lanskap starter Aether Valley  -  seret untuk geser", 22)
 	l.position = Vector2(16, 12)
 	root.add_child(l)
 	var box: HBoxContainer = HBoxContainer.new()
