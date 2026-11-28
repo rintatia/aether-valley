@@ -1,0 +1,535 @@
+{
+ "_note": "Flora musim semi FL01-FL44. Gambar resolusi tinggi: di dunia game ditampilkan ~0.5x (1 titik gambar = 1 piksel layar di zoom x2). region = [x,y,w,h] di atlas.",
+ "atlas": "flora/atlas_flora_semi.png",
+ "skala_dunia": 0.5,
+ "aset": {
+  "FL01": {
+   "nama": "sakura_a",
+   "label": "Sakura",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    2,
+    29,
+    142,
+    165
+   ]
+  },
+  "FL02": {
+   "nama": "apel_bunga_a",
+   "label": "Apel berbunga",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    167,
+    13,
+    158,
+    181
+   ]
+  },
+  "FL03": {
+   "nama": "ek_a",
+   "label": "Ek",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    347,
+    4,
+    159,
+    189
+   ]
+  },
+  "FL04": {
+   "nama": "pinus_a",
+   "label": "Pinus",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    529,
+    0,
+    124,
+    194
+   ]
+  },
+  "FL05": {
+   "nama": "birch_a",
+   "label": "Birch",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    675,
+    0,
+    122,
+    193
+   ]
+  },
+  "FL06": {
+   "nama": "willow_a",
+   "label": "Willow",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    820,
+    6,
+    163,
+    188
+   ]
+  },
+  "FL07": {
+   "nama": "sakura_b",
+   "label": "Sakura (varian)",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    2,
+    233,
+    142,
+    164
+   ]
+  },
+  "FL08": {
+   "nama": "apel_bunga_b",
+   "label": "Apel berbunga (varian)",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    167,
+    217,
+    158,
+    180
+   ]
+  },
+  "FL09": {
+   "nama": "ek_b",
+   "label": "Ek (varian)",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    347,
+    208,
+    159,
+    189
+   ]
+  },
+  "FL10": {
+   "nama": "pinus_b",
+   "label": "Pinus (varian)",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    529,
+    204,
+    123,
+    193
+   ]
+  },
+  "FL11": {
+   "nama": "birch_b",
+   "label": "Birch (varian)",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    675,
+    204,
+    122,
+    193
+   ]
+  },
+  "FL12": {
+   "nama": "willow_b",
+   "label": "Willow (varian)",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    820,
+    210,
+    163,
+    187
+   ]
+  },
+  "FL13": {
+   "nama": "pohon_muda_rimbun",
+   "label": "Pohon muda rimbun",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    10,
+    416,
+    112,
+    146
+   ]
+  },
+  "FL14": {
+   "nama": "pohon_muda",
+   "label": "Pohon muda",
+   "jenis": "pohon_muda",
+   "menghalangi": true,
+   "region": [
+    137,
+    461,
+    62,
+    102
+   ]
+  },
+  "FL15": {
+   "nama": "tunggul",
+   "label": "Tunggul",
+   "jenis": "kayu",
+   "menghalangi": true,
+   "region": [
+    217,
+    478,
+    103,
+    85
+   ]
+  },
+  "FL16": {
+   "nama": "kayu_berbunga",
+   "label": "Kayu berbunga",
+   "jenis": "kayu",
+   "menghalangi": true,
+   "region": [
+    343,
+    451,
+    166,
+    99
+   ]
+  },
+  "FL17": {
+   "nama": "pinus_kecil",
+   "label": "Pinus kecil",
+   "jenis": "pohon",
+   "menghalangi": true,
+   "region": [
+    537,
+    410,
+    106,
+    150
+   ]
+  },
+  "FL18": {
+   "nama": "tunggul_bertunas",
+   "label": "Tunggul bertunas",
+   "jenis": "kayu",
+   "menghalangi": true,
+   "region": [
+    669,
+    450,
+    123,
+    113
+   ]
+  },
+  "FL19": {
+   "nama": "kayu_lumut_bunga",
+   "label": "Kayu lumut bunga",
+   "jenis": "kayu",
+   "menghalangi": true,
+   "region": [
+    815,
+    460,
+    166,
+    102
+   ]
+  },
+  "FL20": {
+   "nama": "semak_bulat",
+   "label": "Semak bulat",
+   "jenis": "semak",
+   "menghalangi": true,
+   "region": [
+    1,
+    650,
+    94,
+    87
+   ]
+  },
+  "FL21": {
+   "nama": "semak_azalea",
+   "label": "Semak azalea",
+   "jenis": "semak",
+   "menghalangi": true,
+   "region": [
+    114,
+    647,
+    104,
+    90
+   ]
+  },
+  "FL22": {
+   "nama": "semak_putih",
+   "label": "Semak putih",
+   "jenis": "semak",
+   "menghalangi": true,
+   "region": [
+    237,
+    643,
+    100,
+    93
+   ]
+  },
+  "FL23": {
+   "nama": "semak_bulat_besar",
+   "label": "Semak bulat besar",
+   "jenis": "semak",
+   "menghalangi": true,
+   "region": [
+    354,
+    622,
+    127,
+    112
+   ]
+  },
+  "FL24": {
+   "nama": "azalea_besar",
+   "label": "Azalea besar",
+   "jenis": "semak",
+   "menghalangi": true,
+   "region": [
+    498,
+    617,
+    141,
+    116
+   ]
+  },
+  "FL25": {
+   "nama": "spirea",
+   "label": "Spirea",
+   "jenis": "semak",
+   "menghalangi": true,
+   "region": [
+    657,
+    611,
+    116,
+    120
+   ]
+  },
+  "FL26": {
+   "nama": "beri_berbunga",
+   "label": "Beri berbunga",
+   "jenis": "semak",
+   "menghalangi": true,
+   "region": [
+    789,
+    608,
+    91,
+    123
+   ]
+  },
+  "FL27": {
+   "nama": "beri_berbunga_tinggi",
+   "label": "Beri berbunga tinggi",
+   "jenis": "semak",
+   "menghalangi": true,
+   "region": [
+    895,
+    590,
+    95,
+    141
+   ]
+  },
+  "FL28": {
+   "nama": "tulip_kuning",
+   "label": "Tulip kuning",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    9,
+    768,
+    55,
+    78
+   ]
+  },
+  "FL29": {
+   "nama": "tulip_merah",
+   "label": "Tulip merah",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    84,
+    766,
+    51,
+    81
+   ]
+  },
+  "FL30": {
+   "nama": "aster",
+   "label": "Aster",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    157,
+    766,
+    72,
+    80
+   ]
+  },
+  "FL31": {
+   "nama": "dandelion",
+   "label": "Dandelion",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    248,
+    776,
+    73,
+    71
+   ]
+  },
+  "FL32": {
+   "nama": "krokus",
+   "label": "Krokus",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    343,
+    777,
+    47,
+    70
+   ]
+  },
+  "FL33": {
+   "nama": "bluebell",
+   "label": "Bluebell",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    411,
+    773,
+    61,
+    74
+   ]
+  },
+  "FL34": {
+   "nama": "lily_lembah",
+   "label": "Lily lembah",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    488,
+    765,
+    69,
+    82
+   ]
+  },
+  "FL35": {
+   "nama": "semanggi",
+   "label": "Semanggi",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    571,
+    784,
+    62,
+    62
+   ]
+  },
+  "FL36": {
+   "nama": "pakis_muda",
+   "label": "Pakis muda",
+   "jenis": "bunga",
+   "menghalangi": false,
+   "region": [
+    651,
+    762,
+    61,
+    85
+   ]
+  },
+  "FL37": {
+   "nama": "rumput_tinggi",
+   "label": "Rumput tinggi",
+   "jenis": "rumput",
+   "menghalangi": false,
+   "region": [
+    730,
+    750,
+    83,
+    97
+   ]
+  },
+  "FL38": {
+   "nama": "rumput_pendek",
+   "label": "Rumput pendek",
+   "jenis": "rumput",
+   "menghalangi": false,
+   "region": [
+    829,
+    780,
+    76,
+    66
+   ]
+  },
+  "FL39": {
+   "nama": "rumput_gelagah",
+   "label": "Rumput gelagah",
+   "jenis": "rumput",
+   "menghalangi": false,
+   "region": [
+    919,
+    744,
+    66,
+    103
+   ]
+  },
+  "FL40": {
+   "nama": "bunga_liar_pink_putih",
+   "label": "Bunga liar pink putih",
+   "jenis": "bunga_liar",
+   "menghalangi": false,
+   "region": [
+    2,
+    873,
+    147,
+    118
+   ]
+  },
+  "FL41": {
+   "nama": "bunga_liar_kuning_biru",
+   "label": "Bunga liar kuning biru",
+   "jenis": "bunga_liar",
+   "menghalangi": false,
+   "region": [
+    173,
+    872,
+    148,
+    118
+   ]
+  },
+  "FL42": {
+   "nama": "batu_lumut_besar",
+   "label": "Batu lumut besar",
+   "jenis": "batu",
+   "menghalangi": true,
+   "region": [
+    347,
+    874,
+    147,
+    114
+   ]
+  },
+  "FL43": {
+   "nama": "batu_lumut",
+   "label": "Batu lumut",
+   "jenis": "batu",
+   "menghalangi": true,
+   "region": [
+    518,
+    896,
+    81,
+    75
+   ]
+  },
+  "FL44": {
+   "nama": "kerikil",
+   "label": "Kerikil",
+   "jenis": "kerikil",
+   "menghalangi": false,
+   "region": [
+    621,
+    920,
+    50,
+    41
+   ]
+  }
+ }
+}

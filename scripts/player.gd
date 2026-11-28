@@ -11,6 +11,7 @@ var spr: Sprite2D
 
 func _ready() -> void:
 	spr = Sprite2D.new()
+	spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST   # karakter pixel art tetap tajam
 	spr.centered = false
 	add_child(spr)
 	_refresh()

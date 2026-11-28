@@ -182,15 +182,20 @@ func _load_chunks(dir: String) -> void:
 			chunk_root.add_child(sp)
 
 
-## Pohon batas (OB01-OB03): satu atlas tekstur untuk semua pohon agar ringan; tiap pohon ikut urutan-Y
-## sehingga karakter bisa berada di depan/belakangnya. Pangkal batang menghalangi jalan.
+## Hutan batas (Flora musim semi FL..): satu atlas resolusi tinggi untuk semua; skala per pohon pecahan
+## (gambar asli besar diperkecil -> tetap tajam, tidak pecah). Urutan-Y: karakter bisa di depan/belakang.
 func _place_trees(id: String) -> void:
 	var d: Dictionary = Art.load_json("res://data/maps/%s.json" % id)
-	var atlas: Texture2D = load("res://assets/" + str(d["atlas"])) as Texture2D
+	var src: Texture2D = load("res://assets/" + str(d["atlas"])) as Texture2D
+	var img: Image = src.get_image()
+	img.generate_mipmaps()
+	var atlas: ImageTexture = ImageTexture.create_from_image(img)
 	var regions: Dictionary = d["region"] as Dictionary
+	var blocks: Dictionary = d.get("menghalangi", {}) as Dictionary
 	for tv: Variant in d["pohon"] as Array:
 		var t: Dictionary = tv as Dictionary
-		var r: Array = regions[str(t["obj"])] as Array
+		var code: String = str(t["obj"])
+		var r: Array = regions[code] as Array
 		var sc: float = float(t["skala"])
 		var w: float = float(r[2])
 		var h: float = float(r[3])
@@ -206,8 +211,7 @@ func _place_trees(id: String) -> void:
 		holder.position = Vector2(float(t["x"]), float(t["y"]))
 		holder.add_child(spr)
 		ysort.add_child(holder)
-		# hanya yang bersifat menghalangi (pohon, semak) yang menutup jalan; rumput & pakis bisa dilewati
-		if bool(Art.info(str(t["obj"])).get("block", true)):
+		if bool(blocks.get(code, true)):
 			var c: Vector2i = _cell(holder.position - Vector2(0, 2))
 			if astar.region.has_point(c):
 				astar.set_point_solid(c, true)
@@ -319,7 +323,7 @@ func _set_zoom(z: float) -> void:
 	cam.zoom = Vector2(zoom_now, zoom_now)
 	# kamera jauh (< x1): beberapa piksel peta jadi satu piksel layar -> pakai mipmap agar tidak berkedip
 	ground.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS if zoom_now < 1.0 else CanvasItem.TEXTURE_FILTER_NEAREST
-	ysort.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if zoom_now < 1.0 else CanvasItem.TEXTURE_FILTER_NEAREST
+	ysort.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 
 
 func _apply_zoom() -> void:
