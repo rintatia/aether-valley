@@ -1,10 +1,11 @@
 extends Control
-## Layar awal: pilih Male / Female. Kartu yang dipilih menyala & membesar, yang lain meredup.
+## Layar awal: pilih Male / Female di bingkai 1.5:1. Kartu yang dipilih menyala & membesar sedikit.
 
 signal confirmed(gender: String)
 signal closed
 
 var panel: TextureRect
+var inner: Control
 var cards: Dictionary = {}
 var glow: Dictionary = {}
 var chosen: String = ""
@@ -18,59 +19,65 @@ func _ready() -> void:
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 	var vs: Vector2 = get_viewport_rect().size
-	var h: float = minf(vs.y - 50.0, 640.0)
-	panel = UIKit.image("res://assets/ui/pilih_karakter.png", h * 1381.0 / 1069.0, h)
-	panel.position = (vs - panel.size) / 2.0
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	var fr: Array = UIKit.frame("bingkai_15", minf(vs.y - 60.0, 640.0), vs.x - 40.0)
+	panel = fr[0] as TextureRect
+	inner = fr[1] as Control
+	panel.position = ((vs - panel.size) / 2.0 - Vector2(0, 14)).round()
 	add_child(panel)
-	var P: Dictionary = UIKit.layout["pilih"] as Dictionary
+	UIKit.frame_title(inner, "Choose Your Character", 34)
+	UIKit.close_button(panel, inner).pressed.connect(func() -> void: closed.emit())
+	# dua kartu berdampingan
+	var ok_h: float = inner.size.y * 0.15
+	var top: float = 58.0
+	var card_h: float = inner.size.y - top - ok_h - 24.0
+	var card_w: float = card_h * 539.0 / 679.0
+	var gap: float = card_w * 0.16
+	var x0: float = (inner.size.x - card_w * 2.0 - gap) / 2.0
+	var i: int = 0
 	for g: String in ["male", "female"]:
-		var r: Array = P[g] as Array
+		var b: TextureButton = TextureButton.new()
+		b.texture_normal = load("res://assets/ui/kartu_%s.png" % g) as Texture2D
+		b.ignore_texture_size = true
+		b.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		b.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		b.position = Vector2(x0 + i * (card_w + gap), top)
+		b.size = Vector2(card_w, card_h)
+		b.pivot_offset = b.size / 2.0
+		b.pressed.connect(func() -> void: _choose(g))
 		var gl: Panel = Panel.new()
 		var sb: StyleBoxFlat = StyleBoxFlat.new()
-		sb.bg_color = Color(0, 0, 0, 0)
 		sb.draw_center = false
 		sb.border_color = Color("#FFD65A")
 		sb.set_border_width_all(6)
-		sb.set_corner_radius_all(18)
-		sb.set_expand_margin_all(4)
+		sb.set_corner_radius_all(14)
+		sb.set_expand_margin_all(6)
 		gl.add_theme_stylebox_override("panel", sb)
-		UIKit.place(gl, panel.size, r)
+		gl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		gl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		gl.visible = false
-		panel.add_child(gl)
-		glow[g] = gl
-		var b: Button = _hit(r, func() -> void: _choose(g))
+		b.add_child(gl)
+		inner.add_child(b)
 		cards[g] = b
-	_hit(P["confirm"] as Array, _confirm)
-	_hit(P["x"] as Array, func() -> void: closed.emit())
-	hint = UIKit.pixel_label("Tap a character, then Confirm", 20, UIKit.CREAM, 5, Color("#1E3F2B"))
-	hint.position = Vector2(0, panel.position.y + panel.size.y + 2)
+		glow[g] = gl
+		i += 1
+	var ok: TextureButton = UIKit.icon_button("res://assets/ui/tombol_confirm.png", ok_h * 3.2)
+	ok.position = Vector2((inner.size.x - ok.size.x) / 2.0, inner.size.y - ok.size.y - 4.0)
+	ok.pressed.connect(_confirm)
+	inner.add_child(ok)
+	hint = UIKit.pixel_label("Tap a character, then Confirm", 22, UIKit.CREAM, 5, Color("#1E3F2B"))
+	hint.position = Vector2(0, panel.position.y + panel.size.y + 4)
 	hint.size = Vector2(vs.x, 30)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(hint)
 
 
-func _hit(r: Array, cb: Callable) -> Button:
-	var b: Button = Button.new()
-	b.flat = true
-	for st: String in ["normal", "hover", "pressed", "focus"]:
-		b.add_theme_stylebox_override(st, StyleBoxEmpty.new())
-	UIKit.place(b, panel.size, r)
-	b.pressed.connect(cb)
-	panel.add_child(b)
-	return b
-
-
 func _choose(g: String) -> void:
 	chosen = g
-	for k: String in glow.keys():
+	for k: String in cards.keys():
 		(glow[k] as Panel).visible = k == g
-		var other: Button = cards[k] as Button
-		other.modulate = Color.WHITE
-		var gl: Panel = glow[k] as Panel
-		gl.pivot_offset = gl.size / 2.0
-		create_tween().tween_property(gl, "scale", Vector2(1.03, 1.03) if k == g else Vector2.ONE, 0.12)
+		var c: TextureButton = cards[k] as TextureButton
+		c.modulate = Color.WHITE if k == g else Color(0.82, 0.82, 0.82)
+		create_tween().tween_property(c, "scale", Vector2(1.04, 1.04) if k == g else Vector2.ONE, 0.12)
 	hint.text = "%s selected - tap Confirm" % ("Male" if g == "male" else "Female")
 
 

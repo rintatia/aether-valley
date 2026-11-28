@@ -2,7 +2,7 @@ extends CanvasLayer
 ## HUD permainan: status bar (siang/malam), setting + buku (kiri atas), shortcut bar + peta + tas (bawah),
 ## popup tas (5x5, 10 halaman), peta, buku, setting. Semua tombol bisa ditekan.
 
-const STATUS_W: float = 340.0
+const STATUS_W: float = 430.0
 const BAR_W: float = 500.0
 const ICON_SET: float = 60.0
 const ICON_BIG: float = 72.0
@@ -16,8 +16,8 @@ var lb_date: Label
 var lb_clock: Label
 var lb_coin: Label
 var lb_crystal: Label
-var lb_season: Label
-var season_icon: Control
+var badge: TextureRect
+var badge_now: String = ""
 var btn_set: TextureButton
 var btn_book: TextureButton
 var bar: Control
@@ -96,31 +96,29 @@ func _build_status() -> void:
 	status.size = st_day.size
 	var L: Dictionary = UIKit.layout["status"] as Dictionary
 	var sz: Vector2 = st_day.size
-	lb_date = _field_label(L["tanggal"] as Array, sz, 14)
-	lb_clock = _field_label(L["jam"] as Array, sz, 16)
-	lb_coin = _field_label(L["koin"] as Array, sz, 14)
-	lb_crystal = _field_label(L["kristal"] as Array, sz, 14)
+	# tanggal & jam: di tengah ruang kosong setelah ikon; koin & kristal: rata kiri setelah ikon
+	lb_date = _field_label(L["tanggal"] as Array, sz, 20, HORIZONTAL_ALIGNMENT_CENTER)
+	lb_clock = _field_label(L["jam"] as Array, sz, 24, HORIZONTAL_ALIGNMENT_CENTER)
+	lb_coin = _field_label(L["koin"] as Array, sz, 20, HORIZONTAL_ALIGNMENT_LEFT)
+	lb_crystal = _field_label(L["kristal"] as Array, sz, 20, HORIZONTAL_ALIGNMENT_LEFT)
 	lb_coin.add_theme_color_override("font_color", Color("#FFEE9A"))
 	lb_crystal.add_theme_color_override("font_color", Color("#C9BFFA"))
-	var sh: Array = L["musim"] as Array
-	season_icon = Control.new()
-	season_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UIKit.place(season_icon, sz, [sh[0], float(sh[1]) + 0.04, sh[2], float(sh[1]) + 0.36])
-	season_icon.draw.connect(_draw_season_icon)
-	status.add_child(season_icon)
-	lb_season = UIKit.pixel_label("", 10, UIKit.BROWN)
-	UIKit.place(lb_season, sz, [float(sh[0]) - 0.01, float(sh[1]) + 0.36, float(sh[2]) + 0.01, float(sh[1]) + 0.52])
-	lb_season.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lb_season.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	status.add_child(lb_season)
+	# lencana musim / hujan di perisai (gambar, tanpa tulisan)
+	badge = TextureRect.new()
+	badge.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	badge.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	badge.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	UIKit.place(badge, sz, L["lencana"] as Array)
+	status.add_child(badge)
 
 
-func _field_label(r: Array, sz: Vector2, fs: int) -> Label:
+func _field_label(r: Array, sz: Vector2, fs: int, align: HorizontalAlignment) -> Label:
 	var l: Label = UIKit.pixel_label("", fs, UIKit.BROWN)
 	UIKit.place(l, sz, r)
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	l.offset_top -= 2
+	l.horizontal_alignment = align
+	l.clip_text = true
 	status.add_child(l)
 	return l
 
@@ -138,42 +136,10 @@ func _refresh_status(force: bool = false) -> void:
 	lb_clock.add_theme_color_override("font_color", UIKit.CREAM if night else UIKit.BROWN)
 	lb_coin.text = str(clampi(Game.coins, 0, 99999999))
 	lb_crystal.text = str(clampi(Game.crystals, 0, 999999))
-	lb_season.text = Game.status_text()
-	season_icon.queue_redraw()
-
-
-func _draw_season_icon() -> void:
-	var c: Vector2 = season_icon.size / 2.0
-	var r: float = minf(season_icon.size.x, season_icon.size.y) * 0.34
-	var s: String = Game.status_text()
-	var ink: Color = Color("#43251D")
-	if s == "Spring":
-		for i: int in range(5):
-			var a: float = TAU * i / 5.0 - PI / 2.0
-			season_icon.draw_circle(c + Vector2(cos(a), sin(a)) * r * 0.55, r * 0.42, Color("#F37CAB"))
-		season_icon.draw_circle(c, r * 0.30, Color("#FFD65A"))
-	elif s == "Summer":
-		for i: int in range(8):
-			var a2: float = TAU * i / 8.0
-			season_icon.draw_line(c + Vector2(cos(a2), sin(a2)) * r * 0.62, c + Vector2(cos(a2), sin(a2)) * r * 1.0, Color("#E0B83C"), 2.0)
-		season_icon.draw_circle(c, r * 0.52, Color("#FFD65A"))
-	elif s == "Autumn":
-		var pts: PackedVector2Array = PackedVector2Array([c + Vector2(0, -r), c + Vector2(r * 0.8, -r * 0.1), c + Vector2(r * 0.25, r * 0.9),
-			c + Vector2(-r * 0.25, r * 0.9), c + Vector2(-r * 0.8, -r * 0.1)])
-		season_icon.draw_colored_polygon(pts, Color("#C87D38"))
-		season_icon.draw_line(c + Vector2(0, -r * 0.6), c + Vector2(0, r * 1.05), ink, 1.5)
-	elif s == "Winter":
-		for i: int in range(3):
-			var a3: float = PI * i / 3.0
-			season_icon.draw_line(c - Vector2(cos(a3), sin(a3)) * r, c + Vector2(cos(a3), sin(a3)) * r, Color("#2480BE"), 2.5)
-		season_icon.draw_circle(c, r * 0.18, Color("#78C8EB"))
-	else:
-		season_icon.draw_circle(c + Vector2(-r * 0.35, -r * 0.2), r * 0.42, Color("#B5B0A6"))
-		season_icon.draw_circle(c + Vector2(r * 0.25, -r * 0.3), r * 0.5, Color("#B5B0A6"))
-		season_icon.draw_rect(Rect2(c.x - r * 0.75, c.y - r * 0.2, r * 1.5, r * 0.4), Color("#B5B0A6"))
-		for i: int in range(3):
-			var x: float = c.x - r * 0.5 + i * r * 0.5
-			season_icon.draw_line(Vector2(x, c.y + r * 0.35), Vector2(x - r * 0.15, c.y + r * 0.85), Color("#34A0D6"), 2.0)
+	var key: String = Game.status_text().to_lower()
+	if key != badge_now:
+		badge_now = key
+		badge.texture = load("res://assets/ui/lencana_%s.png" % key) as Texture2D
 
 
 # ---------------- kiri atas: setting & buku ----------------
@@ -317,56 +283,91 @@ func close_popup() -> void:
 	modal_open = false
 
 
-func _panel(path: String, h_max: float) -> TextureRect:
+## Bingkai popup di tengah layar + judul + tombol X. Hasil: [panel, area isi].
+func _frame(name: String, h_max: float, title: String) -> Array:
 	var vs: Vector2 = root.get_viewport_rect().size
-	var tex: Texture2D = load(path) as Texture2D
-	var ratio: float = tex.get_size().x / tex.get_size().y
-	var h: float = minf(h_max, vs.y - 40.0)
-	var p: TextureRect = UIKit.image(path, h * ratio, h)
-	p.position = (vs - p.size) / 2.0
-	p.mouse_filter = Control.MOUSE_FILTER_STOP
+	var fr: Array = UIKit.frame(name, minf(h_max, vs.y - 40.0), vs.x - 60.0)
+	var p: TextureRect = fr[0] as TextureRect
+	var inner: Control = fr[1] as Control
+	p.position = ((vs - p.size) / 2.0).round()
 	modal.add_child(p)
-	return p
+	UIKit.frame_title(inner, title, 32)
+	UIKit.close_button(p, inner).pressed.connect(close_popup)
+	return fr
 
 
-func _hit(parent: Control, r: Array, cb: Callable) -> Button:
+func _blank_panel(title: String) -> Array:
+	return _frame("bingkai_15", 600.0, title)
+
+
+func _nav_button(txt: String, d: float) -> Button:
 	var b: Button = Button.new()
-	b.flat = true
-	for st: String in ["normal", "hover", "pressed", "focus"]:
-		b.add_theme_stylebox_override(st, StyleBoxEmpty.new())
-	UIKit.place(b, parent.size, r)
-	b.pressed.connect(cb)
-	parent.add_child(b)
+	b.text = txt
+	b.add_theme_font_override("font", UIKit.font)
+	b.add_theme_font_size_override("font_size", int(d * 0.55))
+	for c: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		b.add_theme_color_override(c, UIKit.BROWN)
+	b.add_theme_stylebox_override("normal", UIKit.box(Color("#FEC473"), Color("#7F442C"), 4, 10))
+	b.add_theme_stylebox_override("hover", UIKit.box(Color("#FFD65A"), Color("#7F442C"), 4, 10))
+	b.add_theme_stylebox_override("pressed", UIKit.box(Color("#DE9A4C"), Color("#7F442C"), 4, 10))
+	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	for st: String in ["normal", "hover", "pressed"]:
+		(b.get_theme_stylebox(st) as StyleBoxFlat).set_content_margin_all(0)
+	b.size = Vector2(d * 1.2, d)
 	return b
 
 
 func _popup_bag() -> void:
-	var p: TextureRect = _panel("res://assets/ui/panel_tas.png", 560.0)
-	var L: Dictionary = UIKit.layout["tas"] as Dictionary
-	var cols: Array = L["kolom"] as Array
-	var rows: Array = L["baris"] as Array
+	var fr: Array = _frame("bingkai_11", 640.0, "Bag")
+	var inner: Control = fr[1] as Control
+	var top: float = 54.0
+	var nav_h: float = 40.0
+	var dots_h: float = 18.0
+	var avail: float = minf(inner.size.x - 40.0, inner.size.y - top - nav_h - dots_h - 22.0)
+	var gap: float = avail * 0.025
+	var cell: float = (avail - gap * 4.0) / 5.0
+	var gx: float = (inner.size.x - (cell * 5.0 + gap * 4.0)) / 2.0
+	var slot_bg: StyleBoxFlat = UIKit.box(Color("#EBCFA8"), Color("#B58A2A"), 3, 8)
 	for ri: int in range(5):
 		for ci: int in range(5):
-			var cr: Array = cols[ci] as Array
-			var rr: Array = rows[ri] as Array
-			bag_slots.append(_make_slot(p, p.size, [cr[0], rr[0], cr[1], rr[1]], 0))
-	_hit(p, L["kiri"] as Array, func() -> void: _bag_turn(-1))
-	_hit(p, L["kanan"] as Array, func() -> void: _bag_turn(1))
-	_hit(p, L["x"] as Array, close_popup)
-	bag_page_label = UIKit.pixel_label("", 16, UIKit.BROWN)
-	UIKit.place(bag_page_label, p.size, L["halaman"] as Array)
-	bag_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bag_page_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	p.add_child(bag_page_label)
+			var x: float = gx + ci * (cell + gap)
+			var y: float = top + ri * (cell + gap)
+			var bgp: Panel = Panel.new()
+			bgp.add_theme_stylebox_override("panel", slot_bg)
+			bgp.position = Vector2(x, y)
+			bgp.size = Vector2(cell, cell)
+			bgp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			inner.add_child(bgp)
+			var r: Array = [x / inner.size.x, y / inner.size.y, (x + cell) / inner.size.x, (y + cell) / inner.size.y]
+			bag_slots.append(_make_slot(inner, inner.size, r, 0))
+	var grid_end: float = top + cell * 5.0 + gap * 4.0
 	bag_dots = Control.new()
 	bag_dots.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bag_dots.size = p.size
+	bag_dots.position = Vector2(0, grid_end + 8.0)
+	bag_dots.size = Vector2(inner.size.x, dots_h)
 	bag_dots.draw.connect(func() -> void:
-		var r: float = float(L["titik_r"]) * p.size.x
-		var c: Vector2 = Vector2((float(L["titik_x0"]) + float(L["titik_dx"]) * bag_page) * p.size.x, float(L["titik_y"]) * p.size.y)
-		bag_dots.draw_circle(c, r + 1.5, Color("#43251D"))
-		bag_dots.draw_circle(c, r, Color("#FFD65A")))
-	p.add_child(bag_dots)
+		var step: float = 20.0
+		var x0: float = (inner.size.x - step * (Game.BAG_PAGES - 1)) / 2.0
+		for k: int in range(Game.BAG_PAGES):
+			var c: Vector2 = Vector2(x0 + step * k, dots_h / 2.0)
+			bag_dots.draw_circle(c, 6.0, Color("#43251D"))
+			bag_dots.draw_circle(c, 4.5, Color("#FFD65A") if k == bag_page else Color("#F8F1EA")))
+	inner.add_child(bag_dots)
+	var ny: float = grid_end + 8.0 + dots_h + 6.0
+	var lb: Button = _nav_button("<", nav_h)
+	lb.position = Vector2(gx, ny)
+	lb.pressed.connect(func() -> void: _bag_turn(-1))
+	inner.add_child(lb)
+	var rb: Button = _nav_button(">", nav_h)
+	rb.position = Vector2(inner.size.x - gx - rb.size.x, ny)
+	rb.pressed.connect(func() -> void: _bag_turn(1))
+	inner.add_child(rb)
+	bag_page_label = UIKit.pixel_label("", 22, UIKit.BROWN)
+	bag_page_label.position = Vector2(0, ny)
+	bag_page_label.size = Vector2(inner.size.x, nav_h)
+	bag_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bag_page_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	inner.add_child(bag_page_label)
 	_bag_show()
 
 
@@ -378,34 +379,17 @@ func _bag_turn(d: int) -> void:
 func _bag_show() -> void:
 	for i: int in range(bag_slots.size()):
 		bag_slots[i]["index"] = bag_page * Game.BAG_PER_PAGE + i
-	bag_page_label.text = "%d / %d" % [bag_page + 1, Game.BAG_PAGES]
+	bag_page_label.text = "Page %d / %d" % [bag_page + 1, Game.BAG_PAGES]
 	bag_dots.queue_redraw()
 	_refresh_items()
-
-
-func _blank_panel(title: String) -> Array:
-	var p: TextureRect = _panel("res://assets/ui/panel_kosong.png", 600.0)
-	var P: Dictionary = UIKit.layout["pilih"] as Dictionary
-	_hit(p, P["x"] as Array, close_popup)
-	var isi: Array = P["isi"] as Array
-	var inner: Control = Control.new()
-	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UIKit.place(inner, p.size, isi)
-	p.add_child(inner)
-	var t: Label = UIKit.pixel_label("—  %s  —" % title, 30, UIKit.BROWN)
-	t.position = Vector2(0, 14)
-	t.size = Vector2(inner.size.x, 40)
-	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	inner.add_child(t)
-	return [p, inner]
 
 
 func _popup_map() -> void:
 	var pi: Array = _blank_panel(str(world.get("map_title")))
 	var inner: Control = pi[1] as Control
 	var mid: String = str(world.get("map_id"))
-	var img: TextureRect = UIKit.image("res://assets/lanskap/%s/peta_kecil.png" % mid, inner.size.x - 60.0, inner.size.y - 110.0)
-	img.position = Vector2(30, 66)
+	var img: TextureRect = UIKit.image("res://assets/lanskap/%s/peta_kecil.png" % mid, inner.size.x - 60.0, inner.size.y - 100.0)
+	img.position = Vector2(30, 56)
 	inner.add_child(img)
 	var marker: Control = Control.new()
 	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -419,15 +403,15 @@ func _popup_map() -> void:
 		var pp: Vector2 = (world.get("player") as Node2D).position / ws * ts * sc + off
 		marker.draw_circle(pp, 9.0, Color("#F8F1EA"))
 		marker.draw_circle(pp, 6.0, Color("#D8574F")))
-	var hint: Label = UIKit.pixel_label("You are here", 16, UIKit.BROWN)
-	hint.position = Vector2(0, inner.size.y - 40)
+	var hint: Label = UIKit.pixel_label("You are here", 20, UIKit.BROWN)
+	hint.position = Vector2(0, inner.size.y - 38)
 	hint.size = Vector2(inner.size.x, 30)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	inner.add_child(hint)
 
 
 func _popup_book() -> void:
-	var pi: Array = _blank_panel("Journal")
+	var pi: Array = _frame("bingkai_21", 560.0, "Journal")
 	var inner: Control = pi[1] as Control
 	var lines: PackedStringArray = PackedStringArray([
 		"%s  -  %s %d" % [Game.player_name, Game.season_name(), Game.date_in_season()],
@@ -438,13 +422,13 @@ func _popup_book() -> void:
 		"- Walk west from the farm to reach the Woodland.",
 		"- Tap a tree 3x to fell it, then chop the log & stump.",
 		"- Fallen trees regrow somewhere else after a day."])
-	var y: float = 70.0
+	var y: float = 58.0
 	for ln: String in lines:
-		var l: Label = UIKit.pixel_label(ln, 20, UIKit.BROWN)
-		l.position = Vector2(46, y)
-		l.size = Vector2(inner.size.x - 92, 30)
+		var l: Label = UIKit.pixel_label(ln, 22, UIKit.BROWN)
+		l.position = Vector2(40, y)
+		l.size = Vector2(inner.size.x - 80, 30)
 		inner.add_child(l)
-		y += 32.0
+		y += 34.0
 
 
 func _popup_settings() -> void:
@@ -453,8 +437,8 @@ func _popup_settings() -> void:
 	var col: VBoxContainer = VBoxContainer.new()
 	col.add_theme_constant_override("separation", 14)
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
-	col.position = Vector2(0, 70)
-	col.size = Vector2(inner.size.x, inner.size.y - 130)
+	col.position = Vector2(0, 56)
+	col.size = Vector2(inner.size.x, inner.size.y - 100)
 	inner.add_child(col)
 	var items: Array = [["Resume", close_popup],
 		["Zoom In", func() -> void: world.call("change_zoom", 1)],
@@ -469,8 +453,8 @@ func _popup_settings() -> void:
 		wrap.custom_minimum_size = Vector2(inner.size.x, b.size.y)
 		wrap.add_child(b)
 		col.add_child(wrap)
-	var v: Label = UIKit.pixel_label(UIKit.version(), 14, Color("#7F442C"))
-	v.position = Vector2(0, inner.size.y - 36)
+	var v: Label = UIKit.pixel_label(UIKit.version(), 18, Color("#7F442C"))
+	v.position = Vector2(0, inner.size.y - 32)
 	v.size = Vector2(inner.size.x, 24)
 	v.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	inner.add_child(v)

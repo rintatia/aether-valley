@@ -1,5 +1,5 @@
 extends Node
-## Autoload "UIKit": tema, font pixel (Pixelify Sans, OFL), tombol bergambar, tata letak aset UI.
+## Autoload "UIKit": tema, font pixel (Tiny5, OFL — angka jelas di ukuran kecil), tombol bergambar, tata letak aset UI.
 
 var font: FontFile
 var layout: Dictionary = {}
@@ -8,7 +8,7 @@ const CREAM: Color = Color("#F8F1EA")
 
 
 func _ready() -> void:
-	font = load("res://assets/font/PixelifySans.ttf") as FontFile
+	font = load("res://assets/font/Tiny5.ttf") as FontFile
 	var j: JSON = load("res://assets/ui/tata_letak.json") as JSON
 	if j != null:
 		layout = j.data as Dictionary
@@ -46,6 +46,53 @@ func image(path: String, w: float, h: float = -1.0) -> TextureRect:
 	tr.custom_minimum_size = Vector2(w, h)
 	tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return tr
+
+
+## Bingkai kosong (bingkai_15 = 1.5:1, bingkai_11 = 1:1, bingkai_21 = 2:1) setinggi h (dibatasi lebar w_max).
+## Hasil: [panel TextureRect, area isi Control]. Isi = bagian krem di dalam garis bingkai.
+func frame(name: String, h: float, w_max: float = 99999.0) -> Array:
+	var tex: Texture2D = load("res://assets/ui/%s.png" % name) as Texture2D
+	var ratio: float = tex.get_size().x / tex.get_size().y
+	if h * ratio > w_max:
+		h = w_max / ratio
+	var p: TextureRect = image("res://assets/ui/%s.png" % name, h * ratio, h)
+	p.mouse_filter = Control.MOUSE_FILTER_STOP
+	var inner: Control = Control.new()
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	place(inner, p.size, (layout["bingkai"] as Dictionary)[name] as Array)
+	p.add_child(inner)
+	return [p, inner]
+
+
+## Judul bingkai, rata tengah di atas area isi.
+func frame_title(inner: Control, text: String, fs: int = 32) -> Label:
+	var t: Label = pixel_label(text, fs, BROWN)
+	t.position = Vector2(0, 6)
+	t.size = Vector2(inner.size.x, fs + 10)
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	inner.add_child(t)
+	return t
+
+
+## Tombol tutup bulat (X) di pojok kanan atas area isi bingkai.
+func close_button(panel: Control, inner: Control, d: float = 50.0) -> Button:
+	var b: Button = Button.new()
+	b.text = "X"
+	b.add_theme_font_override("font", font)
+	b.add_theme_font_size_override("font_size", int(d * 0.5))
+	for c: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		b.add_theme_color_override(c, CREAM)
+	b.add_theme_stylebox_override("normal", box(Color("#D8574F"), BROWN, 4, int(d / 2.0)))
+	b.add_theme_stylebox_override("hover", box(Color("#E8706A"), BROWN, 4, int(d / 2.0)))
+	b.add_theme_stylebox_override("pressed", box(Color("#B4433C"), BROWN, 4, int(d / 2.0)))
+	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	for st: String in ["normal", "hover", "pressed"]:
+		(b.get_theme_stylebox(st) as StyleBoxFlat).set_content_margin_all(0)
+	b.size = Vector2(d, d)
+	b.custom_minimum_size = b.size
+	b.position = Vector2(inner.position.x + inner.size.x - d - 8.0, inner.position.y + 8.0)
+	panel.add_child(b)
+	return b
 
 
 ## Tombol bergambar yang membal sedikit saat ditekan.

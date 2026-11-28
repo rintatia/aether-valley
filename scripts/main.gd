@@ -125,10 +125,10 @@ func _screenshots() -> void:
 	await get_tree().create_timer(0.3).timeout
 	w.call("_set_zoom", 2.0)
 	await _shot(pre + "05_ladang_siang.png")
-	var petak: Array = (Art.load_json("res://data/maps/ladang.json")["petak_tanah"]) as Array
-	var p0: Dictionary = petak[0] as Dictionary
-	(w.get("player") as Node2D).position = Vector2(float(p0["x"]) + 120.0, float(p0["y"]) + 40.0)
-	await _shot(pre + "06_ladang_tanah.png")
+	w.call("_set_zoom", 1.0)
+	await get_tree().create_timer(0.2).timeout
+	await _shot(pre + "06_ladang_luas.png")
+	w.call("_set_zoom", 2.0)
 	var hud: CanvasLayer = w.get("hud") as CanvasLayer
 	hud.call("open_popup", "tas")
 	await get_tree().create_timer(0.2).timeout
@@ -144,9 +144,11 @@ func _screenshots() -> void:
 	await _shot(pre + "10_buku.png")
 	hud.call("close_popup")
 	Game.minute = 21.0 * 60.0 + 30.0
+	Game.day = 60
 	await get_tree().create_timer(0.2).timeout
 	await _shot(pre + "11_ladang_malam.png")
 	Game.minute = 9.0 * 60.0
+	Game.raining = true
 	w.call("load_map", "hutan", "ladang")
 	(w.get("player") as Node2D).position = Vector2(1900, 1500)
 	w.call("_set_zoom", 3.0)
@@ -288,7 +290,27 @@ func _selftest() -> void:
 	_check((hud.get("lb_coin") as Label).text == "99999999" and (hud.get("lb_crystal") as Label).text == "999999", "koin 8 digit, kristal 6 digit")
 	Game.coins = 500
 	Game.crystals = 0
-	world.load_map("ladang", "hutan")
-	_check(world.sway_items.size() > 300, "ladang: flora bergoyang %d" % world.sway_items.size())
+	var fs: int = (hud.get("lb_coin") as Label).get_theme_font_size("font_size")
+	_check(UIKit.font.get_string_size("99999999", HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x <= (hud.get("lb_coin") as Label).size.x, "8 digit koin muat")
+	for st: String in ["spring", "summer", "autumn", "winter", "rainy"]:
+		_check(ResourceLoader.exists("res://assets/ui/lencana_%s.png" % st), "lencana %s ada" % st)
+	_check((hud.get("badge") as TextureRect).texture != null, "lencana tampil di status bar")
+	# ladang harus kosong untuk bercocok tanam: tanpa bercak tanah & tanpa taburan semak di bagian dalam
+	var lj: Dictionary = Art.load_json("res://data/maps/ladang.json")
+	_check((lj["petak_tanah"] as Array).is_empty(), "ladang tanpa bercak tanah/pasir")
+	var rows: Array = lj["rows"] as Array
+	var inside: int = 0
+	for it: Variant in (Art.load_json("res://data/maps/ladang_pohon.json")["pohon"] as Array):
+		var d: Dictionary = it as Dictionary
+		var cx: int = clampi(int(d["x"]) / 32, 0, str(rows[0]).length() - 1)
+		var cy: int = clampi(int(d["y"]) / 32, 0, rows.size() - 1)
+		var far: bool = true
+		for yy: int in range(maxi(0, cy - 5), mini(rows.size(), cy + 6)):
+			if str(rows[yy]).substr(maxi(0, cx - 5), 11).contains("#"):
+				far = false
+				break
+		if far:
+			inside += 1
+	_check(inside == 0, "bagian dalam ladang bebas semak (%d)" % inside)
 	print("SELFTEST " + ("OK" if _fails == 0 else "GAGAL (%d)" % _fails))
 	get_tree().quit(0 if _fails == 0 else 1)

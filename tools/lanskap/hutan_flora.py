@@ -212,9 +212,9 @@ if cfg['tebang']:
             items.append({"obj": pick(UNDER), "x": t['x'] + int(rng.integers(-14, 15)), "y": t['y'] + int(rng.integers(2, 8)),
                           "skala": round(UNDER_SCALE * rng.uniform(0.8, 1.05), 3), "cermin": bool(rng.random() < 0.5)})
 
-# ---------- bercak tanah / tanah berbatu / pasir (ladang saja, sedikit) ----------
+# ---------- bercak tanah / pasir: DIMATIKAN (ladang harus bisa ditanami) ----------
 petak = []
-if MID == 'ladang':
+if False:
     jenis = ['tanah', 'tanah_batu', 'pasir', 'tanah', 'tanah_batu', 'pasir', 'tanah', 'tanah_batu', 'pasir', 'tanah']
     sp = (C // 2 * T, R // 2 * T)
     for jn in jenis:
@@ -237,9 +237,9 @@ def on_petak(x, y, extra=14):
     return any((x - p['x']) ** 2 + ((y - p['y']) * 1.25) ** 2 < (p['r'] * 1.25 + extra) ** 2 for p in petak)
 
 
-# ---------- taburan flora: Hutan Tebang FL15-16 & FL18-44, Ladang FL20-44 ----------
-if True:
-    DENS = 1.0 if cfg['tebang'] else 0.35
+# ---------- taburan flora: Hutan Tebang saja (ladang dibiarkan kosong untuk bercocok tanam) ----------
+if cfg['tebang']:
+    DENS = 1.0
     SEMAK = ['FL20', 'FL21', 'FL22', 'FL23', 'FL24', 'FL25', 'FL26', 'FL27']
     BUNGA = ['FL28', 'FL29', 'FL30', 'FL31', 'FL32', 'FL33', 'FL34', 'FL40', 'FL41']
     RUMPUT = ['FL35', 'FL36', 'FL37', 'FL38', 'FL39']
