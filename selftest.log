@@ -1,0 +1,280 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS  tekstur tile_rumput 32x32 (placeholder)
+PASS  tekstur tile_tanah 32x32 (placeholder)
+PASS  tekstur tile_jalan 32x32 (placeholder)
+PASS  tekstur tile_pasir 32x32 (placeholder)
+PASS  tekstur tile_air 32x32 (placeholder)
+PASS  tekstur obj_pohon 64x96 (placeholder)
+PASS  tekstur obj_semak 35x31
+PASS  tekstur obj_batu 32x32 (placeholder)
+PASS  tekstur obj_kotak_kirim 32x32 (placeholder)
+PASS  tekstur bld_rumah 160x128 (placeholder)
+PASS  tekstur bld_toko 160x128 (placeholder)
+PASS  tekstur bld_pandai 160x128 (placeholder)
+PASS  tekstur bld_kedai 160x128 (placeholder)
+PASS  tekstur bld_tetua 160x128 (placeholder)
+PASS  tekstur chr_petani_bawah 128x48 (placeholder)
+PASS  tekstur chr_petani_atas 128x48 (placeholder)
+PASS  tekstur chr_petani_kiri 128x48 (placeholder)
+PASS  tekstur chr_petani_kanan 128x48 (placeholder)
+PASS  tekstur obj_pohon_ek 46x54
+PASS  tekstur obj_pohon_pinus 31x54
+PASS  tekstur obj_pohon_birch 34x54
+PASS  tekstur obj_pohon_muda 23x33
+PASS  tekstur obj_semak_beri 32x30
+PASS  tekstur obj_tunggul 29x26
+PASS  tekstur obj_kayu_lumut 39x27
+PASS  tekstur obj_rumput_tinggi 27x32
+PASS  tekstur obj_rumput_kecil 24x20
+PASS  tekstur obj_rumpun_rumput 46x32
+PASS  tekstur obj_gandum_liar 32x32
+PASS  tekstur obj_semak_bunga 40x29
+PASS  tekstur obj_batu_lumut 34x27
+PASS  tekstur obj_jamur 22x21
+PASS  tekstur obj_pakis 35x29
+PASS  permainan baru: 10 alat di tas
+PASS  peta ladang 155x116 (15x lebih luas)
+PASS  20 potongan lanskap terpasang
+PASS  batu/kayu/tunggul tak bisa ditembus (140/140)
+PASS  pohon & semak batas terpasang (1129 node)
+PASS  batas peta tidak bisa dilewati
+PASS  ladang: seluruh tepi tertutup kecuali gerbang
+PASS  gerbang ladang di kiri menuju hutan
+PASS  gerbang ladang di bawah menuju danau
+PASS  jalur ladang: muncul -> gerbang danau
+PASS  jalur ladang: muncul -> gerbang hutan
+PASS  peta hutan 120x90 (9x luas awal)
+PASS  12 potongan lanskap hutan
+PASS  hutan: seluruh tepi tertutup kecuali gerbang
+PASS  datang dari ladang muncul di sisi kanan hutan
+PASS  pohon tebang: 972
+PASS  hutan rapat tapi tetap bisa dijelajahi sampai tengah
+PASS  tanaman bergoyang: 1702
+PASS  tanaman bisa diterobos
+PASS  diterobos -> bergoyang
+PASS  tunggul & kayu (FL15/16/18/19) tak bisa dilewati (35/35)
+PASS  tebang 3x -> tumbang ke kiri, tunggul tetap, batang rebah menghalangi
+PASS  kapak pembersih sesuai ukuran (ukuran 2 -> 5x)
+PASS  tumbangan & tunggul hilang, kayu +6
+PASS  tumbuh lagi di titik acak (77, 27) -> (28, 61) (FL10)
+PASS  jalur hutan -> gerbang ladang
+PASS  shortcut bar 15 slot
+PASS  tas: kayu tertumpuk (maks 999/slot)
+PASS  popup tas 5x5
+PASS  tas halaman 2 dari 10
+PASS  tas berputar ke halaman 10
+PASS  hapus barang dari tas (-999 Wood)
+PASS  popup peta terbuka
+PASS  popup buku terbuka
+PASS  popup setting terbuka
+PASS  popup tertutup
+PASS  jam 06:00, Mon . 1, siang
+PASS  setengah hari = 12 jam -> 18:00 malam
+PASS  hari 29 = Summer 1
+PASS  koin 8 digit, kristal 6 digit
+PASS  8 digit koin muat
+PASS  lencana spring ada
+PASS  lencana summer ada
+PASS  lencana autumn ada
+PASS  lencana winter ada
+PASS  lencana rainy ada
+PASS  lencana tampil di status bar
+PASS  ladang tanpa bercak tanah/pasir
+PASS  bagian dalam ladang bebas semak (0)
+PASS  peta danau 130x96
+PASS  danau: seluruh tepi tertutup kecuali gerbang
+PASS  datang dari ladang muncul di sisi atas danau, di dalam (y=4)
+PASS  jalur danau -> gerbang ladang
+PASS  kembali dari danau muncul di sisi bawah ladang, di dalam (y=113)
+PASS  Hoe: rumput ladang jadi tanah olahan
+PASS  Watering Can: tanah olahan basah
+PASS  hari baru: tanah kering lagi
+PASS  Trowel: tanah olahan rata lagi
+PASS  Knife: satu semak terpotong
+PASS  Sickle: 5 tanaman sekitar terpotong
+PASS  kupu-kupu: 12
+PASS  Bug Net: kupu-kupu tertangkap
+PASS  Sword & Fishing Rod bisa dipakai
+PASS  Axe: mengayun ke pohon (total hp 2916 -> 2915)
+PASS  batu bisa dipecah: 128
+PASS  Pickaxe: batu pecah, +Stone, jalan terbuka
+PASS  female memakai animasi bingkai (8 frame)
+PASS  Hoe: animasi cangkul apa adanya, alat kita tidak digambar
+PASS  kapak -> animasi tebang
+PASS  beliung -> animasi tambang
+PASS  penyiram -> animasi siram
+PASS  arit -> animasi panen
+PASS  pedang -> animasi serang
+PASS  pancing -> animasi pancing
+PASS  selesai aksi -> kembali diam
+PASS  berjalan -> animasi jalan
+PASS  male memakai animasi bingkai (8 frame)
+PASS  male: Pickaxe -> animasi tambang
+PASS  Walk Speed: Fast lebih cepat
+PASS  Volume 50%
+PASS  Settings dengan tema Mint terbuka
+PASS  koin awal 1.000.000, kristal 10.000
+PASS  katalog: 290 barang, 30 tanaman, 5 ternak
+PASS  semua gambar katalog ada (hilang 0)
+PASS  Shop: beli Cottage 80,000
+PASS  Shop: beli Manor dengan kristal
+PASS  hasil panen tidak dijual di Shop
+PASS  zoom out dibatasi (min 1.50)
+PASS  Build mode: panel Build tampil
+PASS  Build: Cottage diletakkan
+PASS  Cottage menghalangi jalan, keluar dari tas
+PASS  Build: Cottage dipindah, tempat lama terbuka
+PASS  Build: Cottage disimpan kembali ke tas
+PASS  tabur bibit Carrot
+PASS  disiram 3 hari: Carrot matang
+PASS  panen Carrot
+PASS  tanpa disiram tidak tumbuh
+PASS  jual hasil panen di Shop
+PASS  ayam diletakkan di Farm
+PASS  anak ayam belum dewasa
+PASS  ayam dewasa & bertelur (brown_egg)
+PASS  ambil hasil ternak
+PASS  resep: Milk x2 -> Cheese
+PASS  popup toko terbuka
+PASS  popup buku terbuka
+PASS  simpan ke perangkat
+PASS  permainan baru mengosongkan progres
+PASS  muat simpanan
+PASS  koin, hari, tas kembali
+PASS  bangunan Farm kembali di tempatnya
+PASS  tanaman kembali (hari tumbuh)
+PASS  tanah olahan & basah kembali
+PASS  ternak kembali
+PASS  peta & posisi pemain kembali
+PASS  Farm dibangun ulang dari simpanan
+PASS  tombol Save (manual)
+PASS  simpan otomatis setiap 1 menit
+SELFTEST OK
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+---EXPORT---
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Project initialization (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Scanning file structure...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Loading global class names...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifying GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Creating autoload scripts...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Initializing plugins...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Starting file scan...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mexport[22m | Started Exporting for Android (105 steps)[39m[0m
+ERROR: No project icon specified. Please specify one in the Project Settings under Application -> Config -> Icon
+   at: load_icon_refs (platform/android/export/export_plugin.cpp:1941)
+0 param: --xr_mode_regular
+1 param: --xr-mode
+2 param: off
+3 param: --fullscreen
+4 param: --edge_to_edge
+5 param: --background_color
+6 param: #000000
+[   0% ] [90m[1mexport[22m | Creating APK...[39m[0m
+ADDING: assets/dexopt/baseline.prof
+ADDING: assets/dexopt/baseline.profm
+ADDING: classes.dex
+ADDING: lib/arm64-v8a/libc++_shared.so
+ADDING: lib/arm64-v8a/libgodot_android.so
+Adding application metadata org.godotengine.rendering.method
+Adding application metadata org.godotengine.editor.version
+Adding permission android.permission.INTERNET
+ADDING: AndroidManifest.xml
+ADDING: res/anim-v21/fragment_fast_out_extra_slow_in.xml
+ADDING: res/animator/fragment_close_enter.xml
+ADDING: res/animator/fragment_close_exit.xml
+ADDING: res/animator/fragment_fade_enter.xml
+ADDING: res/animator/fragment_fade_exit.xml
+ADDING: res/animator/fragment_open_enter.xml
+ADDING: res/animator/fragment_open_exit.xml
+ADDING: res/drawable-hdpi-v4/notification_bg_low_normal.9.png
+ADDING: res/drawable-hdpi-v4/notification_bg_low_pressed.9.png
+ADDING: res/drawable-hdpi-v4/notification_bg_normal.9.png
+ADDING: res/drawable-hdpi-v4/notification_bg_normal_pressed.9.png
+ADDING: res/drawable-hdpi-v4/notify_panel_notification_icon_bg.png
+ADDING: res/drawable-mdpi-v4/notification_bg_low_normal.9.png
+ADDING: res/drawable-mdpi-v4/notification_bg_low_pressed.9.png
+ADDING: res/drawable-mdpi-v4/notification_bg_normal.9.png
+ADDING: res/drawable-mdpi-v4/notification_bg_normal_pressed.9.png
+ADDING: res/drawable-mdpi-v4/notify_panel_notification_icon_bg.png
+ADDING: res/drawable-v21/notification_action_background.xml
+ADDING: res/drawable-v23/compat_splash_screen.xml
+ADDING: res/drawable-v23/compat_splash_screen_no_icon_background.xml
+ADDING: res/drawable-xhdpi-v4/notification_bg_low_normal.9.png
+ADDING: res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png
+ADDING: res/drawable-xhdpi-v4/notification_bg_normal.9.png
+ADDING: res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png
+ADDING: res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png
+ADDING: res/drawable/icon_background.xml
+ADDING: res/drawable/notification_bg.xml
+ADDING: res/drawable/notification_bg_low.xml
+ADDING: res/drawable/notification_icon_background.xml
+ADDING: res/drawable/notification_tile_bg.xml
+ADDING: res/drawable/splash_branding_image.webp
+ADDING: res/drawable/splash_icon.webp
+ADDING: res/layout-v21/notification_action.xml
+ADDING: res/layout-v21/notification_action_tombstone.xml
+ADDING: res/layout-v21/notification_template_custom_big.xml
+ADDING: res/layout-v21/notification_template_icon_group.xml
+ADDING: res/layout/custom_dialog.xml
+ADDING: res/layout/godot_app_layout.xml
+ADDING: res/layout/notification_template_part_chronometer.xml
+ADDING: res/layout/notification_template_part_time.xml
+ADDING: res/layout/remote_godot_fragment_layout.xml
+ADDING: res/layout/snackbar.xml
+ADDING: res/layout/splash_screen_view.xml
+ADDING: res/mipmap-anydpi-v26/icon.xml
+ADDING: res/mipmap-hdpi-v4/icon.webp
+ADDING: res/mipmap-hdpi-v4/icon_background.webp
+ADDING: res/mipmap-hdpi-v4/icon_foreground.webp
+ADDING: res/mipmap-hdpi-v4/icon_monochrome.webp
+ADDING: res/mipmap-mdpi-v4/icon.webp
+ADDING: res/mipmap-mdpi-v4/icon_background.webp
+ADDING: res/mipmap-mdpi-v4/icon_foreground.webp
+ADDING: res/mipmap-mdpi-v4/icon_monochrome.webp
+ADDING: res/mipmap-xhdpi-v4/icon.webp
+ADDING: res/mipmap-xhdpi-v4/icon_background.webp
+ADDING: res/mipmap-xhdpi-v4/icon_foreground.webp
+ADDING: res/mipmap-xhdpi-v4/icon_monochrome.webp
+ADDING: res/mipmap-xxhdpi-v4/icon.webp
+ADDING: res/mipmap-xxhdpi-v4/icon_background.webp
+ADDING: res/mipmap-xxhdpi-v4/icon_foreground.webp
+ADDING: res/mipmap-xxhdpi-v4/icon_monochrome.webp
+ADDING: res/mipmap-xxxhdpi-v4/icon.webp
+ADDING: res/mipmap-xxxhdpi-v4/icon_background.webp
+ADDING: res/mipmap-xxxhdpi-v4/icon_foreground.webp
+ADDING: res/mipmap-xxxhdpi-v4/icon_monochrome.webp
+ADDING: res/mipmap/icon.webp
+ADDING: res/mipmap/icon_background.webp
+ADDING: res/mipmap/icon_foreground.webp
+ADDING: res/mipmap/icon_monochrome.webp
+ADDING: res/xml/godot_provider_paths.xml
+ADDING: resources.arsc
+ADDING: DebugProbesKt.bin
+ADDING: kotlin-tooling-metadata.json
+ADDING: kotlin/annotation/annotation.kotlin_builtins
+ADDING: kotlin/collections/collections.kotlin_builtins
+ADDING: kotlin/concurrent/atomics/atomics.kotlin_builtins
+ADDING: kotlin/coroutines/coroutines.kotlin_builtins
+ADDING: kotlin/internal/internal.kotlin_builtins
+ADDING: kotlin/kotlin.kotlin_builtins
+ADDING: kotlin/ranges/ranges.kotlin_builtins
+ADDING: kotlin/reflect/reflect.kotlin_builtins
+[   0% ] [90m[1mexport[22m | Adding files...[39m[0m
+[  97% ] [90m[1mexport[22m | Aligning APK...[39m[0m
+[  98% ] [90m[1mexport[22m | Signing release APK...[39m[0m
+Signing binary using: 
+/usr/local/lib/android/sdk/build-tools/36.0.0/apksigner sign --verbose --ks <REDACTED> --ks-pass pass:<REDACTED> --ks-key-alias <REDACTED> /home/runner/work/aether-valley/aether-valley/build/AetherValley-7.0.0.build.76.apk
+Signed
+
+[  99% ] [90m[1mexport[22m | Verifying APK...[39m[0m
+[92m[ DONE ][39m [1mexport[22m
+[0m
+cannot connect to daemon at tcp:5037: Connection refused
