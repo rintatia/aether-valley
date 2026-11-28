@@ -19,6 +19,11 @@ func _ready() -> void:
 	var m: Dictionary = Art.load_json("res://data/uji_tileset.json")
 	map_w = int(m["cols"])
 	map_h = int(m["rows"])
+	if m.has("bg"):
+		var bg: Polygon2D = Polygon2D.new()
+		bg.color = Color(str(m["bg"]))
+		bg.polygon = PackedVector2Array([Vector2(0, 0), Vector2(map_w * T, 0), Vector2(map_w * T, map_h * T), Vector2(0, map_h * T)])
+		add_child(bg)
 	for L: Variant in m["layers"] as Array:
 		var ld: Dictionary = L as Dictionary
 		var arr: PackedByteArray = PackedByteArray()
@@ -56,7 +61,7 @@ func _hud() -> void:
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(root)
-	var l: Label = UIKit.label("Uji tileset SpriteCook (32 px)  -  seret untuk geser", 22)
+	var l: Label = UIKit.label("Uji tileset rumput Aether Valley (32 px)  -  seret untuk geser", 22)
 	l.position = Vector2(16, 12)
 	root.add_child(l)
 	var box: HBoxContainer = HBoxContainer.new()
