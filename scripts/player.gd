@@ -1,11 +1,11 @@
 extends Node2D
 ## Pemain v7. Posisi = titik kaki.
-## Female: animasi bingkai (diam, jalan, ngantuk, cangkul, siram, panen, tebang, tambang, serang, pancing)
+## Male & female: animasi bingkai (diam, jalan, ngantuk, cangkul, siram, panen, tebang, tambang, serang, pancing)
 ## dari assets/karakter_v7/anim_cewek (pixel art 178 px, digambar 0.5x). Animasi dipakai apa adanya (dengan alat
 ## bawaannya); alat kita TIDAK digambar selama animasi agar tidak campur aduk.
-## Male: sprite tunggal dengan langkah memantul (animasi menyusul).
+## (anim_cowok / anim_cewek). Bila folder animasi tidak ada: sprite tunggal dengan langkah memantul.
 
-const ANIM_DIR: String = "res://assets/karakter_v7/anim_cewek/"
+var ANIM_DIR: String = "res://assets/karakter_v7/anim_cewek/"
 ## alat -> animasi yang dipakai
 const TOOL_ANIM: Dictionary = {"cangkul": "cangkul", "sekop": "cangkul", "penyiram": "siram", "arit": "panen",
 	"pisau": "panen", "kapak": "tebang", "beliung": "tambang", "pedang": "serang", "jaring": "serang", "pancing": "pancing"}
@@ -53,7 +53,9 @@ func _ready() -> void:
 
 
 func refresh_look() -> void:
-	animated = Game.gender == "cewek" and ResourceLoader.exists(ANIM_DIR + "anim.json")
+	ANIM_DIR = "res://assets/karakter_v7/anim_%s/" % Game.gender
+	tex_cache.clear()
+	animated = ResourceLoader.exists(ANIM_DIR + "anim.json")
 	spr.rotation = 0.0
 	spr.position = Vector2.ZERO
 	spr.scale = Vector2.ONE
@@ -192,7 +194,7 @@ func _v(x: Variant) -> Vector2:
 	return Vector2(float(arr[0]), float(arr[1]))
 
 
-## Alat dipakai. Female: animasi aksi + alat kita di tangan. Male: alat diayun sederhana.
+## Alat dipakai: animasi aksi (dengan alat bawaannya). Tanpa animasi: alat kita diayun sederhana.
 func use_tool(tex: Texture2D, kind: String) -> void:
 	if animated:
 		acting = str(TOOL_ANIM.get(kind, "serang"))

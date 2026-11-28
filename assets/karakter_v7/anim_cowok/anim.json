@@ -1,0 +1,21 @@
+{
+ "_note": "Animasi male asli (bingkai 178x178, 8 bingkai mendatar, digambar 0.5x). Alat bawaan animasi dipakai apa adanya; alat kita tidak digambar saat animasi.",
+ "frame": 178,
+ "kaki": [
+  89,
+  172
+ ],
+ "skala": 0.5,
+ "fps": {
+  "diam": 6,
+  "jalan": 10,
+  "ngantuk": 5,
+  "cangkul": 12,
+  "siram": 9,
+  "panen": 12,
+  "tebang": 12,
+  "tambang": 12,
+  "serang": 14,
+  "pancing": 10
+ }
+}

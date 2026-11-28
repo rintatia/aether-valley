@@ -62,18 +62,17 @@ func _ready() -> void:
 		inner.add_child(sh)
 		shadows[g] = sh
 		base_pos[g] = b.position
-		# karakter female baru (pixel art) di dalam kartu
-		if g == "female":
-			var at: AtlasTexture = AtlasTexture.new()
-			at.atlas = load("res://assets/karakter_v7/anim_cewek/diam.png") as Texture2D
-			at.region = Rect2(40, 6, 100, 168)
-			var fig: TextureRect = TextureRect.new()
-			fig.texture = at
-			fig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			fig.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			fig.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			UIKit.place(fig, b.size, [0.12, 0.11, 0.88, 0.80])
-			b.add_child(fig)
+		# karakter (pixel art, bingkai pertama animasi diam) di dalam kartu
+		var at: AtlasTexture = AtlasTexture.new()
+		at.atlas = load("res://assets/karakter_v7/anim_%s/diam.png" % ("cewek" if g == "female" else "cowok")) as Texture2D
+		at.region = Rect2(40, 6, 100, 168)
+		var fig: TextureRect = TextureRect.new()
+		fig.texture = at
+		fig.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		fig.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		fig.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		UIKit.place(fig, b.size, [0.12, 0.11, 0.88, 0.80])
+		b.add_child(fig)
 		# nama di papan bawah kartu (teks font, bukan bagian gambar)
 		var nm: Label = UIKit.pixel_label("Male" if g == "male" else "Female", int(card_h * 0.075), UIKit.BROWN)
 		UIKit.place(nm, b.size, [0.2, 0.855, 0.8, 0.975] if g == "male" else [0.2, 0.86, 0.8, 0.965])

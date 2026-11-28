@@ -179,10 +179,19 @@ func _screenshots() -> void:
 	await get_tree().create_timer(0.3).timeout
 	await _shot(pre + "12_hutan.png")
 	Game.raining = false
+	Game.gender = "cowok"
+	(w.get("player") as Node2D).call("refresh_look")
 	w.call("load_map", "danau", "ladang")
 	w.call("_set_zoom", 1.0)
 	await get_tree().create_timer(0.3).timeout
 	await _shot(pre + "14_danau.png")
+	w.call("_set_zoom", 3.0)
+	var pm: Node2D = w.get("player") as Node2D
+	pm.set("hold_anim", true)
+	for sh2: Array in [["kapak", "22_male_tebang"], ["penyiram", "23_male_siram"]]:
+		w.call("use_tool", str(sh2[0]), pm.position + Vector2(60, 0))
+		pm.set("anim_t", 0.42)
+		await _shot(pre + str(sh2[1]) + ".png")
 	get_tree().quit(0)
 
 
@@ -453,6 +462,11 @@ func _selftest() -> void:
 	pl.set("walking", false)
 	Game.gender = "cowok"
 	pl.call("refresh_look")
+	_check(bool(pl.get("animated")) and (pl.get("spr") as Sprite2D).hframes == 8, "male memakai animasi bingkai (8 frame)")
+	pl.call("use_tool", Game.item_icon("beliung"), "beliung")
+	pl.call("_process_anim", 0.01)
+	_check(str(pl.get("cur_anim")) == "tambang", "male: Pickaxe -> animasi tambang")
+	pl.call("_process_anim", 2.0)
 	# --- pengaturan ---
 	var sp0: float = Game.speed_mult()
 	Game.speed_name = "Fast"
