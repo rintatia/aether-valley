@@ -75,7 +75,8 @@ func _choose_gender() -> void:
 	c.connect("confirmed", func(g: String) -> void:
 		Game.gender = g
 		Game.colors = {}
-		_customize())
+		# layar kustom karakter (scripts/layar_kustom.gd) disimpan untuk nanti; sekarang langsung masuk ladang
+		_start_world())
 	c.connect("closed", _title)
 
 
@@ -118,16 +119,7 @@ func _screenshots() -> void:
 	pil.call("_choose", "female")
 	await get_tree().create_timer(0.2).timeout
 	await _shot(pre + "03_pilih_female.png")
-	Game.gender = "cewek"
-	_customize()
-	var kus: Control = layer.get_child(0) as Control
-	var sw: Dictionary = kus.get("swatches") as Dictionary
-	for part: String in ["hair", "shirt", "pants"]:
-		var b: Button = (sw[part] as Array)[3] as Button
-		b.emit_signal("pressed")
-	await get_tree().create_timer(0.25).timeout
-	await _shot(pre + "04_kustom.png")
-	_start_world()
+	pil.call("_confirm")
 	var w: Node2D = world
 	Game.add_item("kayu", 37)
 	await get_tree().create_timer(0.3).timeout
