@@ -253,10 +253,7 @@ func _build_cut_textures(img: Image, regions: Dictionary) -> void:
 			line.append(h - cut + off + (2 if x % 4 < 2 else 0))
 		var stump: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
 		var top: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
-		var wood_a: Color = Color("#E8B28A")
-		var wood_b: Color = Color("#C68672")
 		for x: int in range(w):
-			var first: bool = true
 			for y: int in range(h):
 				var c: Color = src.get_pixel(x, y)
 				if c.a == 0.0:
@@ -264,14 +261,22 @@ func _build_cut_textures(img: Image, regions: Dictionary) -> void:
 				if y < line[x]:
 					top.set_pixel(x, y, c)
 				else:
-					if first and y <= line[x] + 1:
-						# permukaan potong: kayu terang (selang-seling dua nada seperti serat)
-						stump.set_pixel(x, y, wood_a if (x + y) % 3 != 0 else wood_b)
-						first = false
-					else:
-						stump.set_pixel(x, y, c)
-						first = false
-		cut_tex[code] = {"stump": ImageTexture.create_from_image(stump), "top": ImageTexture.create_from_image(top), "cut": cut}
+					stump.set_pixel(x, y, c)
+		# versi "sudah dipotong": permukaan kayu terang di sepanjang garis gerigi (tunggul & ujung batang)
+		var stump_cut: Image = stump.duplicate() as Image
+		var top_cut: Image = top.duplicate() as Image
+		var wood_a: Color = Color("#E8B28A")
+		var wood_b: Color = Color("#C68672")
+		for x: int in range(w):
+			var ys: int = line[x]
+			if ys < h and stump.get_pixel(x, ys).a > 0.0:
+				stump_cut.set_pixel(x, ys, wood_a if x % 3 != 0 else wood_b)
+				if ys + 1 < h and stump.get_pixel(x, ys + 1).a > 0.0 and x % 2 == 0:
+					stump_cut.set_pixel(x, ys + 1, wood_b)
+			if ys - 1 >= 0 and top.get_pixel(x, ys - 1).a > 0.0:
+				top_cut.set_pixel(x, ys - 1, wood_a if x % 3 != 1 else wood_b)
+		cut_tex[code] = {"stump": ImageTexture.create_from_image(stump), "top": ImageTexture.create_from_image(top),
+			"stump_cut": ImageTexture.create_from_image(stump_cut), "top_cut": ImageTexture.create_from_image(top_cut), "cut": cut}
 
 
 func _spawn_chop_tree(t: Dictionary) -> Dictionary:
@@ -302,6 +307,8 @@ func _raise_tree(ct: Dictionary, t: Dictionary) -> void:
 	var top: Sprite2D = _tex_sprite(ctx["top"] as Texture2D, sc, mirror)
 	top.position = Vector2(-w * sc / 2.0, -h * sc + cut * sc)
 	pivot.add_child(top)
+	ct["stump_spr"] = stump
+	ct["top_spr"] = top
 	var hh: float = h * sc
 	var size: int = 2 if hh >= 160.0 else (1 if hh >= 110.0 else 0)   # 0 kecil, 1 sedang, 2 besar
 	ct["t"] = t
@@ -454,6 +461,9 @@ func chop_hit(i: int) -> void:
 ## Batang atas tumbang SELALU ke kiri, tunggul tetap berdiri. Batang rebah menghalangi jalan.
 func _fell(ct: Dictionary) -> void:
 	ct["state"] = "tumbang"
+	var ctx: Dictionary = cut_tex[str((ct["t"] as Dictionary)["obj"])] as Dictionary
+	(ct["stump_spr"] as Sprite2D).texture = ctx["stump_cut"] as Texture2D
+	(ct["top_spr"] as Sprite2D).texture = ctx["top_cut"] as Texture2D
 	ct["hp"] = CLEAR_HITS[int(ct["size"])]
 	var pivot: Node2D = ct["pivot"] as Node2D
 	var fall: Tween = create_tween()
