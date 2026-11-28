@@ -1,0 +1,5667 @@
+{
+ "items": {
+  "treasure_chest": {
+   "nama": "Treasure Chest",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/treasure_chest.png",
+   "ukuran": [
+    50.4,
+    42.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1200,
+   "kristal": 0,
+   "desk": "Stores your treasures in style.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/treasure_chest.png"
+  },
+  "mushroom_mailbox": {
+   "nama": "Mushroom Mailbox",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_mailbox.png",
+   "ukuran": [
+    43.5,
+    54.3
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "A cute toadstool mailbox for letters.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_mailbox.png"
+  },
+  "arrow_signpost": {
+   "nama": "Arrow Signpost",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/arrow_signpost.png",
+   "ukuran": [
+    37.5,
+    54.3
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "Points visitors the right way.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/arrow_signpost.png"
+  },
+  "scarecrow": {
+   "nama": "Scarecrow",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/scarecrow.png",
+   "ukuran": [
+    46.5,
+    58.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 800,
+   "kristal": 0,
+   "desk": "Keeps crows away from your crops.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/scarecrow.png"
+  },
+  "compost_bin": {
+   "nama": "Compost Bin",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/compost_bin.png",
+   "ukuran": [
+    46.2,
+    49.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "Turns scraps into rich soil.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/compost_bin.png"
+  },
+  "beehive": {
+   "nama": "Beehive",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/beehive.png",
+   "ukuran": [
+    39.9,
+    48.9
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2500,
+   "kristal": 0,
+   "desk": "Home for friendly honeybees.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/beehive.png"
+  },
+  "log_pond": {
+   "nama": "Log Pond",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/log_pond.png",
+   "ukuran": [
+    89.1,
+    37.8
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 1800,
+   "kristal": 0,
+   "desk": "A hollow log filled with lilies.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/log_pond.png"
+  },
+  "feed_trough": {
+   "nama": "Feed Trough",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/feed_trough.png",
+   "ukuran": [
+    74.1,
+    37.8
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "Hay trough for your animals.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/feed_trough.png"
+  },
+  "hay_roll": {
+   "nama": "Hay Roll",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/hay_roll.png",
+   "ukuran": [
+    55.5,
+    49.5
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A big round bale of hay.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/hay_roll.png"
+  },
+  "hay_stack": {
+   "nama": "Hay Stack",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/hay_stack.png",
+   "ukuran": [
+    51.9,
+    54.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 600,
+   "kristal": 0,
+   "desk": "Stacked bales tied with vines.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/hay_stack.png"
+  },
+  "pumpkin_wheelbarrow": {
+   "nama": "Pumpkin Wheelbarrow",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/pumpkin_wheelbarrow.png",
+   "ukuran": [
+    59.7,
+    50.7
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1500,
+   "kristal": 0,
+   "desk": "A harvest wheelbarrow full of flowers.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/pumpkin_wheelbarrow.png"
+  },
+  "apple_crate": {
+   "nama": "Apple Crate",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/apple_crate.png",
+   "ukuran": [
+    27.3,
+    34.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 350,
+   "kristal": 0,
+   "desk": "A crate of fresh apples.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/apple_crate.png"
+  },
+  "heart_barrel": {
+   "nama": "Heart Barrel",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/heart_barrel.png",
+   "ukuran": [
+    35.4,
+    45.3
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A sturdy barrel with a heart mark.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/heart_barrel.png"
+  },
+  "leaf_barrel": {
+   "nama": "Leaf Barrel",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/leaf_barrel.png",
+   "ukuran": [
+    35.4,
+    44.7
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A sturdy barrel with a leaf mark.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/leaf_barrel.png"
+  },
+  "rain_barrel": {
+   "nama": "Rain Barrel",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/rain_barrel.png",
+   "ukuran": [
+    35.4,
+    51.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "Collects rainwater for the garden.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/rain_barrel.png"
+  },
+  "firewood_shed": {
+   "nama": "Firewood Shed",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/firewood_shed.png",
+   "ukuran": [
+    51.6,
+    48.3
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2200,
+   "kristal": 0,
+   "desk": "Keeps firewood dry.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/firewood_shed.png"
+  },
+  "vine_lantern_post": {
+   "nama": "Vine Lantern Post",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/vine_lantern_post.png",
+   "ukuran": [
+    30.9,
+    57.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1100,
+   "kristal": 0,
+   "desk": "A glowing lantern wrapped in vines.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/vine_lantern_post.png"
+  },
+  "twin_lantern_post": {
+   "nama": "Twin Lantern Post",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/twin_lantern_post.png",
+   "ukuran": [
+    33.6,
+    56.7
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1400,
+   "kristal": 0,
+   "desk": "Two lanterns light the path.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/twin_lantern_post.png"
+  },
+  "dog_house": {
+   "nama": "Dog House",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/dog_house.png",
+   "ukuran": [
+    39.9,
+    47.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2000,
+   "kristal": 0,
+   "desk": "A cozy house for a loyal dog.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/dog_house.png"
+  },
+  "garden_bench": {
+   "nama": "Garden Bench",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/garden_bench.png",
+   "ukuran": [
+    55.5,
+    41.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1300,
+   "kristal": 0,
+   "desk": "A carved bench to rest on.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/garden_bench.png"
+  },
+  "pet_bowl": {
+   "nama": "Pet Bowl",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/pet_bowl.png",
+   "ukuran": [
+    31.2,
+    18.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 200,
+   "kristal": 0,
+   "desk": "A food bowl for pets.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/pet_bowl.png"
+  },
+  "small_rock": {
+   "nama": "Small Rock",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/small_rock.png",
+   "ukuran": [
+    24.6,
+    18.3
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 100,
+   "kristal": 0,
+   "desk": "A small decorative rock.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/small_rock.png"
+  },
+  "rock_pile": {
+   "nama": "Rock Pile",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/rock_pile.png",
+   "ukuran": [
+    33.0,
+    26.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "A pile of grey stones.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/rock_pile.png"
+  },
+  "rope_bench": {
+   "nama": "Rope Bench",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/rope_bench.png",
+   "ukuran": [
+    62.4,
+    43.5
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 1000,
+   "kristal": 0,
+   "desk": "A rustic bench between rope posts.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/rope_bench.png"
+  },
+  "hanging_sign": {
+   "nama": "Hanging Sign",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/hanging_sign.png",
+   "ukuran": [
+    33.6,
+    45.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 450,
+   "kristal": 0,
+   "desk": "A wooden sign with a heart.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/hanging_sign.png"
+  },
+  "tool_shelter": {
+   "nama": "Tool Shelter",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/tool_shelter.png",
+   "ukuran": [
+    46.8,
+    48.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1600,
+   "kristal": 0,
+   "desk": "Keeps your tools tidy.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/tool_shelter.png"
+  },
+  "seed_sack_decor": {
+   "nama": "Seed Sack Decor",
+   "kategori": "Decor",
+   "musim": "",
+   "gambar": "res://assets/katalog/seed_sack_decor.png",
+   "ukuran": [
+    29.7,
+    37.5
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "A burlap sack of seeds.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/seed_sack_decor.png"
+  },
+  "windmill": {
+   "nama": "Windmill",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/windmill.png",
+   "ukuran": [
+    218.2,
+    290.2
+   ],
+   "tapak": [
+    6,
+    3
+   ],
+   "lewat": false,
+   "harga": 0,
+   "kristal": 200,
+   "desk": "Grinds wheat into flour.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/windmill.png"
+  },
+  "greenhouse": {
+   "nama": "Greenhouse",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/greenhouse.png",
+   "ukuran": [
+    199.6,
+    273.4
+   ],
+   "tapak": [
+    5,
+    3
+   ],
+   "lewat": false,
+   "harga": 0,
+   "kristal": 300,
+   "desk": "Grow crops in any season.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/greenhouse.png"
+  },
+  "silo": {
+   "nama": "Silo",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/silo.png",
+   "ukuran": [
+    109.7,
+    251.7
+   ],
+   "tapak": [
+    3,
+    3
+   ],
+   "lewat": false,
+   "harga": 45000,
+   "kristal": 0,
+   "desk": "Stores hay for your animals.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/silo.png"
+  },
+  "kitchen_hut": {
+   "nama": "Kitchen Hut",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/kitchen_hut.png",
+   "ukuran": [
+    169.9,
+    182.9
+   ],
+   "tapak": [
+    5,
+    2
+   ],
+   "lewat": false,
+   "harga": 60000,
+   "kristal": 0,
+   "desk": "A stone kitchen for cooking recipes.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/kitchen_hut.png"
+  },
+  "blacksmith": {
+   "nama": "Blacksmith",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/blacksmith.png",
+   "ukuran": [
+    196.5,
+    199.6
+   ],
+   "tapak": [
+    5,
+    2
+   ],
+   "lewat": false,
+   "harga": 80000,
+   "kristal": 0,
+   "desk": "Upgrade and repair tools.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/blacksmith.png"
+  },
+  "storehouse": {
+   "nama": "Storehouse",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/storehouse.png",
+   "ukuran": [
+    146.3,
+    163.7
+   ],
+   "tapak": [
+    4,
+    2
+   ],
+   "lewat": false,
+   "harga": 40000,
+   "kristal": 0,
+   "desk": "Extra storage for your goods.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/storehouse.png"
+  },
+  "stable": {
+   "nama": "Stable",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/stable.png",
+   "ukuran": [
+    241.8,
+    148.8
+   ],
+   "tapak": [
+    6,
+    2
+   ],
+   "lewat": false,
+   "harga": 90000,
+   "kristal": 0,
+   "desk": "A home for horses.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stable.png"
+  },
+  "well": {
+   "nama": "Well",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/well.png",
+   "ukuran": [
+    87.4,
+    120.9
+   ],
+   "tapak": [
+    2,
+    2
+   ],
+   "lewat": false,
+   "harga": 12000,
+   "kristal": 0,
+   "desk": "Refill your watering can here.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/well.png"
+  },
+  "root_cellar": {
+   "nama": "Root Cellar",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/root_cellar.png",
+   "ukuran": [
+    184.8,
+    132.1
+   ],
+   "tapak": [
+    5,
+    2
+   ],
+   "lewat": false,
+   "harga": 55000,
+   "kristal": 0,
+   "desk": "A hillside cellar that keeps food cool.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/root_cellar.png"
+  },
+  "big_barn": {
+   "nama": "Big Barn",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/big_barn.png",
+   "ukuran": [
+    223.2,
+    275.3
+   ],
+   "tapak": [
+    6,
+    3
+   ],
+   "lewat": false,
+   "harga": 150000,
+   "kristal": 0,
+   "desk": "A large barn for cows and sheep.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/big_barn.png"
+  },
+  "cow_barn": {
+   "nama": "Cow Barn",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/cow_barn.png",
+   "ukuran": [
+    189.7,
+    203.4
+   ],
+   "tapak": [
+    5,
+    2
+   ],
+   "lewat": false,
+   "harga": 110000,
+   "kristal": 0,
+   "desk": "A barn for cows. Comes with milk cans.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/cow_barn.png"
+  },
+  "chicken_coop": {
+   "nama": "Chicken Coop",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/chicken_coop.png",
+   "ukuran": [
+    84.9,
+    142.6
+   ],
+   "tapak": [
+    2,
+    2
+   ],
+   "lewat": false,
+   "harga": 35000,
+   "kristal": 0,
+   "desk": "A cozy coop for chickens.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/chicken_coop.png"
+  },
+  "duck_house": {
+   "nama": "Duck House",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/duck_house.png",
+   "ukuran": [
+    94.2,
+    119.7
+   ],
+   "tapak": [
+    3,
+    2
+   ],
+   "lewat": false,
+   "harga": 30000,
+   "kristal": 0,
+   "desk": "A pond hut for ducks.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/duck_house.png"
+  },
+  "goose_house": {
+   "nama": "Goose House",
+   "kategori": "Buildings",
+   "musim": "",
+   "gambar": "res://assets/katalog/goose_house.png",
+   "ukuran": [
+    119.0,
+    135.2
+   ],
+   "tapak": [
+    3,
+    2
+   ],
+   "lewat": false,
+   "harga": 30000,
+   "kristal": 0,
+   "desk": "A mossy hut for geese.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/goose_house.png"
+  },
+  "cottage": {
+   "nama": "Cottage",
+   "kategori": "Houses",
+   "musim": "",
+   "gambar": "res://assets/katalog/cottage.png",
+   "ukuran": [
+    155.0,
+    177.9
+   ],
+   "tapak": [
+    4,
+    2
+   ],
+   "lewat": false,
+   "harga": 80000,
+   "kristal": 0,
+   "desk": "A small ivy-covered cottage.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/cottage.png"
+  },
+  "farmhouse": {
+   "nama": "Farmhouse",
+   "kategori": "Houses",
+   "musim": "",
+   "gambar": "res://assets/katalog/farmhouse.png",
+   "ukuran": [
+    208.3,
+    220.1
+   ],
+   "tapak": [
+    6,
+    2
+   ],
+   "lewat": false,
+   "harga": 180000,
+   "kristal": 0,
+   "desk": "A warm family farmhouse with roses.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/farmhouse.png"
+  },
+  "manor": {
+   "nama": "Manor",
+   "kategori": "Houses",
+   "musim": "",
+   "gambar": "res://assets/katalog/manor.png",
+   "ukuran": [
+    217.6,
+    255.4
+   ],
+   "tapak": [
+    6,
+    3
+   ],
+   "lewat": false,
+   "harga": 0,
+   "kristal": 500,
+   "desk": "A grand manor with a moon weathervane.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/manor.png"
+  },
+  "vine_log_fence": {
+   "nama": "Vine Log Fence",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/vine_log_fence.png",
+   "ukuran": [
+    110.1,
+    31.0
+   ],
+   "tapak": [
+    3,
+    1
+   ],
+   "lewat": false,
+   "harga": 600,
+   "kristal": 0,
+   "desk": "Long log fence with vines.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/vine_log_fence.png"
+  },
+  "log_fence_post": {
+   "nama": "Log Fence Post",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/log_fence_post.png",
+   "ukuran": [
+    43.8,
+    76.5
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "A tall log post section.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/log_fence_post.png"
+  },
+  "log_arch_gate": {
+   "nama": "Log Arch Gate",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/log_arch_gate.png",
+   "ukuran": [
+    67.2,
+    48.3
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": true,
+   "harga": 1500,
+   "kristal": 0,
+   "desk": "An arched gateway made of logs.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/log_arch_gate.png"
+  },
+  "log_fence": {
+   "nama": "Log Fence",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/log_fence.png",
+   "ukuran": [
+    54.1,
+    31.0
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "Medium log fence.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/log_fence.png"
+  },
+  "short_log_fence": {
+   "nama": "Short Log Fence",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/short_log_fence.png",
+   "ukuran": [
+    32.6,
+    31.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "Short log fence.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/short_log_fence.png"
+  },
+  "heart_picket_fence": {
+   "nama": "Heart Picket Fence",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/heart_picket_fence.png",
+   "ukuran": [
+    110.7,
+    31.0
+   ],
+   "tapak": [
+    3,
+    1
+   ],
+   "lewat": false,
+   "harga": 600,
+   "kristal": 0,
+   "desk": "Long white picket fence with hearts.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/heart_picket_fence.png"
+  },
+  "arrow_sign_board": {
+   "nama": "Arrow Sign Board",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/arrow_sign_board.png",
+   "ukuran": [
+    25.0,
+    77.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A post full of arrow signs.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/arrow_sign_board.png"
+  },
+  "picket_fence": {
+   "nama": "Picket Fence",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/picket_fence.png",
+   "ukuran": [
+    43.8,
+    31.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "Medium picket fence.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/picket_fence.png"
+  },
+  "short_picket_fence": {
+   "nama": "Short Picket Fence",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/short_picket_fence.png",
+   "ukuran": [
+    34.2,
+    31.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "Short picket fence.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/short_picket_fence.png"
+  },
+  "picket_gate": {
+   "nama": "Picket Gate",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/picket_gate.png",
+   "ukuran": [
+    66.2,
+    33.6
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": true,
+   "harga": 1800,
+   "kristal": 0,
+   "desk": "A double gate with lanterns.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/picket_gate.png"
+  },
+  "long_stone_wall": {
+   "nama": "Long Stone Wall",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/long_stone_wall.png",
+   "ukuran": [
+    109.8,
+    26.6
+   ],
+   "tapak": [
+    3,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "Mossy stone wall.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/long_stone_wall.png"
+  },
+  "stone_wall_post": {
+   "nama": "Stone Wall Post",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/stone_wall_post.png",
+   "ukuran": [
+    21.1,
+    35.5
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "A narrow stone wall section.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stone_wall_post.png"
+  },
+  "stone_wall_corner": {
+   "nama": "Stone Wall Corner",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/stone_wall_corner.png",
+   "ukuran": [
+    51.8,
+    29.4
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "Stone wall corner.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stone_wall_corner.png"
+  },
+  "stone_wall_end": {
+   "nama": "Stone Wall End",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/stone_wall_end.png",
+   "ukuran": [
+    36.5,
+    32.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "Stone wall end piece.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stone_wall_end.png"
+  },
+  "stone_arch": {
+   "nama": "Stone Arch",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/stone_arch.png",
+   "ukuran": [
+    65.6,
+    32.6
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": true,
+   "harga": 2200,
+   "kristal": 0,
+   "desk": "An open stone archway.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stone_arch.png"
+  },
+  "stone_gate": {
+   "nama": "Stone Gate",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/stone_gate.png",
+   "ukuran": [
+    64.6,
+    39.4
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": true,
+   "harga": 2800,
+   "kristal": 0,
+   "desk": "A stone arch with an iron gate.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stone_gate.png"
+  },
+  "stone_wall": {
+   "nama": "Stone Wall",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/stone_wall.png",
+   "ukuran": [
+    72.6,
+    26.2
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "Medium stone wall.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stone_wall.png"
+  },
+  "short_stone_wall": {
+   "nama": "Short Stone Wall",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/short_stone_wall.png",
+   "ukuran": [
+    31.7,
+    25.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 350,
+   "kristal": 0,
+   "desk": "Short stone wall.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/short_stone_wall.png"
+  },
+  "stone_wall_tower": {
+   "nama": "Stone Wall Tower",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/stone_wall_tower.png",
+   "ukuran": [
+    41.3,
+    35.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 550,
+   "kristal": 0,
+   "desk": "Stone wall with a raised end.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stone_wall_tower.png"
+  },
+  "stone_wall_step": {
+   "nama": "Stone Wall Step",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/stone_wall_step.png",
+   "ukuran": [
+    37.4,
+    36.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 550,
+   "kristal": 0,
+   "desk": "Stepped stone wall.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/stone_wall_step.png"
+  },
+  "low_stone_wall": {
+   "nama": "Low Stone Wall",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/low_stone_wall.png",
+   "ukuran": [
+    39.4,
+    25.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "Low stone wall.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/low_stone_wall.png"
+  },
+  "mushroom_fence": {
+   "nama": "Mushroom Fence",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_fence.png",
+   "ukuran": [
+    100.8,
+    31.7
+   ],
+   "tapak": [
+    3,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "Long fence topped with mushrooms.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_fence.png"
+  },
+  "mushroom_post": {
+   "nama": "Mushroom Post",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_post.png",
+   "ukuran": [
+    39.0,
+    76.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "Tall mushroom fence post.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_post.png"
+  },
+  "mushroom_post_pair": {
+   "nama": "Mushroom Post Pair",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_post_pair.png",
+   "ukuran": [
+    13.8,
+    53.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 350,
+   "kristal": 0,
+   "desk": "Two mushroom posts.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_post_pair.png"
+  },
+  "mushroom_fence_corner": {
+   "nama": "Mushroom Fence Corner",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_fence_corner.png",
+   "ukuran": [
+    42.9,
+    34.9
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 450,
+   "kristal": 0,
+   "desk": "Mushroom fence corner.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_fence_corner.png"
+  },
+  "short_mushroom_fence": {
+   "nama": "Short Mushroom Fence",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/short_mushroom_fence.png",
+   "ukuran": [
+    37.1,
+    29.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "Short mushroom fence.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/short_mushroom_fence.png"
+  },
+  "mushroom_gate": {
+   "nama": "Mushroom Gate",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_gate.png",
+   "ukuran": [
+    60.2,
+    56.6
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": true,
+   "harga": 2500,
+   "kristal": 0,
+   "desk": "A magical mushroom gate.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_gate.png"
+  },
+  "mushroom_fence_piece": {
+   "nama": "Mushroom Fence Piece",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_fence_piece.png",
+   "ukuran": [
+    46.4,
+    31.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "Mushroom fence piece.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_fence_piece.png"
+  },
+  "mushroom_fence_rail": {
+   "nama": "Mushroom Fence Rail",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_fence_rail.png",
+   "ukuran": [
+    46.1,
+    31.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "Mushroom fence rail.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_fence_rail.png"
+  },
+  "mushroom_fence_bend": {
+   "nama": "Mushroom Fence Bend",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_fence_bend.png",
+   "ukuran": [
+    35.2,
+    32.3
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 350,
+   "kristal": 0,
+   "desk": "Mushroom fence bend.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_fence_bend.png"
+  },
+  "mushroom_fence_bit": {
+   "nama": "Mushroom Fence Bit",
+   "kategori": "Fences",
+   "musim": "",
+   "gambar": "res://assets/katalog/mushroom_fence_bit.png",
+   "ukuran": [
+    39.0,
+    32.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "Small mushroom fence.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_fence_bit.png"
+  },
+  "cherry_blossom_tree": {
+   "nama": "Cherry Blossom Tree",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/cherry_blossom_tree.png",
+   "ukuran": [
+    84.0,
+    97.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 3000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/cherry_blossom_tree.png"
+  },
+  "white_blossom_tree": {
+   "nama": "White Blossom Tree",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/white_blossom_tree.png",
+   "ukuran": [
+    93.6,
+    107.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2800,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/white_blossom_tree.png"
+  },
+  "oak_tree": {
+   "nama": "Oak Tree",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/oak_tree.png",
+   "ukuran": [
+    94.2,
+    112.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/oak_tree.png"
+  },
+  "pine_tree": {
+   "nama": "Pine Tree",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/pine_tree.png",
+   "ukuran": [
+    72.6,
+    114.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1800,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/pine_tree.png"
+  },
+  "birch_tree": {
+   "nama": "Birch Tree",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/birch_tree.png",
+   "ukuran": [
+    71.4,
+    114.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/birch_tree.png"
+  },
+  "willow_tree": {
+   "nama": "Willow Tree",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/willow_tree.png",
+   "ukuran": [
+    96.6,
+    111.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 3200,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/willow_tree.png"
+  },
+  "young_tree": {
+   "nama": "Young Tree",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/young_tree.png",
+   "ukuran": [
+    66.0,
+    86.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/young_tree.png"
+  },
+  "sapling": {
+   "nama": "Sapling",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/sapling.png",
+   "ukuran": [
+    35.4,
+    60.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/sapling.png"
+  },
+  "tree_stump": {
+   "nama": "Tree Stump",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/tree_stump.png",
+   "ukuran": [
+    59.4,
+    49.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/tree_stump.png"
+  },
+  "mossy_flower_log": {
+   "nama": "Mossy Flower Log",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/mossy_flower_log.png",
+   "ukuran": [
+    98.4,
+    57.0
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 800,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mossy_flower_log.png"
+  },
+  "small_pine": {
+   "nama": "Small Pine",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/small_pine.png",
+   "ukuran": [
+    61.8,
+    88.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/small_pine.png"
+  },
+  "sprouting_stump": {
+   "nama": "Sprouting Stump",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/sprouting_stump.png",
+   "ukuran": [
+    72.6,
+    66.0
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/sprouting_stump.png"
+  },
+  "blossom_log": {
+   "nama": "Blossom Log",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/blossom_log.png",
+   "ukuran": [
+    98.4,
+    59.4
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 800,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/blossom_log.png"
+  },
+  "green_bush": {
+   "nama": "Green Bush",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/green_bush.png",
+   "ukuran": [
+    55.2,
+    50.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/green_bush.png"
+  },
+  "pink_flower_bush": {
+   "nama": "Pink Flower Bush",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/pink_flower_bush.png",
+   "ukuran": [
+    60.6,
+    51.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 600,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/pink_flower_bush.png"
+  },
+  "white_flower_bush": {
+   "nama": "White Flower Bush",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/white_flower_bush.png",
+   "ukuran": [
+    58.2,
+    53.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 600,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/white_flower_bush.png"
+  },
+  "round_bush": {
+   "nama": "Round Bush",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/round_bush.png",
+   "ukuran": [
+    74.4,
+    66.0
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/round_bush.png"
+  },
+  "azalea_bush": {
+   "nama": "Azalea Bush",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/azalea_bush.png",
+   "ukuran": [
+    83.4,
+    67.8
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 800,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/azalea_bush.png"
+  },
+  "hydrangea_bush": {
+   "nama": "Hydrangea Bush",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/hydrangea_bush.png",
+   "ukuran": [
+    68.4,
+    70.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 800,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/hydrangea_bush.png"
+  },
+  "blossom_shrub": {
+   "nama": "Blossom Shrub",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/blossom_shrub.png",
+   "ukuran": [
+    53.4,
+    72.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/blossom_shrub.png"
+  },
+  "tall_blossom_shrub": {
+   "nama": "Tall Blossom Shrub",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/tall_blossom_shrub.png",
+   "ukuran": [
+    55.2,
+    83.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/tall_blossom_shrub.png"
+  },
+  "yellow_tulip": {
+   "nama": "Yellow Tulip",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/yellow_tulip.png",
+   "ukuran": [
+    31.2,
+    45.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/yellow_tulip.png"
+  },
+  "red_tulip": {
+   "nama": "Red Tulip",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/red_tulip.png",
+   "ukuran": [
+    29.4,
+    46.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/red_tulip.png"
+  },
+  "daisies": {
+   "nama": "Daisies",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/daisies.png",
+   "ukuran": [
+    41.4,
+    46.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/daisies.png"
+  },
+  "dandelions": {
+   "nama": "Dandelions",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/dandelions.png",
+   "ukuran": [
+    41.4,
+    40.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 100,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/dandelions.png"
+  },
+  "crocus": {
+   "nama": "Crocus",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/crocus.png",
+   "ukuran": [
+    26.4,
+    40.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/crocus.png"
+  },
+  "bluebells": {
+   "nama": "Bluebells",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/bluebells.png",
+   "ukuran": [
+    34.2,
+    42.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/bluebells.png"
+  },
+  "lily_of_the_valley": {
+   "nama": "Lily of the Valley",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/lily_of_the_valley.png",
+   "ukuran": [
+    39.0,
+    48.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/lily_of_the_valley.png"
+  },
+  "clover": {
+   "nama": "Clover",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/clover.png",
+   "ukuran": [
+    36.0,
+    36.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 80,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/clover.png"
+  },
+  "fern_sprout": {
+   "nama": "Fern Sprout",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/fern_sprout.png",
+   "ukuran": [
+    35.4,
+    49.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 100,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/fern_sprout.png"
+  },
+  "tall_grass": {
+   "nama": "Tall Grass",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/tall_grass.png",
+   "ukuran": [
+    48.0,
+    55.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 80,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/tall_grass.png"
+  },
+  "short_grass": {
+   "nama": "Short Grass",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/short_grass.png",
+   "ukuran": [
+    44.4,
+    37.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 60,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/short_grass.png"
+  },
+  "cattails": {
+   "nama": "Cattails",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/cattails.png",
+   "ukuran": [
+    38.4,
+    60.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/cattails.png"
+  },
+  "pink_flower_patch": {
+   "nama": "Pink Flower Patch",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/pink_flower_patch.png",
+   "ukuran": [
+    87.0,
+    69.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/pink_flower_patch.png"
+  },
+  "yellow_flower_patch": {
+   "nama": "Yellow Flower Patch",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/yellow_flower_patch.png",
+   "ukuran": [
+    87.0,
+    69.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/yellow_flower_patch.png"
+  },
+  "mossy_boulder": {
+   "nama": "Mossy Boulder",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/mossy_boulder.png",
+   "ukuran": [
+    87.0,
+    63.6
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mossy_boulder.png"
+  },
+  "mossy_rock": {
+   "nama": "Mossy Rock",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/mossy_rock.png",
+   "ukuran": [
+    46.8,
+    43.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mossy_rock.png"
+  },
+  "pebbles": {
+   "nama": "Pebbles",
+   "kategori": "Nature",
+   "musim": "Spring",
+   "gambar": "res://assets/katalog/pebbles.png",
+   "ukuran": [
+    28.2,
+    23.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 80,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Spring.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/pebbles.png"
+  },
+  "red_maple": {
+   "nama": "Red Maple",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/red_maple.png",
+   "ukuran": [
+    78.0,
+    88.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2800,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/red_maple.png"
+  },
+  "orange_tree": {
+   "nama": "Orange Tree",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/orange_tree.png",
+   "ukuran": [
+    78.6,
+    94.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2600,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/orange_tree.png"
+  },
+  "golden_tree": {
+   "nama": "Golden Tree",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/golden_tree.png",
+   "ukuran": [
+    72.6,
+    101.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2600,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/golden_tree.png"
+  },
+  "turning_oak": {
+   "nama": "Turning Oak",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/turning_oak.png",
+   "ukuran": [
+    88.2,
+    111.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2400,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/turning_oak.png"
+  },
+  "golden_birch": {
+   "nama": "Golden Birch",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/golden_birch.png",
+   "ukuran": [
+    64.2,
+    113.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2400,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/golden_birch.png"
+  },
+  "autumn_pine": {
+   "nama": "Autumn Pine",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/autumn_pine.png",
+   "ukuran": [
+    60.6,
+    114.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1800,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/autumn_pine.png"
+  },
+  "bare_tree": {
+   "nama": "Bare Tree",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/bare_tree.png",
+   "ukuran": [
+    73.2,
+    106.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1500,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/bare_tree.png"
+  },
+  "small_maple": {
+   "nama": "Small Maple",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/small_maple.png",
+   "ukuran": [
+    52.2,
+    59.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/small_maple.png"
+  },
+  "maple_sapling": {
+   "nama": "Maple Sapling",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/maple_sapling.png",
+   "ukuran": [
+    48.6,
+    60.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/maple_sapling.png"
+  },
+  "red_sapling": {
+   "nama": "Red Sapling",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/red_sapling.png",
+   "ukuran": [
+    42.6,
+    60.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/red_sapling.png"
+  },
+  "leafy_stump": {
+   "nama": "Leafy Stump",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/leafy_stump.png",
+   "ukuran": [
+    55.8,
+    45.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/leafy_stump.png"
+  },
+  "mushroom_log": {
+   "nama": "Mushroom Log",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/mushroom_log.png",
+   "ukuran": [
+    105.0,
+    49.8
+   ],
+   "tapak": [
+    3,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_log.png"
+  },
+  "little_stump": {
+   "nama": "Little Stump",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/little_stump.png",
+   "ukuran": [
+    38.4,
+    31.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/little_stump.png"
+  },
+  "old_stump": {
+   "nama": "Old Stump",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/old_stump.png",
+   "ukuran": [
+    50.4,
+    40.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 350,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/old_stump.png"
+  },
+  "mossy_log": {
+   "nama": "Mossy Log",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/mossy_log.png",
+   "ukuran": [
+    99.6,
+    43.8
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 800,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mossy_log.png"
+  },
+  "orange_bush": {
+   "nama": "Orange Bush",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/orange_bush.png",
+   "ukuran": [
+    60.6,
+    54.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/orange_bush.png"
+  },
+  "crimson_bush": {
+   "nama": "Crimson Bush",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/crimson_bush.png",
+   "ukuran": [
+    59.4,
+    52.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/crimson_bush.png"
+  },
+  "yellow_bush": {
+   "nama": "Yellow Bush",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/yellow_bush.png",
+   "ukuran": [
+    59.4,
+    52.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/yellow_bush.png"
+  },
+  "berry_bush": {
+   "nama": "Berry Bush",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/berry_bush.png",
+   "ukuran": [
+    57.6,
+    48.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/berry_bush.png"
+  },
+  "marigolds": {
+   "nama": "Marigolds",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/marigolds.png",
+   "ukuran": [
+    48.0,
+    46.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/marigolds.png"
+  },
+  "asters": {
+   "nama": "Asters",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/asters.png",
+   "ukuran": [
+    43.8,
+    47.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/asters.png"
+  },
+  "yellow_marigolds": {
+   "nama": "Yellow Marigolds",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/yellow_marigolds.png",
+   "ukuran": [
+    44.4,
+    46.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/yellow_marigolds.png"
+  },
+  "spider_lily": {
+   "nama": "Spider Lily",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/spider_lily.png",
+   "ukuran": [
+    45.0,
+    48.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 200,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/spider_lily.png"
+  },
+  "autumn_cattails": {
+   "nama": "Autumn Cattails",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/autumn_cattails.png",
+   "ukuran": [
+    42.6,
+    57.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/autumn_cattails.png"
+  },
+  "golden_grass": {
+   "nama": "Golden Grass",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/golden_grass.png",
+   "ukuran": [
+    45.0,
+    46.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 80,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/golden_grass.png"
+  },
+  "dry_grass": {
+   "nama": "Dry Grass",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/dry_grass.png",
+   "ukuran": [
+    42.6,
+    46.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 60,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/dry_grass.png"
+  },
+  "red_daisies": {
+   "nama": "Red Daisies",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/red_daisies.png",
+   "ukuran": [
+    40.8,
+    45.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/red_daisies.png"
+  },
+  "brown_grass": {
+   "nama": "Brown Grass",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/brown_grass.png",
+   "ukuran": [
+    39.6,
+    39.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 60,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/brown_grass.png"
+  },
+  "dry_tuft": {
+   "nama": "Dry Tuft",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/dry_tuft.png",
+   "ukuran": [
+    40.8,
+    28.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 50,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/dry_tuft.png"
+  },
+  "autumn_fern": {
+   "nama": "Autumn Fern",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/autumn_fern.png",
+   "ukuran": [
+    49.2,
+    51.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/autumn_fern.png"
+  },
+  "toadstools": {
+   "nama": "Toadstools",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/toadstools.png",
+   "ukuran": [
+    39.0,
+    36.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/toadstools.png"
+  },
+  "brown_mushrooms": {
+   "nama": "Brown Mushrooms",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/brown_mushrooms.png",
+   "ukuran": [
+    43.8,
+    41.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/brown_mushrooms.png"
+  },
+  "acorns_and_leaves": {
+   "nama": "Acorns and Leaves",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/acorns_and_leaves.png",
+   "ukuran": [
+    47.4,
+    37.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 80,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/acorns_and_leaves.png"
+  },
+  "big_toadstool": {
+   "nama": "Big Toadstool",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/big_toadstool.png",
+   "ukuran": [
+    33.6,
+    36.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/big_toadstool.png"
+  },
+  "mushroom_cluster": {
+   "nama": "Mushroom Cluster",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/mushroom_cluster.png",
+   "ukuran": [
+    42.0,
+    38.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/mushroom_cluster.png"
+  },
+  "acorns": {
+   "nama": "Acorns",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/acorns.png",
+   "ukuran": [
+    42.6,
+    29.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 60,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/acorns.png"
+  },
+  "leaf_pile": {
+   "nama": "Leaf Pile",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/leaf_pile.png",
+   "ukuran": [
+    73.2,
+    51.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 200,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/leaf_pile.png"
+  },
+  "golden_leaf_pile": {
+   "nama": "Golden Leaf Pile",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/golden_leaf_pile.png",
+   "ukuran": [
+    45.0,
+    31.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 180,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/golden_leaf_pile.png"
+  },
+  "leafy_boulder": {
+   "nama": "Leafy Boulder",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/leafy_boulder.png",
+   "ukuran": [
+    75.6,
+    49.8
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/leafy_boulder.png"
+  },
+  "autumn_pebbles": {
+   "nama": "Autumn Pebbles",
+   "kategori": "Nature",
+   "musim": "Autumn",
+   "gambar": "res://assets/katalog/autumn_pebbles.png",
+   "ukuran": [
+    37.8,
+    25.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 80,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Autumn.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/autumn_pebbles.png"
+  },
+  "snowy_pine": {
+   "nama": "Snowy Pine",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_pine.png",
+   "ukuran": [
+    60.0,
+    85.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_pine.png"
+  },
+  "frosted_pine": {
+   "nama": "Frosted Pine",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/frosted_pine.png",
+   "ukuran": [
+    66.0,
+    101.4
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/frosted_pine.png"
+  },
+  "dark_snowy_pine": {
+   "nama": "Dark Snowy Pine",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/dark_snowy_pine.png",
+   "ukuran": [
+    64.2,
+    117.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2200,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/dark_snowy_pine.png"
+  },
+  "snowy_oak": {
+   "nama": "Snowy Oak",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_oak.png",
+   "ukuran": [
+    88.8,
+    108.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_oak.png"
+  },
+  "snowy_birch": {
+   "nama": "Snowy Birch",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_birch.png",
+   "ukuran": [
+    72.0,
+    111.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_birch.png"
+  },
+  "holly_tree": {
+   "nama": "Holly Tree",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/holly_tree.png",
+   "ukuran": [
+    92.4,
+    111.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 2800,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/holly_tree.png"
+  },
+  "frost_tree": {
+   "nama": "Frost Tree",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/frost_tree.png",
+   "ukuran": [
+    84.6,
+    111.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 3200,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/frost_tree.png"
+  },
+  "small_snowy_pine": {
+   "nama": "Small Snowy Pine",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/small_snowy_pine.png",
+   "ukuran": [
+    43.2,
+    63.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 800,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/small_snowy_pine.png"
+  },
+  "young_snowy_pine": {
+   "nama": "Young Snowy Pine",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/young_snowy_pine.png",
+   "ukuran": [
+    52.2,
+    88.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 1000,
+   "kristal": 0,
+   "desk": "A decorative tree. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/young_snowy_pine.png"
+  },
+  "snowy_stump": {
+   "nama": "Snowy Stump",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_stump.png",
+   "ukuran": [
+    52.8,
+    48.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_stump.png"
+  },
+  "snow_capped_stump": {
+   "nama": "Snow Capped Stump",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snow_capped_stump.png",
+   "ukuran": [
+    59.4,
+    54.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 350,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snow_capped_stump.png"
+  },
+  "big_snowy_stump": {
+   "nama": "Big Snowy Stump",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/big_snowy_stump.png",
+   "ukuran": [
+    64.8,
+    57.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/big_snowy_stump.png"
+  },
+  "snowy_log": {
+   "nama": "Snowy Log",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_log.png",
+   "ukuran": [
+    72.0,
+    58.2
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_log.png"
+  },
+  "long_snowy_log": {
+   "nama": "Long Snowy Log",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/long_snowy_log.png",
+   "ukuran": [
+    92.4,
+    60.0
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 800,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/long_snowy_log.png"
+  },
+  "snowy_bush": {
+   "nama": "Snowy Bush",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_bush.png",
+   "ukuran": [
+    64.2,
+    66.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_bush.png"
+  },
+  "holly_bush": {
+   "nama": "Holly Bush",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/holly_bush.png",
+   "ukuran": [
+    67.8,
+    66.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/holly_bush.png"
+  },
+  "frosty_twigs": {
+   "nama": "Frosty Twigs",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/frosty_twigs.png",
+   "ukuran": [
+    66.0,
+    66.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 300,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/frosty_twigs.png"
+  },
+  "winterberry_twigs": {
+   "nama": "Winterberry Twigs",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/winterberry_twigs.png",
+   "ukuran": [
+    66.6,
+    73.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/winterberry_twigs.png"
+  },
+  "snow_bush": {
+   "nama": "Snow Bush",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snow_bush.png",
+   "ukuran": [
+    69.6,
+    76.8
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 500,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snow_bush.png"
+  },
+  "berry_holly_bush": {
+   "nama": "Berry Holly Bush",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/berry_holly_bush.png",
+   "ukuran": [
+    69.0,
+    77.4
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/berry_holly_bush.png"
+  },
+  "bare_twigs": {
+   "nama": "Bare Twigs",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/bare_twigs.png",
+   "ukuran": [
+    66.0,
+    69.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/bare_twigs.png"
+  },
+  "red_berry_bush": {
+   "nama": "Red Berry Bush",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/red_berry_bush.png",
+   "ukuran": [
+    70.8,
+    74.4
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 700,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/red_berry_bush.png"
+  },
+  "snowdrops": {
+   "nama": "Snowdrops",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowdrops.png",
+   "ukuran": [
+    42.6,
+    49.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowdrops.png"
+  },
+  "camellias": {
+   "nama": "Camellias",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/camellias.png",
+   "ukuran": [
+    53.4,
+    54.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 200,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/camellias.png"
+  },
+  "hellebores": {
+   "nama": "Hellebores",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/hellebores.png",
+   "ukuran": [
+    45.0,
+    54.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 200,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/hellebores.png"
+  },
+  "frost_grass": {
+   "nama": "Frost Grass",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/frost_grass.png",
+   "ukuran": [
+    49.8,
+    48.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 80,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/frost_grass.png"
+  },
+  "winter_grass": {
+   "nama": "Winter Grass",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/winter_grass.png",
+   "ukuran": [
+    51.6,
+    34.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 60,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/winter_grass.png"
+  },
+  "snowy_cattails": {
+   "nama": "Snowy Cattails",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_cattails.png",
+   "ukuran": [
+    46.2,
+    61.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_cattails.png"
+  },
+  "holly_sprig": {
+   "nama": "Holly Sprig",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/holly_sprig.png",
+   "ukuran": [
+    36.0,
+    42.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/holly_sprig.png"
+  },
+  "frost_fern": {
+   "nama": "Frost Fern",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/frost_fern.png",
+   "ukuran": [
+    51.6,
+    52.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/frost_fern.png"
+  },
+  "snow_mushrooms": {
+   "nama": "Snow Mushrooms",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snow_mushrooms.png",
+   "ukuran": [
+    33.6,
+    34.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 120,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snow_mushrooms.png"
+  },
+  "snow_pile": {
+   "nama": "Snow Pile",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snow_pile.png",
+   "ukuran": [
+    58.8,
+    24.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 100,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snow_pile.png"
+  },
+  "snowdrift": {
+   "nama": "Snowdrift",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowdrift.png",
+   "ukuran": [
+    67.8,
+    48.0
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 150,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowdrift.png"
+  },
+  "icicle_branch": {
+   "nama": "Icicle Branch",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/icicle_branch.png",
+   "ukuran": [
+    62.4,
+    55.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/icicle_branch.png"
+  },
+  "frozen_branch": {
+   "nama": "Frozen Branch",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/frozen_branch.png",
+   "ukuran": [
+    60.6,
+    58.8
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 250,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/frozen_branch.png"
+  },
+  "snowy_boulder": {
+   "nama": "Snowy Boulder",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_boulder.png",
+   "ukuran": [
+    60.0,
+    53.4
+   ],
+   "tapak": [
+    2,
+    1
+   ],
+   "lewat": false,
+   "harga": 900,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_boulder.png"
+  },
+  "snowy_rocks": {
+   "nama": "Snowy Rocks",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_rocks.png",
+   "ukuran": [
+    60.6,
+    43.2
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_rocks.png"
+  },
+  "snowy_rock": {
+   "nama": "Snowy Rock",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/snowy_rock.png",
+   "ukuran": [
+    59.4,
+    51.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": false,
+   "harga": 400,
+   "kristal": 0,
+   "desk": "A natural decoration. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/snowy_rock.png"
+  },
+  "frosty_pebbles": {
+   "nama": "Frosty Pebbles",
+   "kategori": "Nature",
+   "musim": "Winter",
+   "gambar": "res://assets/katalog/frosty_pebbles.png",
+   "ukuran": [
+    52.2,
+    36.6
+   ],
+   "tapak": [
+    1,
+    1
+   ],
+   "lewat": true,
+   "harga": 80,
+   "kristal": 0,
+   "desk": "A small plant you can walk through. Best in Winter.",
+   "tumpuk": 99,
+   "ikon": "res://assets/katalog/frosty_pebbles.png"
+  },
+  "bibit_wheat": {
+   "nama": "Wheat Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_wheat.png",
+   "harga": 20,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 4 days.",
+   "tumpuk": 99
+  },
+  "wheat": {
+   "nama": "Wheat",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_wheat.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 52,
+   "desk": "Harvested from Wheat Seeds after 4 days.",
+   "tumpuk": 999
+  },
+  "bibit_carrot": {
+   "nama": "Carrot Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_carrot.png",
+   "harga": 25,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 3 days.",
+   "tumpuk": 99
+  },
+  "carrot": {
+   "nama": "Carrot",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_carrot.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 55,
+   "desk": "Harvested from Carrot Seeds after 3 days.",
+   "tumpuk": 999
+  },
+  "bibit_turnip": {
+   "nama": "Turnip Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_turnip.png",
+   "harga": 20,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 3 days.",
+   "tumpuk": 99
+  },
+  "turnip": {
+   "nama": "Turnip",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_turnip.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 47,
+   "desk": "Harvested from Turnip Seeds after 3 days.",
+   "tumpuk": 999
+  },
+  "bibit_bellflower": {
+   "nama": "Bellflower Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_bellflower.png",
+   "harga": 40,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 4 days.",
+   "tumpuk": 99
+  },
+  "bellflower": {
+   "nama": "Bellflower",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_bellflower.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 84,
+   "desk": "Harvested from Bellflower Seeds after 4 days.",
+   "tumpuk": 999
+  },
+  "bibit_potato": {
+   "nama": "Potato Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_potato.png",
+   "harga": 30,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 4 days.",
+   "tumpuk": 99
+  },
+  "potato": {
+   "nama": "Potato",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_potato.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 68,
+   "desk": "Harvested from Potato Seeds after 4 days.",
+   "tumpuk": 999
+  },
+  "bibit_strawberry": {
+   "nama": "Strawberry Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_strawberry.png",
+   "harga": 60,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 5 days.",
+   "tumpuk": 99
+  },
+  "strawberry": {
+   "nama": "Strawberry",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_strawberry.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 121,
+   "desk": "Harvested from Strawberry Seeds after 5 days.",
+   "tumpuk": 999
+  },
+  "bibit_cabbage": {
+   "nama": "Cabbage Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_cabbage.png",
+   "harga": 50,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 5 days.",
+   "tumpuk": 99
+  },
+  "cabbage": {
+   "nama": "Cabbage",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_cabbage.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 105,
+   "desk": "Harvested from Cabbage Seeds after 5 days.",
+   "tumpuk": 999
+  },
+  "bibit_radish": {
+   "nama": "Radish Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_radish.png",
+   "harga": 15,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 2 days.",
+   "tumpuk": 99
+  },
+  "radish": {
+   "nama": "Radish",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_radish.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 34,
+   "desk": "Harvested from Radish Seeds after 2 days.",
+   "tumpuk": 999
+  },
+  "bibit_peas": {
+   "nama": "Peas Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_peas.png",
+   "harga": 35,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 4 days.",
+   "tumpuk": 99
+  },
+  "peas": {
+   "nama": "Peas",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_peas.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 76,
+   "desk": "Harvested from Peas Seeds after 4 days.",
+   "tumpuk": 999
+  },
+  "bibit_tulip": {
+   "nama": "Tulip Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_tulip.png",
+   "harga": 40,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 4 days.",
+   "tumpuk": 99
+  },
+  "tulip": {
+   "nama": "Tulip",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_tulip.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 84,
+   "desk": "Harvested from Tulip Seeds after 4 days.",
+   "tumpuk": 999
+  },
+  "bibit_tomato": {
+   "nama": "Tomato Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_tomato.png",
+   "harga": 60,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 6 days.",
+   "tumpuk": 99
+  },
+  "tomato": {
+   "nama": "Tomato",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_tomato.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 126,
+   "desk": "Harvested from Tomato Seeds after 6 days.",
+   "tumpuk": 999
+  },
+  "bibit_corn": {
+   "nama": "Corn Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_corn.png",
+   "harga": 80,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 7 days.",
+   "tumpuk": 99
+  },
+  "corn": {
+   "nama": "Corn",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_corn.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 163,
+   "desk": "Harvested from Corn Seeds after 7 days.",
+   "tumpuk": 999
+  },
+  "bibit_melon": {
+   "nama": "Melon Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_melon.png",
+   "harga": 100,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 8 days.",
+   "tumpuk": 99
+  },
+  "melon": {
+   "nama": "Melon",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_melon.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 200,
+   "desk": "Harvested from Melon Seeds after 8 days.",
+   "tumpuk": 999
+  },
+  "bibit_blueberry": {
+   "nama": "Blueberry Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_blueberry.png",
+   "harga": 80,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 6 days.",
+   "tumpuk": 99
+  },
+  "blueberry": {
+   "nama": "Blueberry",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_blueberry.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 158,
+   "desk": "Harvested from Blueberry Seeds after 6 days.",
+   "tumpuk": 999
+  },
+  "bibit_sunflower": {
+   "nama": "Sunflower Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_sunflower.png",
+   "harga": 60,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 5 days.",
+   "tumpuk": 99
+  },
+  "sunflower": {
+   "nama": "Sunflower",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_sunflower.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 121,
+   "desk": "Harvested from Sunflower Seeds after 5 days.",
+   "tumpuk": 999
+  },
+  "bibit_pumpkin": {
+   "nama": "Pumpkin Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_pumpkin.png",
+   "harga": 120,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 8 days.",
+   "tumpuk": 99
+  },
+  "pumpkin": {
+   "nama": "Pumpkin",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_pumpkin.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 232,
+   "desk": "Harvested from Pumpkin Seeds after 8 days.",
+   "tumpuk": 999
+  },
+  "bibit_eggplant": {
+   "nama": "Eggplant Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_eggplant.png",
+   "harga": 70,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 6 days.",
+   "tumpuk": 99
+  },
+  "eggplant": {
+   "nama": "Eggplant",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_eggplant.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 142,
+   "desk": "Harvested from Eggplant Seeds after 6 days.",
+   "tumpuk": 999
+  },
+  "bibit_sweet_potato": {
+   "nama": "Sweet Potato Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_sweet_potato.png",
+   "harga": 60,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 5 days.",
+   "tumpuk": 99
+  },
+  "sweet_potato": {
+   "nama": "Sweet Potato",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_sweet_potato.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 121,
+   "desk": "Harvested from Sweet Potato Seeds after 5 days.",
+   "tumpuk": 999
+  },
+  "bibit_grape": {
+   "nama": "Grape Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_grape.png",
+   "harga": 120,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 8 days.",
+   "tumpuk": 99
+  },
+  "grape": {
+   "nama": "Grape",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_grape.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 232,
+   "desk": "Harvested from Grape Seeds after 8 days.",
+   "tumpuk": 999
+  },
+  "bibit_cranberry": {
+   "nama": "Cranberry Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_cranberry.png",
+   "harga": 80,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 6 days.",
+   "tumpuk": 99
+  },
+  "cranberry": {
+   "nama": "Cranberry",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_cranberry.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 158,
+   "desk": "Harvested from Cranberry Seeds after 6 days.",
+   "tumpuk": 999
+  },
+  "bibit_garlic": {
+   "nama": "Garlic Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_garlic.png",
+   "harga": 30,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 4 days.",
+   "tumpuk": 99
+  },
+  "garlic": {
+   "nama": "Garlic",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_garlic.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 68,
+   "desk": "Harvested from Garlic Seeds after 4 days.",
+   "tumpuk": 999
+  },
+  "bibit_onion": {
+   "nama": "Onion Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_onion.png",
+   "harga": 30,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 4 days.",
+   "tumpuk": 99
+  },
+  "onion": {
+   "nama": "Onion",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_onion.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 68,
+   "desk": "Harvested from Onion Seeds after 4 days.",
+   "tumpuk": 999
+  },
+  "bibit_daikon": {
+   "nama": "Daikon Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_daikon.png",
+   "harga": 45,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 5 days.",
+   "tumpuk": 99
+  },
+  "daikon": {
+   "nama": "Daikon",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_daikon.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 97,
+   "desk": "Harvested from Daikon Seeds after 5 days.",
+   "tumpuk": 999
+  },
+  "bibit_snowdrop": {
+   "nama": "Snowdrop Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_snowdrop.png",
+   "harga": 50,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 3 days.",
+   "tumpuk": 99
+  },
+  "snowdrop": {
+   "nama": "Snowdrop",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_snowdrop.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 95,
+   "desk": "Harvested from Snowdrop Seeds after 3 days.",
+   "tumpuk": 999
+  },
+  "bibit_rose": {
+   "nama": "Rose Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_rose.png",
+   "harga": 90,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 6 days.",
+   "tumpuk": 99
+  },
+  "rose": {
+   "nama": "Rose",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_rose.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 174,
+   "desk": "Harvested from Rose Seeds after 6 days.",
+   "tumpuk": 999
+  },
+  "bibit_lavender": {
+   "nama": "Lavender Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_lavender.png",
+   "harga": 70,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 5 days.",
+   "tumpuk": 99
+  },
+  "lavender": {
+   "nama": "Lavender",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_lavender.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 137,
+   "desk": "Harvested from Lavender Seeds after 5 days.",
+   "tumpuk": 999
+  },
+  "bibit_apple": {
+   "nama": "Apple Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_apple.png",
+   "harga": 200,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 10 days.",
+   "tumpuk": 99
+  },
+  "apple": {
+   "nama": "Apple",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_apple.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 370,
+   "desk": "Harvested from Apple Seeds after 10 days.",
+   "tumpuk": 999
+  },
+  "bibit_cherry": {
+   "nama": "Cherry Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_cherry.png",
+   "harga": 200,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 10 days.",
+   "tumpuk": 99
+  },
+  "cherry": {
+   "nama": "Cherry",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_cherry.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 370,
+   "desk": "Harvested from Cherry Seeds after 10 days.",
+   "tumpuk": 999
+  },
+  "bibit_herbs": {
+   "nama": "Herbs Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_herbs.png",
+   "harga": 25,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 3 days.",
+   "tumpuk": 99
+  },
+  "herbs": {
+   "nama": "Herbs",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_herbs.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 55,
+   "desk": "Harvested from Herbs Seeds after 3 days.",
+   "tumpuk": 999
+  },
+  "bibit_wildflowers": {
+   "nama": "Wildflowers Seeds",
+   "kategori": "Seeds",
+   "ikon": "res://assets/tani/bibit_wildflowers.png",
+   "harga": 40,
+   "kristal": 0,
+   "desk": "Sow on tilled soil. Water daily. Ready in 4 days.",
+   "tumpuk": 99
+  },
+  "wildflowers": {
+   "nama": "Wildflowers",
+   "kategori": "Crops",
+   "ikon": "res://assets/tani/panen_wildflowers.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 84,
+   "desk": "Harvested from Wildflowers Seeds after 4 days.",
+   "tumpuk": 999
+  },
+  "ternak_cow": {
+   "nama": "Baby Cow",
+   "kategori": "Animals",
+   "ikon": "res://assets/ternak/cow_bayi.png",
+   "harga": 3000,
+   "kristal": 0,
+   "desk": "A young cow. Grows up in 4 days, then gives milk every day.",
+   "tumpuk": 9,
+   "hewan": "cow"
+  },
+  "ternak_chicken": {
+   "nama": "Baby Chicken",
+   "kategori": "Animals",
+   "ikon": "res://assets/ternak/chicken_bayi.png",
+   "harga": 800,
+   "kristal": 0,
+   "desk": "A young chicken. Grows up in 2 days, then gives egg every day.",
+   "tumpuk": 9,
+   "hewan": "chicken"
+  },
+  "ternak_duck": {
+   "nama": "Baby Duck",
+   "kategori": "Animals",
+   "ikon": "res://assets/ternak/duck_bayi.png",
+   "harga": 900,
+   "kristal": 0,
+   "desk": "A young duck. Grows up in 2 days, then gives duck egg every day.",
+   "tumpuk": 9,
+   "hewan": "duck"
+  },
+  "ternak_sheep": {
+   "nama": "Baby Sheep",
+   "kategori": "Animals",
+   "ikon": "res://assets/ternak/sheep_bayi.png",
+   "harga": 2500,
+   "kristal": 0,
+   "desk": "A young sheep. Grows up in 3 days, then gives wool every day.",
+   "tumpuk": 9,
+   "hewan": "sheep"
+  },
+  "ternak_goose": {
+   "nama": "Baby Goose",
+   "kategori": "Animals",
+   "ikon": "res://assets/ternak/goose_bayi.png",
+   "harga": 1200,
+   "kristal": 0,
+   "desk": "A young goose. Grows up in 3 days, then gives goose egg every day.",
+   "tumpuk": 9,
+   "hewan": "goose"
+  },
+  "small_milk": {
+   "nama": "Small Milk",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_small_milk.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 60,
+   "desk": "From: Cows (young adults)",
+   "tumpuk": 999
+  },
+  "milk": {
+   "nama": "Milk",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_milk.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 120,
+   "desk": "From: Cows, every day",
+   "tumpuk": 999
+  },
+  "milk_pail": {
+   "nama": "Milk Pail",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_milk_pail.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 300,
+   "desk": "From: Cows, sometimes",
+   "tumpuk": 999
+  },
+  "cheese": {
+   "nama": "Cheese",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_cheese.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 350,
+   "desk": "From: Recipe: Milk x2",
+   "tumpuk": 999
+  },
+  "butter": {
+   "nama": "Butter",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_butter.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 300,
+   "desk": "From: Recipe: Milk x2",
+   "tumpuk": 999
+  },
+  "egg": {
+   "nama": "Egg",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_egg.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 50,
+   "desk": "From: Chickens, every day",
+   "tumpuk": 999
+  },
+  "brown_egg": {
+   "nama": "Brown Egg",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_brown_egg.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 55,
+   "desk": "From: Chickens, every day",
+   "tumpuk": 999
+  },
+  "large_egg": {
+   "nama": "Large Brown Egg",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_large_egg.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 90,
+   "desk": "From: Chickens, sometimes",
+   "tumpuk": 999
+  },
+  "golden_egg": {
+   "nama": "Golden Egg",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_golden_egg.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 1000,
+   "desk": "From: Chickens, very rare",
+   "tumpuk": 999
+  },
+  "feather": {
+   "nama": "Feather",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_feather.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 40,
+   "desk": "From: Ducks, sometimes",
+   "tumpuk": 999
+  },
+  "duck_egg": {
+   "nama": "Duck Egg",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_duck_egg.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 90,
+   "desk": "From: Ducks, every day",
+   "tumpuk": 999
+  },
+  "goose_egg": {
+   "nama": "Goose Egg",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_goose_egg.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 140,
+   "desk": "From: Geese, every day",
+   "tumpuk": 999
+  },
+  "quail_egg": {
+   "nama": "Speckled Egg",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_quail_egg.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 70,
+   "desk": "From: Geese, sometimes",
+   "tumpuk": 999
+  },
+  "goose_feather": {
+   "nama": "Goose Feather",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_goose_feather.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 60,
+   "desk": "From: Geese, sometimes",
+   "tumpuk": 999
+  },
+  "down": {
+   "nama": "Down Fluff",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_down.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 120,
+   "desk": "From: Geese, sometimes",
+   "tumpuk": 999
+  },
+  "wool": {
+   "nama": "Wool",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_wool.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 250,
+   "desk": "From: Sheep, every day",
+   "tumpuk": 999
+  },
+  "fine_wool": {
+   "nama": "Fine Wool",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_fine_wool.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 500,
+   "desk": "From: Sheep, sometimes",
+   "tumpuk": 999
+  },
+  "yarn": {
+   "nama": "Yarn",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_yarn.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 400,
+   "desk": "From: Recipe: Wool x2",
+   "tumpuk": 999
+  },
+  "goat_milk": {
+   "nama": "Goat Milk",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_goat_milk.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 200,
+   "desk": "From: Coming soon (goats)",
+   "tumpuk": 999
+  },
+  "goat_cheese": {
+   "nama": "Goat Cheese",
+   "kategori": "Animal Products",
+   "ikon": "res://assets/ternak/hasil_goat_cheese.png",
+   "harga": 0,
+   "kristal": 0,
+   "jual": 450,
+   "desk": "From: Coming soon (goats)",
+   "tumpuk": 999
+  }
+ },
+ "tanaman": {
+  "wheat": {
+   "nama": "Wheat",
+   "hari": 4,
+   "bibit": "bibit_wheat",
+   "hasil": "wheat",
+   "tahap": [
+    {
+     "p": "res://assets/tani/wheat_0.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/wheat_1.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/wheat_2.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/wheat_3.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/wheat_4.png",
+     "k": 0.2027
+    }
+   ],
+   "jual": 52
+  },
+  "carrot": {
+   "nama": "Carrot",
+   "hari": 3,
+   "bibit": "bibit_carrot",
+   "hasil": "carrot",
+   "tahap": [
+    {
+     "p": "res://assets/tani/carrot_0.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/carrot_1.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/carrot_2.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/carrot_3.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/carrot_4.png",
+     "k": 0.2027
+    }
+   ],
+   "jual": 55
+  },
+  "turnip": {
+   "nama": "Turnip",
+   "hari": 3,
+   "bibit": "bibit_turnip",
+   "hasil": "turnip",
+   "tahap": [
+    {
+     "p": "res://assets/tani/turnip_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/turnip_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/turnip_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/turnip_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 47
+  },
+  "bellflower": {
+   "nama": "Bellflower",
+   "hari": 4,
+   "bibit": "bibit_bellflower",
+   "hasil": "bellflower",
+   "tahap": [
+    {
+     "p": "res://assets/tani/bellflower_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/bellflower_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/bellflower_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/bellflower_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 84
+  },
+  "potato": {
+   "nama": "Potato",
+   "hari": 4,
+   "bibit": "bibit_potato",
+   "hasil": "potato",
+   "tahap": [
+    {
+     "p": "res://assets/tani/potato_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/potato_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/potato_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/potato_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 68
+  },
+  "strawberry": {
+   "nama": "Strawberry",
+   "hari": 5,
+   "bibit": "bibit_strawberry",
+   "hasil": "strawberry",
+   "tahap": [
+    {
+     "p": "res://assets/tani/strawberry_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/strawberry_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/strawberry_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/strawberry_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 121
+  },
+  "cabbage": {
+   "nama": "Cabbage",
+   "hari": 5,
+   "bibit": "bibit_cabbage",
+   "hasil": "cabbage",
+   "tahap": [
+    {
+     "p": "res://assets/tani/cabbage_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cabbage_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cabbage_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cabbage_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 105
+  },
+  "radish": {
+   "nama": "Radish",
+   "hari": 2,
+   "bibit": "bibit_radish",
+   "hasil": "radish",
+   "tahap": [
+    {
+     "p": "res://assets/tani/radish_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/radish_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/radish_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/radish_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 34
+  },
+  "peas": {
+   "nama": "Peas",
+   "hari": 4,
+   "bibit": "bibit_peas",
+   "hasil": "peas",
+   "tahap": [
+    {
+     "p": "res://assets/tani/peas_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/peas_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/peas_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/peas_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 76
+  },
+  "tulip": {
+   "nama": "Tulip",
+   "hari": 4,
+   "bibit": "bibit_tulip",
+   "hasil": "tulip",
+   "tahap": [
+    {
+     "p": "res://assets/tani/tulip_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/tulip_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/tulip_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/tulip_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 84
+  },
+  "tomato": {
+   "nama": "Tomato",
+   "hari": 6,
+   "bibit": "bibit_tomato",
+   "hasil": "tomato",
+   "tahap": [
+    {
+     "p": "res://assets/tani/tomato_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/tomato_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/tomato_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/tomato_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 126
+  },
+  "corn": {
+   "nama": "Corn",
+   "hari": 7,
+   "bibit": "bibit_corn",
+   "hasil": "corn",
+   "tahap": [
+    {
+     "p": "res://assets/tani/corn_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/corn_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/corn_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/corn_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 163
+  },
+  "melon": {
+   "nama": "Melon",
+   "hari": 8,
+   "bibit": "bibit_melon",
+   "hasil": "melon",
+   "tahap": [
+    {
+     "p": "res://assets/tani/melon_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/melon_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/melon_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/melon_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 200
+  },
+  "blueberry": {
+   "nama": "Blueberry",
+   "hari": 6,
+   "bibit": "bibit_blueberry",
+   "hasil": "blueberry",
+   "tahap": [
+    {
+     "p": "res://assets/tani/blueberry_0.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/blueberry_1.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/blueberry_2.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/blueberry_3.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/blueberry_4.png",
+     "k": 0.2027
+    }
+   ],
+   "jual": 158
+  },
+  "sunflower": {
+   "nama": "Sunflower",
+   "hari": 5,
+   "bibit": "bibit_sunflower",
+   "hasil": "sunflower",
+   "tahap": [
+    {
+     "p": "res://assets/tani/sunflower_0.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/sunflower_1.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/sunflower_2.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/sunflower_3.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/sunflower_4.png",
+     "k": 0.2027
+    }
+   ],
+   "jual": 121
+  },
+  "pumpkin": {
+   "nama": "Pumpkin",
+   "hari": 8,
+   "bibit": "bibit_pumpkin",
+   "hasil": "pumpkin",
+   "tahap": [
+    {
+     "p": "res://assets/tani/pumpkin_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/pumpkin_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/pumpkin_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/pumpkin_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 232
+  },
+  "eggplant": {
+   "nama": "Eggplant",
+   "hari": 6,
+   "bibit": "bibit_eggplant",
+   "hasil": "eggplant",
+   "tahap": [
+    {
+     "p": "res://assets/tani/eggplant_0.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/eggplant_1.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/eggplant_2.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/eggplant_3.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/eggplant_4.png",
+     "k": 0.2027
+    },
+    {
+     "p": "res://assets/tani/eggplant_5.png",
+     "k": 0.2027
+    }
+   ],
+   "jual": 142
+  },
+  "sweet_potato": {
+   "nama": "Sweet Potato",
+   "hari": 5,
+   "bibit": "bibit_sweet_potato",
+   "hasil": "sweet_potato",
+   "tahap": [
+    {
+     "p": "res://assets/tani/sweet_potato_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/sweet_potato_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/sweet_potato_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/sweet_potato_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 121
+  },
+  "grape": {
+   "nama": "Grape",
+   "hari": 8,
+   "bibit": "bibit_grape",
+   "hasil": "grape",
+   "tahap": [
+    {
+     "p": "res://assets/tani/grape_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/grape_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/grape_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/grape_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 232
+  },
+  "cranberry": {
+   "nama": "Cranberry",
+   "hari": 6,
+   "bibit": "bibit_cranberry",
+   "hasil": "cranberry",
+   "tahap": [
+    {
+     "p": "res://assets/tani/cranberry_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cranberry_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cranberry_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cranberry_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 158
+  },
+  "garlic": {
+   "nama": "Garlic",
+   "hari": 4,
+   "bibit": "bibit_garlic",
+   "hasil": "garlic",
+   "tahap": [
+    {
+     "p": "res://assets/tani/garlic_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/garlic_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/garlic_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/garlic_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 68
+  },
+  "onion": {
+   "nama": "Onion",
+   "hari": 4,
+   "bibit": "bibit_onion",
+   "hasil": "onion",
+   "tahap": [
+    {
+     "p": "res://assets/tani/onion_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/onion_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/onion_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/onion_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 68
+  },
+  "daikon": {
+   "nama": "Daikon",
+   "hari": 5,
+   "bibit": "bibit_daikon",
+   "hasil": "daikon",
+   "tahap": [
+    {
+     "p": "res://assets/tani/daikon_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/daikon_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/daikon_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/daikon_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 97
+  },
+  "snowdrop": {
+   "nama": "Snowdrop",
+   "hari": 3,
+   "bibit": "bibit_snowdrop",
+   "hasil": "snowdrop",
+   "tahap": [
+    {
+     "p": "res://assets/tani/snowdrop_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/snowdrop_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/snowdrop_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/snowdrop_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 95
+  },
+  "rose": {
+   "nama": "Rose",
+   "hari": 6,
+   "bibit": "bibit_rose",
+   "hasil": "rose",
+   "tahap": [
+    {
+     "p": "res://assets/tani/rose_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/rose_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/rose_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/rose_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 174
+  },
+  "lavender": {
+   "nama": "Lavender",
+   "hari": 5,
+   "bibit": "bibit_lavender",
+   "hasil": "lavender",
+   "tahap": [
+    {
+     "p": "res://assets/tani/lavender_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/lavender_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/lavender_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/lavender_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 137
+  },
+  "apple": {
+   "nama": "Apple",
+   "hari": 10,
+   "bibit": "bibit_apple",
+   "hasil": "apple",
+   "tahap": [
+    {
+     "p": "res://assets/tani/apple_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/apple_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/apple_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/apple_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 370
+  },
+  "cherry": {
+   "nama": "Cherry",
+   "hari": 10,
+   "bibit": "bibit_cherry",
+   "hasil": "cherry",
+   "tahap": [
+    {
+     "p": "res://assets/tani/cherry_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cherry_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cherry_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/cherry_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 370
+  },
+  "herbs": {
+   "nama": "Herbs",
+   "hari": 3,
+   "bibit": "bibit_herbs",
+   "hasil": "herbs",
+   "tahap": [
+    {
+     "p": "res://assets/tani/herbs_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/herbs_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/herbs_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/herbs_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 55
+  },
+  "wildflowers": {
+   "nama": "Wildflowers",
+   "hari": 4,
+   "bibit": "bibit_wildflowers",
+   "hasil": "wildflowers",
+   "tahap": [
+    {
+     "p": "res://assets/tani/wildflowers_0.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/wildflowers_1.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/wildflowers_2.png",
+     "k": 0.3125
+    },
+    {
+     "p": "res://assets/tani/wildflowers_matang.png",
+     "k": 0.3125
+    }
+   ],
+   "jual": 84
+  }
+ },
+ "ternak": {
+  "cow": {
+   "nama": "Cow",
+   "dewasa": 4,
+   "hasil": "milk",
+   "k": 0.42
+  },
+  "chicken": {
+   "nama": "Chicken",
+   "dewasa": 2,
+   "hasil": "egg",
+   "k": 0.42
+  },
+  "duck": {
+   "nama": "Duck",
+   "dewasa": 2,
+   "hasil": "duck_egg",
+   "k": 0.42
+  },
+  "sheep": {
+   "nama": "Sheep",
+   "dewasa": 3,
+   "hasil": "wool",
+   "k": 0.42
+  },
+  "goose": {
+   "nama": "Goose",
+   "dewasa": 3,
+   "hasil": "goose_egg",
+   "k": 0.42
+  }
+ },
+ "resep": [
+  {
+   "nama": "Cheese",
+   "hasil": "cheese",
+   "bahan": {
+    "milk": 2
+   },
+   "desk": "Aged milk, rich and creamy."
+  },
+  {
+   "nama": "Butter",
+   "hasil": "butter",
+   "bahan": {
+    "milk": 2
+   },
+   "desk": "Churned from fresh milk."
+  },
+  {
+   "nama": "Yarn",
+   "hasil": "yarn",
+   "bahan": {
+    "wool": 2
+   },
+   "desk": "Spun from soft wool."
+  },
+  {
+   "nama": "Pumpkin Soup",
+   "bahan": {
+    "pumpkin": 1,
+    "milk": 1
+   },
+   "desk": "Warm autumn soup. Restores lots of energy."
+  },
+  {
+   "nama": "Omelet",
+   "bahan": {
+    "egg": 2,
+    "milk": 1
+   },
+   "desk": "Fluffy eggs cooked with milk."
+  },
+  {
+   "nama": "Veggie Salad",
+   "bahan": {
+    "cabbage": 1,
+    "tomato": 1,
+    "carrot": 1
+   },
+   "desk": "Fresh and crunchy."
+  },
+  {
+   "nama": "Baked Potato",
+   "bahan": {
+    "potato": 1,
+    "butter": 1
+   },
+   "desk": "Golden potato with butter."
+  },
+  {
+   "nama": "Strawberry Jam",
+   "bahan": {
+    "strawberry": 3
+   },
+   "desk": "Sweet jam for bread."
+  },
+  {
+   "nama": "Blueberry Pie",
+   "bahan": {
+    "blueberry": 3,
+    "wheat": 1,
+    "butter": 1
+   },
+   "desk": "A classic farm pie."
+  },
+  {
+   "nama": "Apple Pie",
+   "bahan": {
+    "apple": 2,
+    "wheat": 1,
+    "egg": 1
+   },
+   "desk": "Cinnamon apple pie."
+  },
+  {
+   "nama": "Corn Chowder",
+   "bahan": {
+    "corn": 2,
+    "milk": 1,
+    "onion": 1
+   },
+   "desk": "Creamy corn soup."
+  },
+  {
+   "nama": "Tomato Soup",
+   "bahan": {
+    "tomato": 2,
+    "garlic": 1
+   },
+   "desk": "Simple and comforting."
+  },
+  {
+   "nama": "Grilled Eggplant",
+   "bahan": {
+    "eggplant": 1,
+    "garlic": 1
+   },
+   "desk": "Smoky grilled eggplant."
+  },
+  {
+   "nama": "Sweet Potato Fries",
+   "bahan": {
+    "sweet_potato": 2
+   },
+   "desk": "Crispy and sweet."
+  },
+  {
+   "nama": "Cranberry Sauce",
+   "bahan": {
+    "cranberry": 3
+   },
+   "desk": "Tart winter sauce."
+  },
+  {
+   "nama": "Cherry Tart",
+   "bahan": {
+    "cherry": 2,
+    "wheat": 1,
+    "egg": 1
+   },
+   "desk": "A bright red tart."
+  },
+  {
+   "nama": "Grape Juice",
+   "bahan": {
+    "grape": 3
+   },
+   "desk": "Fresh-pressed grapes."
+  },
+  {
+   "nama": "Herb Bread",
+   "bahan": {
+    "wheat": 2,
+    "herbs": 1
+   },
+   "desk": "Fragrant homemade bread."
+  },
+  {
+   "nama": "Melon Smoothie",
+   "bahan": {
+    "melon": 1,
+    "milk": 1
+   },
+   "desk": "Cool summer smoothie."
+  },
+  {
+   "nama": "Lavender Tea",
+   "bahan": {
+    "lavender": 2
+   },
+   "desk": "Calming floral tea."
+  },
+  {
+   "nama": "Pea Soup",
+   "bahan": {
+    "peas": 2,
+    "onion": 1
+   },
+   "desk": "Hearty green soup."
+  },
+  {
+   "nama": "Pickled Radish",
+   "bahan": {
+    "radish": 2,
+    "daikon": 1
+   },
+   "desk": "Crunchy pickles."
+  },
+  {
+   "nama": "Turnip Stew",
+   "bahan": {
+    "turnip": 2,
+    "carrot": 1,
+    "potato": 1
+   },
+   "desk": "A thick farmhouse stew."
+  },
+  {
+   "nama": "Custard",
+   "bahan": {
+    "egg": 2,
+    "milk": 2
+   },
+   "desk": "Silky sweet custard."
+  }
+ ]
+}

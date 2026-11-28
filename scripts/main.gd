@@ -196,7 +196,94 @@ func _screenshots() -> void:
 		w.call("use_tool", str(sh2[0]), pm.position + Vector2(60, 0))
 		pm.set("anim_t", 0.42)
 		await _shot(pre + str(sh2[1]) + ".png")
+	pm.set("hold_anim", false)
+	# --- Farm: bangunan, pagar, dekor, tanaman di berbagai tahap, ternak ---
+	Game.minute = 10.0 * 60.0
+	Game.day = 3
+	Game.raining = false
+	w.call("load_map", "ladang", "")
+	var fm: Node2D = w.get("farm") as Node2D
+	var sp: Vector2i = w.call("_cell", pm.position) as Vector2i
+	for it: Array in [["cottage", Vector2i(-8, -4)], ["big_barn", Vector2i(9, -4)], ["chicken_coop", Vector2i(16, 3)], ["well", Vector2i(-4, 3)],
+			["cherry_blossom_tree", Vector2i(-12, 4)], ["oak_tree", Vector2i(4, -6)], ["heart_picket_fence", Vector2i(-2, 10)], ["heart_picket_fence", Vector2i(2, 10)],
+			["scarecrow", Vector2i(7, 6)], ["beehive", Vector2i(-11, -1)], ["garden_bench", Vector2i(-6, 4)], ["pink_flower_patch", Vector2i(-3, 6)],
+			["yellow_tulip", Vector2i(1, 3)], ["hay_roll", Vector2i(13, 2)], ["twin_lantern_post", Vector2i(3, 3)]]:
+		Game.add_item(str(it[0]), 1)
+		_place_near(fm, str(it[0]), sp + (it[1] as Vector2i))
+	var crops_at: Array = [["carrot", 0], ["carrot", 1], ["carrot", 2], ["carrot", 4], ["tomato", 0], ["tomato", 2], ["tomato", 4], ["tomato", 6],
+		["sunflower", 1], ["sunflower", 3], ["sunflower", 5], ["pumpkin", 8]]
+	for i: int in range(crops_at.size()):
+		var cc: Vector2i = sp + Vector2i(-3 + i % 4, 6 + i / 4)
+		w.call("use_tool", "cangkul", Vector2((cc.x + 0.5) * 32, (cc.y + 0.5) * 32))
+		Game.add_item("bibit_" + str(crops_at[i][0]), 1)
+		fm.call("plant", "bibit_" + str(crops_at[i][0]), cc)
+		(Game.crops[cc] as Dictionary)["days"] = int(crops_at[i][1])
+		fm.call("_crop_node", cc)
+	for an: Array in [["cow", 5], ["cow", 0], ["chicken", 3], ["chicken", 0], ["sheep", 4], ["duck", 3], ["goose", 4]]:
+		Game.add_item("ternak_" + str(an[0]), 1)
+		_place_near(fm, "ternak_" + str(an[0]), sp + Vector2i(randi_range(4, 12), randi_range(1, 6)))
+		var last: Dictionary = Game.animals[Game.animals.size() - 1] as Dictionary
+		last["age"] = int(an[1])
+		if Game.is_adult(last):
+			last["product"] = "egg" if str(an[0]) == "chicken" else ""
+	fm.call("rebuild")
+	w.call("_set_zoom", 1.5)
+	await get_tree().create_timer(0.6).timeout
+	await _shot(pre + "25_farm.png")
+	w.call("_set_zoom", 3.0)
+	(w.get("cam") as Camera2D).offset = Vector2(0, 200)
+	await get_tree().create_timer(0.4).timeout
+	await _shot(pre + "26_tanam.png")
+	(w.get("cam") as Camera2D).offset = Vector2(260, 100)
+	await get_tree().create_timer(0.4).timeout
+	await _shot(pre + "27_ternak.png")
+	(w.get("cam") as Camera2D).offset = Vector2.ZERO
+	w.call("_set_zoom", 2.0)
+	fm.call("set_build_mode", true)
+	Game.add_item("windmill", 1)
+	Game.add_item("silo", 2)
+	hud.set("build_tab", "Buildings")
+	hud.call("refresh_build_panel")
+	fm.call("begin_new", "windmill")
+	var vs: Vector2 = get_viewport().get_visible_rect().size
+	fm.call("_update_ghost", vs * Vector2(0.62, 0.45))
+	await get_tree().create_timer(0.3).timeout
+	await _shot(pre + "28_build.png")
+	fm.call("_cancel_ghost")
+	fm.call("set_build_mode", false)
+	hud.set("shop_sel", "cottage")
+	hud.call("open_popup", "toko")
+	await get_tree().create_timer(0.3).timeout
+	await _shot(pre + "29_shop.png")
+	hud.set("shop_tab", "Seeds")
+	hud.set("shop_sel", "bibit_tomato")
+	hud.call("open_popup", "toko")
+	await get_tree().create_timer(0.3).timeout
+	await _shot(pre + "30_shop_seeds.png")
+	hud.set("book_tab", "Crops")
+	hud.call("open_popup", "buku")
+	await get_tree().create_timer(0.3).timeout
+	await _shot(pre + "31_buku.png")
+	hud.set("book_tab", "Recipes")
+	hud.call("open_popup", "buku")
+	await get_tree().create_timer(0.3).timeout
+	await _shot(pre + "32_resep.png")
+	hud.call("close_popup")
 	get_tree().quit(0)
+
+
+## Cari tempat sah terdekat di sekitar sel lalu letakkan barang dari tas.
+func _place_near(fm: Node2D, id: String, around: Vector2i) -> bool:
+	for r: int in range(0, 12):
+		for dy: int in range(-r, r + 1):
+			for dx: int in range(-r, r + 1):
+				if maxi(absi(dx), absi(dy)) != r:
+					continue
+				var pc: Vector2i = around + Vector2i(dx, dy)
+				var o: Vector2i = pc if Game.item(id).has("hewan") else fm.call("origin_for", id, pc) as Vector2i
+				if bool(fm.call("place_new", id, o)):
+					return true
+	return false
 
 
 # ---------------- selftest ----------------
@@ -485,5 +572,81 @@ func _selftest() -> void:
 	hud.call("close_popup")
 	Game.theme_name = "Peach"
 	Game.save_settings()
+	# --- katalog, Shop, Build, tanam, ternak, resep ---
+	Game.new_game()
+	_check(Game.coins == 1000000 and Game.crystals == 10000, "koin awal 1.000.000, kristal 10.000")
+	_check(Game.ITEMS.size() > 250 and Game.tanaman.size() == 30 and Game.ternak.size() == 5, "katalog: %d barang, 30 tanaman, 5 ternak" % Game.ITEMS.size())
+	var miss: int = 0
+	for k: String in Game.ITEMS.keys():
+		var itx: Dictionary = Game.ITEMS[k] as Dictionary
+		for f: String in ["gambar", "ikon"]:
+			if itx.has(f) and str(itx[f]) != "" and not ResourceLoader.exists(str(itx[f])):
+				miss += 1
+	_check(miss == 0, "semua gambar katalog ada (hilang %d)" % miss)
+	_check(Game.buy("cottage") == "" and Game.coins == 1000000 - 80000 and Game.count("cottage") == 1, "Shop: beli Cottage 80,000")
+	_check(Game.buy("manor") == "" and Game.crystals == 10000 - 500, "Shop: beli Manor dengan kristal")
+	_check(Game.buy("carrot") != "", "hasil panen tidak dijual di Shop")
+	world.load_map("ladang", "")
+	var fm: Node2D = world.farm
+	_check(world.zoom_min >= 1.5, "zoom out dibatasi (min %.2f)" % world.zoom_min)
+	fm.set_build_mode(true)
+	_check(bool(fm.build_mode) and not (hud.get("bar") as Control).visible, "Build mode: panel Build tampil")
+	var sp0: Vector2i = world._cell(world.player.position)
+	_check(_place_near(fm, "cottage", sp0 + Vector2i(0, -6)), "Build: Cottage diletakkan")
+	var ce: Dictionary = Game.placed[0] as Dictionary
+	var cells: Array[Vector2i] = fm.cells_of("cottage", ce["cell"] as Vector2i)
+	_check(world.astar.is_point_solid(cells[0]) and Game.count("cottage") == 0, "Cottage menghalangi jalan, keluar dari tas")
+	var moved: bool = false
+	for dx: int in range(4, 20):
+		if fm.move_to(ce, (ce["cell"] as Vector2i) + Vector2i(dx, 0)):
+			moved = true
+			break
+	_check(moved and not world.astar.is_point_solid(cells[0]), "Build: Cottage dipindah, tempat lama terbuka")
+	fm.store(ce)
+	_check(Game.placed.is_empty() and Game.count("cottage") == 1, "Build: Cottage disimpan kembali ke tas")
+	fm.set_build_mode(false)
+	# tanam: cangkul -> tabur -> siram -> tumbuh -> panen
+	var tc: Vector2 = world.player.position + Vector2(0, 64)
+	var tcell: Vector2i = world._cell(tc)
+	world.use_tool("cangkul", tc)
+	Game.buy("bibit_carrot", 3)
+	_check(fm.plant("bibit_carrot", tcell) and Game.crops.has(tcell) and Game.count("bibit_carrot") == 2, "tabur bibit Carrot")
+	var st0: int = Game.crop_stage(Game.crops[tcell] as Dictionary)
+	for d: int in range(3):
+		world.use_tool("penyiram", tc)
+		Game.new_day()
+	_check(Game.crop_ready(Game.crops[tcell] as Dictionary) and Game.crop_stage(Game.crops[tcell] as Dictionary) > st0, "disiram 3 hari: Carrot matang")
+	var c0: int = Game.count("carrot")
+	_check(fm.harvest(tcell) and Game.count("carrot") > c0 and not Game.crops.has(tcell), "panen Carrot")
+	var dry: Vector2i = tcell + Vector2i(1, 0)
+	world.use_tool("cangkul", tc + Vector2(32, 0))
+	Game.raining = false
+	fm.plant("bibit_carrot", dry)
+	(Game.tilled_of("ladang")[dry] as Dictionary)["wet"] = false
+	Game.new_day()
+	_check(int((Game.crops[dry] as Dictionary)["days"]) == 0 or Game.raining, "tanpa disiram tidak tumbuh")
+	_check(Game.sell("carrot", 1) > 0, "jual hasil panen di Shop")
+	# ternak: beli -> letakkan -> dewasa -> hasil harian
+	Game.buy("ternak_chicken")
+	_check(_place_near(fm, "ternak_chicken", sp0 + Vector2i(5, 2)) and Game.animals.size() == 1, "ayam diletakkan di Farm")
+	var ch: Dictionary = Game.animals[0] as Dictionary
+	_check(not Game.is_adult(ch), "anak ayam belum dewasa")
+	Game.new_day()
+	Game.new_day()
+	_check(Game.is_adult(ch) and str(ch["product"]) != "", "ayam dewasa & bertelur (%s)" % str(ch["product"]))
+	var pid: String = str(ch["product"])
+	var pc0: int = Game.count(pid)
+	fm.collect((fm.animal_nodes as Array)[0] as Dictionary)
+	_check(Game.count(pid) == pc0 + 1 and str(ch["product"]) == "", "ambil hasil ternak")
+	Game.add_item("milk", 2)
+	var cheese: Dictionary = {}
+	for rv: Variant in Game.resep:
+		if str((rv as Dictionary)["nama"]) == "Cheese":
+			cheese = rv as Dictionary
+	_check(Game.cook(cheese) and Game.count("cheese") == 1, "resep: Milk x2 -> Cheese")
+	for tab: String in ["toko", "buku"]:
+		hud.call("open_popup", tab)
+		_check(bool(hud.get("modal_open")), "popup %s terbuka" % tab)
+		hud.call("close_popup")
 	print("SELFTEST " + ("OK" if _fails == 0 else "GAGAL (%d)" % _fails))
 	get_tree().quit(0 if _fails == 0 else 1)

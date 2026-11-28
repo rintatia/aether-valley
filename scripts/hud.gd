@@ -35,6 +35,25 @@ var bag_page_label: Label
 var bag_dots: Control
 var bag_title: Label             # nama + jumlah barang terpilih (pengganti tulisan "Bag")
 var last_minute: int = -1
+var btn_shop: TextureButton
+var btn_build: TextureButton
+var shop_season: String = ""
+# Build mode
+var build_panel: Control
+var build_tab: String = "Buildings"
+var build_page: int = 0
+var build_hint: Label
+var build_done: TextureButton
+var sel_panel: Control
+# Shop & Buku
+var shop_tab: String = "Buildings"
+var shop_page: int = 0
+var shop_sel: String = ""
+var book_tab: String = "Crops"
+var book_page: int = 0
+const BUILD_TABS: Array[String] = ["Buildings", "Houses", "Fences", "Decor", "Nature", "Animals"]
+const SHOP_TABS: Array[String] = ["Buildings", "Houses", "Fences", "Decor", "Nature", "Seeds", "Animals", "Sell"]
+const BOOK_TABS: Array[String] = ["Crops", "Seeds", "Animals", "Products", "Buildings", "Houses", "Fences", "Decor", "Nature", "Tools", "Recipes"]
 
 
 func _ready() -> void:
@@ -47,6 +66,7 @@ func _ready() -> void:
 	_build_status()
 	_build_left()
 	_build_bottom()
+	_build_build_ui()
 	toast = UIKit.pixel_label("", 24, UIKit.CREAM, 6, Color("#2B2730"))
 	toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	toast.modulate.a = 0.0
@@ -72,6 +92,14 @@ func _layout() -> void:
 	var lx: float = maxf(14.0, m.x - 30.0)
 	btn_set.position = Vector2(lx, m.y + 18.0)
 	btn_book.position = Vector2(lx, btn_set.position.y + btn_set.size.y + 12.0)
+	btn_shop.position = Vector2(lx - 4.0, btn_book.position.y + btn_book.size.y + 10.0)
+	btn_build.position = Vector2(lx + (ICON_SET - btn_build.size.x) / 2.0, btn_shop.position.y + btn_shop.size.y + 10.0)
+	if build_panel != null:
+		build_panel.position = Vector2((vs.x - build_panel.size.x) / 2.0, vs.y - m.w - build_panel.size.y)
+		build_hint.position = Vector2(0, m.y + 6.0)
+		build_hint.size = Vector2(vs.x, 30)
+		build_done.position = Vector2(vs.x - m.z - build_done.size.x, build_panel.position.y - build_done.size.y - 8.0)
+		sel_panel.position = Vector2((vs.x - sel_panel.size.x) / 2.0, m.y + 40.0)
 	var total: float = btn_map.size.x + 8.0 + BAR_W + 8.0 + btn_bag.size.x
 	var x0: float = (vs.x - total) / 2.0
 	var bar_h: float = bar.size.y
@@ -139,6 +167,10 @@ func _refresh_status(force: bool = false) -> void:
 	lb_clock.add_theme_color_override("font_color", UIKit.CREAM if night else UIKit.BROWN)
 	lb_coin.text = str(clampi(Game.coins, 0, 99999999))
 	lb_crystal.text = str(clampi(Game.crystals, 0, 999999))
+	var sn: String = Game.season_name().to_lower()
+	if sn != shop_season and btn_shop != null:
+		shop_season = sn
+		btn_shop.texture_normal = load("res://assets/ui/toko_%s.png" % sn) as Texture2D
 	var key: String = Game.status_text().to_lower()
 	if key != badge_now:
 		badge_now = key
@@ -153,6 +185,13 @@ func _build_left() -> void:
 	btn_book = UIKit.icon_button("res://assets/ui/ikon_buku.png", ICON_SET)
 	btn_book.pressed.connect(func() -> void: open_popup("buku"))
 	root.add_child(btn_book)
+	# Shop: ikon kios berganti sesuai musim
+	btn_shop = UIKit.icon_button("res://assets/ui/toko_%s.png" % Game.season_name().to_lower(), ICON_SET + 8.0)
+	btn_shop.pressed.connect(func() -> void: open_popup("toko"))
+	root.add_child(btn_shop)
+	btn_build = UIKit.round_button("tombol_build", ICON_SET - 10.0)
+	btn_build.pressed.connect(func() -> void: world.get("farm").call("set_build_mode", true))
+	root.add_child(btn_build)
 
 
 # ---------------- bawah: peta | shortcut | tas ----------------
@@ -278,8 +317,11 @@ func open_popup(kind: String) -> void:
 			_popup_book()
 		"setting":
 			_popup_settings()
+		"toko":
+			_popup_shop()
 	modal.modulate.a = 0.0
-	create_tween().tween_property(modal, "modulate:a", 1.0, 0.12)
+	var mtw: Tween = create_tween()
+	mtw.tween_property(modal, "modulate:a", 1.0, 0.12)
 
 
 func close_popup() -> void:
@@ -476,27 +518,6 @@ func _popup_map() -> void:
 	inner.add_child(hint)
 
 
-func _popup_book() -> void:
-	var pi: Array = _frame("bingkai_21", 560.0, "Journal")
-	var inner: Control = pi[1] as Control
-	var lines: PackedStringArray = PackedStringArray([
-		"%s  -  %s %d" % [Game.player_name, Game.season_name(), Game.date_in_season()],
-		"Weather: %s" % ("Rainy" if Game.raining else "Clear"),
-		"Wood collected: %d" % Game.count("kayu"),
-		"",
-		"Tips:",
-		"- Walk west from the farm to reach the Woodland.",
-		"- Tap a tree 3x to fell it, then chop the log & stump.",
-		"- Fallen trees regrow somewhere else after a day."])
-	var y: float = 58.0
-	for ln: String in lines:
-		var l: Label = UIKit.pixel_label(ln, 22, UIKit.BROWN)
-		l.position = Vector2(40, y)
-		l.size = Vector2(inner.size.x - 80, 30)
-		inner.add_child(l)
-		y += 34.0
-
-
 func _popup_settings() -> void:
 	var pi: Array = _blank_panel("Settings")
 	var inner: Control = pi[1] as Control
@@ -631,3 +652,507 @@ func show_toast(t: String) -> void:
 
 func _process(_delta: float) -> void:
 	_refresh_status()
+
+
+# ================= umum: angka, tombol tab, harga =================
+func fmt(n: int) -> String:
+	var s: String = str(absi(n))
+	var out: String = ""
+	while s.length() > 3:
+		out = "," + s.substr(s.length() - 3) + out
+		s = s.substr(0, s.length() - 3)
+	return ("-" if n < 0 else "") + s + out
+
+
+func _tab_button(txt: String, on: bool, h: float, fs: int = 18) -> Button:
+	var b: Button = _nav_button(txt, h)
+	b.add_theme_font_size_override("font_size", fs)
+	if on:
+		b.add_theme_stylebox_override("normal", UIKit.box(Color("#7DBE5A"), Color("#2F6A32"), 4))
+		b.add_theme_stylebox_override("hover", UIKit.box(Color("#7DBE5A"), Color("#2F6A32"), 4))
+		for c: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+			b.add_theme_color_override(c, UIKit.CREAM)
+	return b
+
+
+## Ikon koin/kristal + angka.
+func _price_row(it: Dictionary, fs: int, w: float) -> HBoxContainer:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 4)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.size = Vector2(w, fs + 4)
+	var kr: int = int(it.get("kristal", 0))
+	var ic: TextureRect = UIKit.image("res://assets/ui/%s.png" % ("ikon_kristal" if kr > 0 else "ikon_koin"), fs * 0.9, fs * 0.9)
+	row.add_child(ic)
+	var l: Label = UIKit.pixel_label(fmt(kr if kr > 0 else int(it.get("harga", 0))), fs, UIKit.BROWN)
+	row.add_child(l)
+	return row
+
+
+func _icon_rect(tex: Texture2D, sz: Vector2) -> TextureRect:
+	var t: TextureRect = TextureRect.new()
+	t.texture = tex
+	t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	t.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	t.size = sz
+	return t
+
+
+func _ids_in(cat: String) -> Array[String]:
+	var out: Array[String] = []
+	for k: String in Game.ITEMS.keys():
+		if str((Game.ITEMS[k] as Dictionary).get("kategori", "")) == cat:
+			out.append(k)
+	if cat == "Nature":
+		var order: Dictionary = {"Spring": 0, "Autumn": 1, "Winter": 2}
+		out.sort_custom(func(a: String, b: String) -> bool:
+			return int(order.get(str(Game.item(a).get("musim", "")), 3)) < int(order.get(str(Game.item(b).get("musim", "")), 3)))
+	return out
+
+
+# ================= Build mode =================
+func _build_build_ui() -> void:
+	build_panel = Control.new()
+	build_panel.size = Vector2(980, 176)
+	build_panel.visible = false
+	root.add_child(build_panel)
+	var bg: Panel = Panel.new()
+	bg.add_theme_stylebox_override("panel", UIKit.box(Game.theme_color(), Color("#7F442C"), 4))
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	build_panel.add_child(bg)
+	build_hint = UIKit.pixel_label("Drag items onto your farm - drag placed items to move - tap one to store it", 22, UIKit.CREAM, 6, Color("#2B2730"))
+	build_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	build_hint.visible = false
+	root.add_child(build_hint)
+	build_done = UIKit.pill_button("Done", 150.0)
+	build_done.visible = false
+	build_done.pressed.connect(func() -> void: world.get("farm").call("set_build_mode", false))
+	root.add_child(build_done)
+	sel_panel = Control.new()
+	sel_panel.size = Vector2(460, 64)
+	sel_panel.visible = false
+	root.add_child(sel_panel)
+
+
+func on_map_changed() -> void:
+	if btn_build != null:
+		btn_build.visible = str(world.get("map_id")) == "ladang"
+
+
+func on_build_mode(on: bool) -> void:
+	for c: Control in [bar, btn_map, btn_bag, btn_set, btn_book, btn_shop, btn_build]:
+		c.visible = not on
+	if not on:
+		on_map_changed()
+	build_panel.visible = on
+	build_hint.visible = on
+	build_done.visible = on
+	sel_panel.visible = false
+	if on:
+		refresh_build_panel()
+	_layout()
+
+
+func over_build_panel(pos: Vector2) -> bool:
+	return build_panel.visible and build_panel.get_global_rect().grow(6.0).has_point(pos)
+
+
+## Barang yang bisa dipasang di tas untuk satu kategori: [[id, jumlah]].
+func _owned(cat: String) -> Array:
+	var out: Array = []
+	var seen: Dictionary = {}
+	for sv: Variant in Game.bag:
+		var d: Dictionary = sv as Dictionary
+		if d.is_empty():
+			continue
+		var id: String = str(d["id"])
+		if not Game.is_placeable(id) or str(Game.item(id).get("kategori", "")) != cat or seen.has(id):
+			continue
+		seen[id] = true
+		out.append([id, Game.count(id)])
+	return out
+
+
+func refresh_build_panel() -> void:
+	for c: Node in build_panel.get_children():
+		if c.get_index() > 0:
+			c.queue_free()
+	var x: float = 14.0
+	for t: String in BUILD_TABS:
+		var tb: Button = _tab_button(t, t == build_tab, 38.0, 18)
+		tb.size = Vector2(140, 38)
+		tb.position = Vector2(x, 10)
+		tb.pressed.connect(func() -> void:
+			build_tab = t
+			build_page = 0
+			refresh_build_panel())
+		build_panel.add_child(tb)
+		x += 150.0
+	var items: Array = _owned(build_tab)
+	var per: int = 9
+	var pages: int = maxi(1, int(ceil(items.size() / float(per))))
+	build_page = clampi(build_page, 0, pages - 1)
+	var y: float = 58.0
+	var cs: float = 96.0
+	var x0: float = (build_panel.size.x - (cs * per + 8.0 * (per - 1))) / 2.0
+	if items.is_empty():
+		var l: Label = UIKit.pixel_label("Nothing to place here - buy %s at the Shop" % build_tab.to_lower(), 22, UIKit.BROWN)
+		l.position = Vector2(0, y + 30)
+		l.size = Vector2(build_panel.size.x, 30)
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		build_panel.add_child(l)
+	for i: int in range(per):
+		var k: int = build_page * per + i
+		if k >= items.size():
+			break
+		var id: String = str((items[k] as Array)[0])
+		var n: int = int((items[k] as Array)[1])
+		var b: Button = Button.new()
+		b.add_theme_stylebox_override("normal", UIKit.box(Game.theme_color().darkened(0.09), Color("#B58A2A"), 3))
+		b.add_theme_stylebox_override("hover", UIKit.box(Game.theme_color().darkened(0.09), Color("#B58A2A"), 3))
+		b.add_theme_stylebox_override("pressed", UIKit.box(Color("#FFE9A8"), Color("#FFD65A"), 3))
+		b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+		b.position = Vector2(x0 + i * (cs + 8.0), y)
+		b.size = Vector2(cs, cs + 8.0)
+		var ic: TextureRect = _icon_rect(Game.item_icon(id), Vector2(cs - 16.0, cs - 26.0))
+		ic.position = Vector2(8, 6)
+		b.add_child(ic)
+		var nl: Label = UIKit.pixel_label("x%d" % n, 17, UIKit.CREAM, 4, Color("#43251D"))
+		nl.position = Vector2(0, cs - 18.0)
+		nl.size = Vector2(cs - 6.0, 22)
+		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		b.add_child(nl)
+		b.button_down.connect(func() -> void:
+			UIKit.sfx("klik")
+			world.get("farm").call("begin_new", id))
+		build_panel.add_child(b)
+	if pages > 1:
+		var lb: Button = _nav_button("<", 34.0)
+		lb.position = Vector2(build_panel.size.x - 110.0, 14)
+		lb.pressed.connect(func() -> void:
+			build_page = (build_page - 1 + pages) % pages
+			refresh_build_panel())
+		build_panel.add_child(lb)
+		var rb: Button = _nav_button(">", 34.0)
+		rb.position = Vector2(build_panel.size.x - 58.0, 14)
+		rb.pressed.connect(func() -> void:
+			build_page = (build_page + 1) % pages
+			refresh_build_panel())
+		build_panel.add_child(rb)
+
+
+## Objek terpilih di Build mode: nama + Store (kembali ke tas).
+func show_selected(e: Dictionary) -> void:
+	for c: Node in sel_panel.get_children():
+		c.queue_free()
+	sel_panel.visible = not e.is_empty()
+	if e.is_empty():
+		return
+	var bg: Panel = Panel.new()
+	bg.add_theme_stylebox_override("panel", UIKit.box(Game.theme_color(), Color("#7F442C"), 4))
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	sel_panel.add_child(bg)
+	var l: Label = UIKit.pixel_label(str(Game.item(str(e["id"]))["nama"]), 22, UIKit.BROWN)
+	l.position = Vector2(16, 0)
+	l.size = Vector2(240, 64)
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.clip_text = true
+	sel_panel.add_child(l)
+	var st: TextureButton = UIKit.pill_button("Store", 130.0)
+	st.position = Vector2(260, (64 - st.size.y) / 2.0)
+	st.pressed.connect(func() -> void:
+		world.get("farm").call("store", e)
+		show_selected({})
+		refresh_build_panel())
+	sel_panel.add_child(st)
+	var x: TextureButton = UIKit.round_button("tombol_x", 40.0)
+	x.position = Vector2(406, 12)
+	x.pressed.connect(func() -> void: show_selected({}))
+	sel_panel.add_child(x)
+
+
+# ================= Shop =================
+func _popup_shop() -> void:
+	var fr: Array = _frame("bingkai_15", 640.0, "Shop")
+	var inner: Control = fr[1] as Control
+	var tx: float = 20.0
+	var tw: float = (inner.size.x - 40.0 - 6.0 * 7.0) / 8.0
+	for t: String in SHOP_TABS:
+		var tb: Button = _tab_button(t, t == shop_tab, 34.0, 17)
+		tb.size = Vector2(tw, 34)
+		tb.position = Vector2(tx, 50)
+		tb.pressed.connect(func() -> void:
+			shop_tab = t
+			shop_page = 0
+			shop_sel = ""
+			_reopen("toko"))
+		inner.add_child(tb)
+		tx += tw + 6.0
+	var ids: Array[String] = []
+	if shop_tab == "Sell":
+		for sv: Variant in Game.bag:
+			var d: Dictionary = sv as Dictionary
+			if not d.is_empty() and int(Game.item(str(d["id"])).get("jual", 0)) > 0 and not ids.has(str(d["id"])):
+				ids.append(str(d["id"]))
+	else:
+		ids = _ids_in(shop_tab)
+	var cols: int = 6
+	var rows: int = 2
+	var per: int = cols * rows
+	var pages: int = maxi(1, int(ceil(ids.size() / float(per))))
+	shop_page = clampi(shop_page, 0, pages - 1)
+	var gx: float = 20.0
+	var gy: float = 94.0
+	var gap: float = 8.0
+	var cw: float = (inner.size.x - 40.0 - gap * (cols - 1)) / cols
+	var ch: float = (inner.size.y - gy - 104.0 - gap) / rows
+	if ids.is_empty():
+		var el: Label = UIKit.pixel_label("Nothing to sell yet - harvest crops and collect animal products", 22, UIKit.BROWN)
+		el.position = Vector2(0, gy + 60)
+		el.size = Vector2(inner.size.x, 30)
+		el.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		inner.add_child(el)
+	for i: int in range(per):
+		var k: int = shop_page * per + i
+		if k >= ids.size():
+			break
+		var id: String = ids[k]
+		var it: Dictionary = Game.item(id)
+		var b: Button = Button.new()
+		var on: bool = id == shop_sel
+		var bx: StyleBox = UIKit.box(Color("#FFE9A8") if on else Game.theme_color().darkened(0.07), Color("#FFD65A") if on else Color("#B58A2A"), 3)
+		for st: String in ["normal", "hover", "pressed"]:
+			b.add_theme_stylebox_override(st, bx)
+		b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+		b.position = Vector2(gx + (i % cols) * (cw + gap), gy + (i / cols) * (ch + gap))
+		b.size = Vector2(cw, ch)
+		var ic: TextureRect = _icon_rect(Game.item_icon(id), Vector2(cw - 20.0, ch - 58.0))
+		ic.position = Vector2(10, 6)
+		b.add_child(ic)
+		var nl: Label = UIKit.pixel_label(str(it["nama"]), 16, UIKit.BROWN)
+		nl.position = Vector2(4, ch - 50.0)
+		nl.size = Vector2(cw - 8.0, 22)
+		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nl.clip_text = true
+		b.add_child(nl)
+		var pr: HBoxContainer
+		if shop_tab == "Sell":
+			pr = _price_row({"harga": int(it.get("jual", 0))}, 16, cw)
+			var cnt: Label = UIKit.pixel_label("x%d" % Game.count(id), 16, UIKit.CREAM, 4, Color("#43251D"))
+			cnt.position = Vector2(cw - 44.0, 4)
+			cnt.size = Vector2(40, 20)
+			cnt.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			b.add_child(cnt)
+		else:
+			pr = _price_row(it, 16, cw)
+		pr.position = Vector2(0, ch - 27.0)
+		b.add_child(pr)
+		if str(it.get("musim", "")) != "":
+			var sl: Label = UIKit.pixel_label(str(it["musim"]), 14, UIKit.CREAM, 4, Color("#43251D"))
+			sl.position = Vector2(6, 4)
+			sl.size = Vector2(cw, 18)
+			b.add_child(sl)
+		b.pressed.connect(func() -> void:
+			UIKit.sfx("klik")
+			shop_sel = id
+			_reopen("toko"))
+		inner.add_child(b)
+	# bawah: halaman + rincian + tombol Buy/Sell
+	var by: float = inner.size.y - 98.0
+	if pages > 1:
+		var lb: Button = _nav_button("<", 36.0)
+		lb.position = Vector2(20, by)
+		lb.pressed.connect(func() -> void:
+			shop_page = (shop_page - 1 + pages) % pages
+			_reopen("toko"))
+		inner.add_child(lb)
+		var pl: Label = UIKit.pixel_label("%d / %d" % [shop_page + 1, pages], 20, UIKit.BROWN)
+		pl.position = Vector2(70, by)
+		pl.size = Vector2(80, 36)
+		pl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		pl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		inner.add_child(pl)
+		var rb: Button = _nav_button(">", 36.0)
+		rb.position = Vector2(152, by)
+		rb.pressed.connect(func() -> void:
+			shop_page = (shop_page + 1) % pages
+			_reopen("toko"))
+		inner.add_child(rb)
+	if shop_sel != "" and Game.ITEMS.has(shop_sel):
+		var it2: Dictionary = Game.item(shop_sel)
+		var dl: Label = UIKit.pixel_label("%s - %s" % [str(it2["nama"]), str(it2.get("desk", ""))], 18, UIKit.BROWN)
+		dl.position = Vector2(220, by - 4)
+		dl.size = Vector2(inner.size.x - 440.0, 44)
+		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		dl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		inner.add_child(dl)
+		var act: TextureButton = UIKit.pill_button("Sell" if shop_tab == "Sell" else "Buy", 180.0)
+		act.position = Vector2(inner.size.x - 200.0, by - 6.0)
+		act.pressed.connect(func() -> void:
+			if shop_tab == "Sell":
+				var got: int = Game.sell(shop_sel, 1)
+				show_toast("Sold %s +%s" % [str(it2["nama"]), fmt(got)] if got > 0 else "Nothing to sell")
+				if Game.count(shop_sel) <= 0:
+					shop_sel = ""
+			else:
+				var err: String = Game.buy(shop_sel, 1)
+				show_toast(err if err != "" else "Bought %s (you have %d)" % [str(it2["nama"]), Game.count(shop_sel)])
+			_refresh_status(true)
+			_reopen("toko"))
+		inner.add_child(act)
+	else:
+		var hl: Label = UIKit.pixel_label("Tap an item to see it", 18, Color("#7F442C"))
+		hl.position = Vector2(220, by)
+		hl.size = Vector2(inner.size.x - 440.0, 36)
+		hl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		inner.add_child(hl)
+	var money: Label = UIKit.pixel_label("Coins %s   Crystals %s" % [fmt(Game.coins), fmt(Game.crystals)], 18, Color("#7F442C"))
+	money.position = Vector2(0, inner.size.y - 40.0)
+	money.size = Vector2(inner.size.x, 26)
+	money.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	inner.add_child(money)
+
+
+# ================= Buku: ensiklopedia + resep =================
+const TOOL_INFO: Dictionary = {
+	"cangkul": "Till farm grass into soil for planting.", "penyiram": "Water tilled soil so crops grow each day.",
+	"sekop": "Flatten tilled soil back into grass.", "arit": "Cut all plants around the target.",
+	"pisau": "Cut a single plant.", "kapak": "Chop trees (Woodland) for Wood.", "beliung": "Break rocks for Stone.",
+	"pedang": "Swing at things. Monsters coming soon.", "jaring": "Catch butterflies on sunny days.",
+	"pancing": "Fishing at the Lake - coming soon.",
+}
+
+
+func _book_entries(tab: String) -> Array:
+	var out: Array = []   # [ikon, nama, baris1, baris2]
+	match tab:
+		"Crops":
+			for k: String in Game.tanaman.keys():
+				var t: Dictionary = Game.tanaman[k] as Dictionary
+				out.append([Game.item_icon(k), str(t["nama"]), "Get: grow %s Seeds on tilled soil, water daily (%d days)." % [str(t["nama"]), int(t["hari"])],
+					"Where: your Farm. Sells for %s coins." % fmt(int(t["jual"]))])
+		"Seeds":
+			for k: String in _ids_in("Seeds"):
+				var it: Dictionary = Game.item(k)
+				out.append([Game.item_icon(k), str(it["nama"]), "Get: buy at the Shop for %s coins." % fmt(int(it["harga"])), "Where: sow on tilled soil on your Farm. " + str(it["desk"]).get_slice(".", 2).strip_edges()])
+		"Animals":
+			for k: String in _ids_in("Animals"):
+				var it2: Dictionary = Game.item(k)
+				out.append([Game.item_icon(k), str(it2["nama"]), str(it2["desk"]), "Get: Shop (%s coins). Where: place on your Farm in Build mode." % fmt(int(it2["harga"]))])
+		"Products":
+			for k: String in _ids_in("Animal Products"):
+				var it3: Dictionary = Game.item(k)
+				out.append([Game.item_icon(k), str(it3["nama"]), str(it3["desk"]), "Where: your Farm animals. Sells for %s coins." % fmt(int(it3.get("jual", 0)))])
+		"Tools":
+			for k: String in Game.START_TOOLS:
+				out.append([Game.item_icon(k), str(Game.item(k)["nama"]), str(TOOL_INFO.get(k, "")), "Get: starter tool. Where: your Bag."])
+			out.append([Game.item_icon("kayu"), "Wood", "Get: chop trees with the Axe.", "Where: the Woodland, west of the Farm."])
+			out.append([Game.item_icon("batu"), "Stone", "Get: break rocks with the Pickaxe.", "Where: rocks around the Farm and Woodland."])
+			out.append([Game.item_icon("kupu"), "Butterfly", "Get: catch with the Bug Net on sunny days.", "Where: everywhere, in daytime."])
+		"Recipes":
+			for rv: Variant in Game.resep:
+				var r: Dictionary = rv as Dictionary
+				var parts: PackedStringArray = PackedStringArray()
+				for b: String in (r["bahan"] as Dictionary).keys():
+					parts.append("%s x%d" % [str(Game.item(b).get("nama", b)), int((r["bahan"] as Dictionary)[b])])
+				var ic: Texture2D = Game.item_icon(str(r["hasil"])) if r.has("hasil") else Game.item_icon(str((r["bahan"] as Dictionary).keys()[0]))
+				out.append([ic, str(r["nama"]), "Needs: " + ", ".join(parts), str(r["desk"]) + ("" if r.has("hasil") else " (cooking coming soon)"), r])
+		_:
+			for k: String in _ids_in(tab):
+				var it4: Dictionary = Game.item(k)
+				var price: String = ("%s crystals" % fmt(int(it4["kristal"]))) if int(it4.get("kristal", 0)) > 0 else ("%s coins" % fmt(int(it4.get("harga", 0))))
+				out.append([Game.item_icon(k), str(it4["nama"]), str(it4.get("desk", "")), "Get: Shop (%s). Where: place on your Farm in Build mode." % price])
+	return out
+
+
+func _popup_book() -> void:
+	var fr: Array = _frame("bingkai_21", 600.0, "Journal")
+	var inner: Control = fr[1] as Control
+	var ty: float = 52.0
+	var th: float = (inner.size.y - ty - 14.0) / BOOK_TABS.size() - 4.0
+	for t: String in BOOK_TABS:
+		var tb: Button = _tab_button(t, t == book_tab, th, 17)
+		tb.size = Vector2(150, th)
+		tb.position = Vector2(22, ty)
+		tb.pressed.connect(func() -> void:
+			book_tab = t
+			book_page = 0
+			_reopen("buku"))
+		inner.add_child(tb)
+		ty += th + 4.0
+	var ents: Array = _book_entries(book_tab)
+	var per: int = 5
+	var pages: int = maxi(1, int(ceil(ents.size() / float(per))))
+	book_page = clampi(book_page, 0, pages - 1)
+	var lx: float = 190.0
+	var lw: float = inner.size.x - lx - 24.0
+	var rh: float = (inner.size.y - 52.0 - 50.0) / per
+	for i: int in range(per):
+		var k: int = book_page * per + i
+		if k >= ents.size():
+			break
+		var e: Array = ents[k] as Array
+		var y: float = 52.0 + i * rh
+		var bg: Panel = Panel.new()
+		bg.add_theme_stylebox_override("panel", UIKit.box(Game.theme_color().darkened(0.06), Color("#D9B88A"), 2))
+		bg.position = Vector2(lx, y)
+		bg.size = Vector2(lw, rh - 6.0)
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		inner.add_child(bg)
+		var ic: TextureRect = _icon_rect(e[0] as Texture2D, Vector2(rh - 18.0, rh - 18.0))
+		ic.position = Vector2(lx + 6.0, y + 6.0)
+		inner.add_child(ic)
+		var tx: float = lx + rh
+		var nl: Label = UIKit.pixel_label(str(e[1]), 21, UIKit.BROWN)
+		nl.position = Vector2(tx, y + 2.0)
+		nl.size = Vector2(lw - rh - 10.0, 24)
+		inner.add_child(nl)
+		for j: int in range(2):
+			var dl: Label = UIKit.pixel_label(str(e[2 + j]), 16, Color("#6B4A2E"))
+			dl.position = Vector2(tx, y + 25.0 + j * 18.0)
+			dl.size = Vector2(lw - rh - 120.0, 20)
+			dl.clip_text = true
+			inner.add_child(dl)
+		if e.size() > 4:
+			var r: Dictionary = e[4] as Dictionary
+			if r.has("hasil"):
+				var cb: Button = _tab_button("Cook", Game.can_cook(r), 32.0, 17)
+				cb.size = Vector2(96, 32)
+				cb.position = Vector2(lx + lw - 106.0, y + (rh - 38.0) / 2.0)
+				cb.pressed.connect(func() -> void:
+					if Game.cook(r):
+						show_toast("Made %s!" % str(r["nama"]))
+						_reopen("buku")
+					else:
+						show_toast("Not enough ingredients"))
+				inner.add_child(cb)
+	var nav_y: float = inner.size.y - 44.0
+	if pages > 1:
+		var lb: Button = _nav_button("<", 34.0)
+		lb.position = Vector2(lx + lw / 2.0 - 110.0, nav_y)
+		lb.pressed.connect(func() -> void:
+			book_page = (book_page - 1 + pages) % pages
+			_reopen("buku"))
+		inner.add_child(lb)
+		var rb: Button = _nav_button(">", 34.0)
+		rb.position = Vector2(lx + lw / 2.0 + 70.0, nav_y)
+		rb.pressed.connect(func() -> void:
+			book_page = (book_page + 1) % pages
+			_reopen("buku"))
+		inner.add_child(rb)
+	var pl: Label = UIKit.pixel_label("%s  %d / %d" % [book_tab, book_page + 1, pages], 18, UIKit.BROWN)
+	pl.position = Vector2(lx + lw / 2.0 - 65.0, nav_y)
+	pl.size = Vector2(130, 34)
+	pl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	inner.add_child(pl)
+
+
+## Buka ulang popup tanpa animasi muncul (dipakai saat isi popup diperbarui).
+func _reopen(kind: String) -> void:
+	open_popup(kind)
+	modal.modulate.a = 1.0

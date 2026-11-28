@@ -7,7 +7,8 @@ const T: int = 32
 const SPEED: float = 128.0  # piksel seni per detik (4 petak/detik)
 const ZOOM_MAX: float = 6.0
 const ZOOM_DEFAULT: float = 2.0
-const ZOOM_STEPS: Array[float] = [0.5, 1.0, 2.0, 3.0, 4.0, 6.0]
+const ZOOM_STEPS: Array[float] = [1.5, 2.0, 3.0, 4.0, 6.0]
+const ZOOM_MIN_ALLOWED: float = 1.5   # kamera tidak boleh terlalu jauh
 const TAP_DIST: float = 24.0
 const TAP_TIME: float = 0.45
 
@@ -59,6 +60,7 @@ var press_pos: Vector2 = Vector2.ZERO
 var press_t: float = 0.0
 
 var hud: CanvasLayer
+var farm: Node2D
 var map_title: String = ""
 var soil: Node2D                          # tanah olahan (digambar di atas lanskap)
 var bugs: Node2D                          # kupu-kupu
@@ -93,6 +95,10 @@ func _ready() -> void:
 	bugs = Node2D.new()
 	bugs.z_index = 5
 	add_child(bugs)
+	farm = Node2D.new()
+	farm.set_script(load("res://scripts/farm.gd"))
+	farm.set("world", self)
+	add_child(farm)
 	Game.day_changed.connect(func() -> void: soil.queue_redraw())
 	_build_hud()
 	get_viewport().size_changed.connect(func() -> void:
@@ -169,8 +175,11 @@ func load_map(id: String, from_gate: String) -> void:
 	ground.queue_redraw()
 	soil.queue_redraw()
 	_spawn_bugs()
+	farm.call("rebuild")
 	_fit_zoom()
 	_set_zoom(zoom_now)
+	if hud != null:
+		hud.call("on_map_changed")
 
 
 func _place_object(key: String, cell: Vector2i, id: String) -> void:
@@ -705,7 +714,7 @@ func _fit_zoom() -> void:
 	var vs: Vector2 = get_viewport_rect().size
 	if mw == 0 or mh == 0:
 		return
-	zoom_min = maxf(vs.x / float(mw * T), vs.y / float(mh * T))
+	zoom_min = maxf(ZOOM_MIN_ALLOWED, maxf(vs.x / float(mw * T), vs.y / float(mh * T)))
 
 
 func _set_zoom(z: float) -> void:
@@ -761,6 +770,10 @@ func change_zoom(d: int) -> void:
 func _unhandled_input(e: InputEvent) -> void:
 	if busy or bool(hud.get("modal_open")):
 		return
+	if bool(farm.get("build_mode")) and (e is InputEventMouseButton and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT or e is InputEventMouseMotion):
+		if not pinching:
+			farm.call("build_input", e)
+		return
 	if e is InputEventScreenTouch:
 		var t: InputEventScreenTouch = e as InputEventScreenTouch
 		if t.pressed:
@@ -814,6 +827,8 @@ func tap_world(wp: Vector2) -> void:
 		if hit.has_point(c):
 			walk_to(b["door"] as Vector2i, {"type": "door", "b": b})
 			return
+	if bool(farm.call("tap", wp)):
+		return
 	var ti: int = _tree_at(wp) if Game.held_tool() == "kapak" else -1
 	if ti < 0 and Game.held_tool() == "" and _tree_at(wp) >= 0:
 		show_toast("Hold the Axe to chop trees")
@@ -853,6 +868,8 @@ func _arrived() -> void:
 		show_toast("%s - segera dibuka" % str(b["label"]))
 	elif str(a["type"]) == "chop":
 		chop_hit(int(a["i"]))
+	elif str(a["type"]) == "farm":
+		farm.call("arrived", a["wp"] as Vector2)
 	elif str(a["type"]) == "gate":
 		var to: String = str(gates.get(_cell(player.position), ""))
 		if to != "":
@@ -978,6 +995,8 @@ func _can_till(c: Vector2i) -> bool:
 		return false
 	if gates.has(c) or Game.tilled_of(map_id).has(c):
 		return false
+	if (farm.get("occ") as Dictionary).has(c):
+		return false
 	var ch: String = grid[c.y][c.x]
 	return ch != "#" and not "<>^v".contains(ch)
 
@@ -1000,7 +1019,10 @@ func use_tool(tool: String, wp: Vector2) -> void:
 				UIKit.sfx("ayun")
 				show_toast("Only farm grass can be tilled" if map_id != "ladang" else "Can't till here")
 		"sekop":
-			if td.has(c):
+			if Game.crops.has(c):
+				UIKit.sfx("ayun")
+				show_toast("A crop is growing here")
+			elif td.has(c):
 				td.erase(c)
 				soil.queue_redraw()
 				UIKit.sfx("gali", 1.2)

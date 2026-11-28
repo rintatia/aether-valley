@@ -8,7 +8,7 @@ const SEASONS: Array[String] = ["Spring", "Summer", "Autumn", "Winter"]
 const WEEKDAYS: Array[String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 const BAG_PAGES: int = 10
 const BAG_PER_PAGE: int = 25
-const ITEMS: Dictionary = {
+var ITEMS: Dictionary = {
 	"kayu": {"nama": "Wood", "ikon": "res://assets/ui/item_kayu.png", "tumpuk": 999},
 	"kupu": {"nama": "Butterfly", "ikon": "res://assets/ui/item_kupu.png", "tumpuk": 99},
 	"batu": {"nama": "Stone", "ikon": "res://assets/ui/item_batu.png", "tumpuk": 999},
@@ -43,8 +43,10 @@ var minute: float = START_MINUTE          # menit dalam hari (0..1440)
 var raining: bool = false
 
 # uang & tas
-var coins: int = 500
-var crystals: int = 0
+const START_COINS: int = 1000000
+const START_CRYSTALS: int = 10000
+var coins: int = START_COINS
+var crystals: int = START_CRYSTALS
 var bag: Array = []                       # BAG_PAGES * BAG_PER_PAGE slot: {} atau {"id":..,"n":..}
 var selected_slot: int = 0               # -1 = tangan kosong
 
@@ -56,6 +58,18 @@ var theme_name: String = "Peach"
 # tanah olahan per peta: map_id -> {Vector2i: {"wet": bool}}
 var tilled: Dictionary = {}
 
+# katalog (data/katalog.json): items (bangunan, pagar, dekor, alam, bibit, hasil, ternak), tanaman, ternak, resep
+var katalog: Dictionary = {}
+var tanaman: Dictionary = {}
+var ternak: Dictionary = {}
+var resep: Array = []
+# objek yang dipasang di Farm (Build mode): [{"id", "cell": Vector2i}]
+var placed: Array = []
+# tanaman di tanah olahan Farm: Vector2i -> {"id": jenis, "days": hari tumbuh}
+var crops: Dictionary = {}
+# ternak di Farm: [{"jenis", "age", "pos": Vector2, "product": "" / id hasil}]
+var animals: Array = []
+
 signal day_changed
 signal bag_changed
 
@@ -66,6 +80,19 @@ func _ready() -> void:
 		bag[i] = {}
 	_roll_weather()
 	load_settings()
+	_load_katalog()
+
+
+func _load_katalog() -> void:
+	var j: JSON = load("res://data/katalog.json") as JSON
+	if j == null:
+		return
+	katalog = j.data as Dictionary
+	tanaman = katalog["tanaman"] as Dictionary
+	ternak = katalog["ternak"] as Dictionary
+	resep = katalog["resep"] as Array
+	for k: String in (katalog["items"] as Dictionary).keys():
+		ITEMS[k] = (katalog["items"] as Dictionary)[k]
 
 
 func new_game() -> void:
@@ -75,10 +102,13 @@ func new_game() -> void:
 		bag[i] = {"id": START_TOOLS[i], "n": 1}
 	selected_slot = 0
 	tilled = {}
+	placed = []
+	crops = {}
+	animals = []
 	day = 1
 	minute = START_MINUTE
-	coins = 500
-	crystals = 0
+	coins = START_COINS
+	crystals = START_CRYSTALS
 	_roll_weather()
 	bag_changed.emit()
 
@@ -130,12 +160,29 @@ func tick(delta: float) -> void:
 	if minute >= 1440.0:
 		minute -= 1440.0
 		day += 1
-		_roll_weather()
-		# tanah yang disiram kering lagi di hari baru
-		for mp: Variant in tilled.values():
-			for cv: Variant in (mp as Dictionary).values():
-				(cv as Dictionary)["wet"] = raining
+		new_day()
 		day_changed.emit()
+
+
+## Hari baru: tanaman yang kemarin disiram (atau kena hujan) tumbuh 1 hari; ternak bertambah umur & menghasilkan.
+func new_day() -> void:
+	var farm: Dictionary = tilled_of("ladang")
+	for cv: Variant in crops.keys():
+		var cr: Dictionary = crops[cv] as Dictionary
+		if raining or bool((farm.get(cv, {}) as Dictionary).get("wet", false)):
+			cr["days"] = int(cr["days"]) + 1
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = day * 31337
+	for av: Variant in animals:
+		var a: Dictionary = av as Dictionary
+		a["age"] = int(a["age"]) + 1
+		if is_adult(a) and str(a.get("product", "")) == "":
+			a["product"] = _roll_product(str(a["jenis"]), rng)
+	_roll_weather()
+	# tanah yang disiram kering lagi di hari baru
+	for mp: Variant in tilled.values():
+		for cv: Variant in (mp as Dictionary).values():
+			(cv as Dictionary)["wet"] = raining
 
 
 func hour() -> int:
@@ -202,7 +249,7 @@ func _roll_weather() -> void:
 # ---------------- tas ----------------
 func add_item(id: String, n: int) -> int:
 	var left: int = n
-	var stack: int = int((ITEMS[id] as Dictionary)["tumpuk"])
+	var stack: int = int((ITEMS[id] as Dictionary).get("tumpuk", 99))
 	for i: int in range(bag.size()):
 		var s: Dictionary = bag[i] as Dictionary
 		if not s.is_empty() and str(s["id"]) == id and int(s["n"]) < stack:
@@ -252,8 +299,120 @@ func tilled_of(map_id: String) -> Dictionary:
 	return tilled[map_id] as Dictionary
 
 
+# ---------------- katalog, tanam, ternak ----------------
+func item(id: String) -> Dictionary:
+	return ITEMS.get(id, {}) as Dictionary
+
+
+func is_placeable(id: String) -> bool:
+	return item(id).has("gambar") or item(id).has("hewan")
+
+
+func is_seed(id: String) -> bool:
+	return id.begins_with("bibit_")
+
+
+## Barang yang sedang dipegang (slot terpilih), "" bila kosong.
+func held_item() -> String:
+	if selected_slot < 0 or selected_slot >= bag.size():
+		return ""
+	var s: Dictionary = bag[selected_slot] as Dictionary
+	return "" if s.is_empty() else str(s["id"])
+
+
+func remove_item(id: String, n: int = 1) -> bool:
+	if count(id) < n:
+		return false
+	var left: int = n
+	for i: int in range(bag.size() - 1, -1, -1):
+		var s: Dictionary = bag[i] as Dictionary
+		if not s.is_empty() and str(s["id"]) == id:
+			var take: int = mini(left, int(s["n"]))
+			s["n"] = int(s["n"]) - take
+			left -= take
+			if int(s["n"]) <= 0:
+				bag[i] = {}
+			if left == 0:
+				break
+	bag_changed.emit()
+	return true
+
+
+## Beli dari Shop: bayar koin atau kristal. Hasil: "" (berhasil) atau alasan gagal.
+func buy(id: String, n: int = 1) -> String:
+	var it: Dictionary = item(id)
+	var kr: int = int(it.get("kristal", 0)) * n
+	var co: int = int(it.get("harga", 0)) * n
+	if kr <= 0 and co <= 0:
+		return "Not for sale"
+	if kr > crystals or co > coins:
+		return "Not enough " + ("crystals" if kr > crystals else "coins")
+	if add_item(id, n) < n:
+		return "Bag is full"
+	crystals -= kr
+	coins -= co
+	return ""
+
+
+func sell(id: String, n: int = 1) -> int:
+	var price: int = int(item(id).get("jual", 0))
+	if price <= 0 or not remove_item(id, n):
+		return 0
+	coins += price * n
+	return price * n
+
+
+func crop_stage(cr: Dictionary) -> int:
+	var t: Dictionary = tanaman[str(cr["id"])] as Dictionary
+	var n: int = (t["tahap"] as Array).size()
+	if int(cr["days"]) >= int(t["hari"]):
+		return n - 1
+	return clampi(int(float(cr["days"]) / float(t["hari"]) * float(n - 1)), 0, n - 2)
+
+
+func crop_ready(cr: Dictionary) -> bool:
+	return int(cr["days"]) >= int((tanaman[str(cr["id"])] as Dictionary)["hari"])
+
+
+func is_adult(a: Dictionary) -> bool:
+	return int(a["age"]) >= int((ternak[str(a["jenis"])] as Dictionary)["dewasa"])
+
+
+func _roll_product(jenis: String, rng: RandomNumberGenerator) -> String:
+	var r: float = rng.randf()
+	match jenis:
+		"cow":
+			return "milk_pail" if r < 0.1 else "milk"
+		"chicken":
+			return "golden_egg" if r < 0.03 else ("large_egg" if r < 0.13 else ("brown_egg" if r < 0.55 else "egg"))
+		"duck":
+			return "feather" if r < 0.2 else "duck_egg"
+		"goose":
+			return "down" if r < 0.1 else ("goose_feather" if r < 0.25 else ("quail_egg" if r < 0.35 else "goose_egg"))
+		"sheep":
+			return "fine_wool" if r < 0.15 else "wool"
+	return ""
+
+
+func can_cook(r: Dictionary) -> bool:
+	for k: String in (r["bahan"] as Dictionary).keys():
+		if count(k) < int((r["bahan"] as Dictionary)[k]):
+			return false
+	return r.has("hasil")
+
+
+func cook(r: Dictionary) -> bool:
+	if not can_cook(r):
+		return false
+	for k: String in (r["bahan"] as Dictionary).keys():
+		remove_item(k, int((r["bahan"] as Dictionary)[k]))
+	add_item(str(r["hasil"]), 1)
+	return true
+
+
 func item_icon(id: String) -> Texture2D:
-	return load(str((ITEMS[id] as Dictionary)["ikon"])) as Texture2D
+	var it: Dictionary = item(id)
+	return UIKit.mip_tex(str(it.get("ikon", it.get("gambar", ""))))
 
 
 # ---------------- karakter ----------------

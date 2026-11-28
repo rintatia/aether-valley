@@ -8,6 +8,7 @@ var sfx_players: Array[AudioStreamPlayer] = []
 var sfx_cache: Dictionary = {}
 var sfx_next: int = 0
 var box_cache: Dictionary = {}
+var mip_cache: Dictionary = {}
 const PX: int = 3   # satu "piksel" kotak UI = 3 piksel layar
 const BROWN: Color = Color("#43251D")
 const CREAM: Color = Color("#F8F1EA")
@@ -137,6 +138,22 @@ func round_button(name: String, d: float) -> TextureButton:
 	b.custom_minimum_size = b.size
 	b.button_down.connect(func() -> void: sfx("klik"))
 	return b
+
+
+## Tekstur dengan mipmap (aset resolusi tinggi yang tampil kecil: tetap halus, tidak berkedip). Disimpan sekali.
+func mip_tex(path: String) -> Texture2D:
+	if path == "":
+		return null
+	if not mip_cache.has(path):
+		var t: Texture2D = load(path) as Texture2D
+		if t == null:
+			return null
+		var img: Image = t.get_image()
+		if img.is_compressed():
+			img.decompress()
+		img.generate_mipmaps()
+		mip_cache[path] = ImageTexture.create_from_image(img)
+	return mip_cache[path] as Texture2D
 
 
 ## Tombol bergambar yang membal sedikit saat ditekan.
