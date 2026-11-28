@@ -3,7 +3,7 @@ extends Node2D
 
 const DualGrid = preload("res://scripts/dualgrid.gd")
 const T: int = 32
-const ZOOMS: Array[int] = [1, 2, 3, 4]
+const ZOOMS: Array[int] = [2, 3, 4]   # x2 = terjauh: detail rumput tetap terlihat, peta selalu memenuhi layar
 
 var cam: Camera2D
 var zoom_i: int = 0
@@ -12,7 +12,10 @@ var map_h: int = 0
 var dragging: bool = false
 var touches: Dictionary = {}
 var pinch_ref: float = 0.0
-var pinch_done: bool = false
+var pinch_zoom0: float = 2.0
+var pinch_world: Vector2 = Vector2.ZERO
+var pinching: bool = false
+var snap_tw: Tween
 
 
 func _ready() -> void:
@@ -60,6 +63,16 @@ func set_zoom(i: int, focus: Vector2) -> void:
 
 func _apply_zoom() -> void:
 	cam.zoom = Vector2(ZOOMS[zoom_i], ZOOMS[zoom_i])
+	_clamp_cam()
+
+
+## Kamera tidak boleh memperlihatkan area di luar peta (layar selalu penuh rumput).
+func _clamp_cam() -> void:
+	var half: Vector2 = get_viewport_rect().size / cam.zoom / 2.0
+	var mw: float = map_w * T
+	var mh: float = map_h * T
+	cam.position.x = mw / 2.0 if half.x * 2.0 >= mw else clampf(cam.position.x, half.x, mw - half.x)
+	cam.position.y = mh / 2.0 if half.y * 2.0 >= mh else clampf(cam.position.y, half.y, mh - half.y)
 
 
 func _hud() -> void:
@@ -100,28 +113,72 @@ func _hud() -> void:
 	box.add_child(bp)
 
 
+func _two() -> Array:
+	var v: Array = touches.values()
+	return [v[0] as Vector2, v[1] as Vector2]
+
+
+## Cubit seperti Stardew Valley: zoom halus mengikuti jari, berpusat di titik tengah kedua jari.
+## Saat jari dilepas, zoom menempel ke tingkat bulat terdekat (x2/x3/x4) agar piksel tetap tajam.
+func _pinch_begin() -> void:
+	var p: Array = _two()
+	pinch_ref = maxf((p[0] as Vector2).distance_to(p[1] as Vector2), 1.0)
+	pinch_zoom0 = cam.zoom.x
+	var mid: Vector2 = ((p[0] as Vector2) + (p[1] as Vector2)) / 2.0
+	pinch_world = cam.position + (mid - get_viewport_rect().size / 2.0) / cam.zoom.x
+	pinching = true
+	if snap_tw != null:
+		snap_tw.kill()
+
+
+func _pinch_move() -> void:
+	var p: Array = _two()
+	var d: float = (p[0] as Vector2).distance_to(p[1] as Vector2)
+	var z: float = clampf(pinch_zoom0 * d / pinch_ref, float(ZOOMS[0]) - 0.25, float(ZOOMS[ZOOMS.size() - 1]) + 0.25)
+	var mid: Vector2 = ((p[0] as Vector2) + (p[1] as Vector2)) / 2.0
+	cam.zoom = Vector2(z, z)
+	cam.position = pinch_world - (mid - get_viewport_rect().size / 2.0) / z
+	_clamp_cam()
+
+
+func _pinch_end() -> void:
+	pinching = false
+	var best: int = 0
+	for i: int in range(ZOOMS.size()):
+		if absf(ZOOMS[i] - cam.zoom.x) < absf(ZOOMS[best] - cam.zoom.x):
+			best = i
+	zoom_i = best
+	var target: float = float(ZOOMS[best])
+	snap_tw = create_tween()
+	snap_tw.tween_method(func(z: float) -> void:
+		cam.zoom = Vector2(z, z)
+		_clamp_cam(), cam.zoom.x, target, 0.12)
+
+
 func _unhandled_input(e: InputEvent) -> void:
 	if e is InputEventScreenTouch:
 		var t: InputEventScreenTouch = e as InputEventScreenTouch
 		if t.pressed:
 			touches[t.index] = t.position
 			if touches.size() == 2:
-				var v: Array = touches.values()
-				pinch_ref = (v[0] as Vector2).distance_to(v[1] as Vector2)
-				pinch_done = false
+				_pinch_begin()
 		else:
 			touches.erase(t.index)
+			if pinching and touches.size() < 2:
+				_pinch_end()
 	elif e is InputEventScreenDrag:
 		var dr: InputEventScreenDrag = e as InputEventScreenDrag
 		touches[dr.index] = dr.position
-		if touches.size() == 2 and not pinch_done and pinch_ref > 1.0:
-			var v2: Array = touches.values()
-			var r: float = (v2[0] as Vector2).distance_to(v2[1] as Vector2) / pinch_ref
-			if r >= 1.25 or r <= 0.8:
-				zoom_i = clampi(zoom_i + (1 if r >= 1.25 else -1), 0, ZOOMS.size() - 1)
-				_apply_zoom()
-				pinch_done = true
-		elif touches.size() == 1:
+		if touches.size() >= 2 and pinching:
+			_pinch_move()
+		elif touches.size() == 1 and not pinching:
 			cam.position -= dr.relative / cam.zoom.x
+			_clamp_cam()
 	elif e is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and touches.is_empty():
 		cam.position -= (e as InputEventMouseMotion).relative / cam.zoom.x
+		_clamp_cam()
+	elif e is InputEventMouseButton and (e as InputEventMouseButton).pressed:
+		var mb: InputEventMouseButton = e as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			zoom_i = clampi(zoom_i + (1 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else -1), 0, ZOOMS.size() - 1)
+			_apply_zoom()

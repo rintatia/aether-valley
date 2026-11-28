@@ -78,9 +78,10 @@ func _shot(name: String) -> void:
 func _screenshots() -> void:
 	var tt: Node2D = (load("res://scripts/tiletest.gd") as GDScript).new()
 	add_child(tt)
-	await _shot("uji_tileset_zoom1.png")
-	tt.call("set_zoom", 3, Vector2(430, 330))
-	await _shot("uji_tileset_zoom4.png")
+	var pre: String = OS.get_environment("SHOT_PREFIX")
+	await _shot(pre + "zoom_terjauh.png")
+	tt.call("set_zoom", 2, Vector2(430, 330))
+	await _shot(pre + "zoom_terdekat.png")
 	get_tree().quit(0)
 
 
