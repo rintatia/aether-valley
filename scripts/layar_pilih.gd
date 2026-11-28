@@ -31,8 +31,8 @@ func _ready() -> void:
 	UIKit.close_button(panel, inner).pressed.connect(func() -> void: closed.emit())
 	# dua kartu berdampingan
 	var ok_h: float = inner.size.y * 0.15
-	var top: float = 58.0
-	var card_h: float = inner.size.y - top - ok_h - 24.0
+	var top: float = 74.0
+	var card_h: float = inner.size.y - top - ok_h - 30.0
 	var card_w: float = card_h * 539.0 / 679.0
 	var gap: float = card_w * 0.16
 	var x0: float = (inner.size.x - card_w * 2.0 - gap) / 2.0
@@ -45,7 +45,7 @@ func _ready() -> void:
 		b.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		b.position = Vector2(x0 + i * (card_w + gap), top)
 		b.size = Vector2(card_w, card_h)
-		b.pivot_offset = Vector2(b.size.x / 2.0, b.size.y)
+		b.pivot_offset = b.size / 2.0
 		b.pressed.connect(func() -> void:
 			UIKit.sfx("klik")
 			_choose(g))
@@ -105,8 +105,8 @@ func _choose(g: String) -> void:
 		if k == g:
 			c.modulate = Color.WHITE
 			inner.move_child(c, inner.get_child_count() - 1)
-			tw.tween_property(c, "position:y", bp.y - 18.0, 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			tw.tween_property(c, "scale", Vector2(1.07, 1.07), 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tw.tween_property(c, "position:y", bp.y - 12.0, 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tw.tween_property(c, "scale", Vector2(1.05, 1.05), 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 			tw.tween_property(sh, "modulate:a", 1.0, 0.25)
 			tw.tween_property(sh, "position:y", bp.y + 14.0, 0.28)
 			tw.chain().tween_callback(func() -> void: _float(k))
@@ -125,8 +125,8 @@ func _float(k: String) -> void:
 	var bp: Vector2 = base_pos[k] as Vector2
 	var tw: Tween = create_tween().set_loops()
 	tweens[k] = tw
+	tw.tween_property(c, "position:y", bp.y - 7.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tw.tween_property(c, "position:y", bp.y - 12.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_property(c, "position:y", bp.y - 18.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func _confirm() -> void:

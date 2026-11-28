@@ -466,7 +466,7 @@ func _popup_settings() -> void:
 	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fill.position = Vector2(4, 4)
 	bar_bg.add_child(fill)
-	var pct: Label = UIKit.pixel_label("", 20, UIKit.CREAM, 4, Color("#43251D"))
+	var pct: Label = UIKit.pixel_label("", 22, UIKit.CREAM, 6, Color("#43251D"))
 	pct.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	pct.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	pct.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
