@@ -15,7 +15,9 @@ var facing_left: bool = false
 var spr: Sprite2D
 var shadow: Node2D
 var tool_spr: Sprite2D
+var hand_spr: Sprite2D          # tangan di atas alat (jari menggenggam gagang)
 var tool_tw: Tween
+var hold_anim: bool = false     # untuk tangkapan layar: bingkai dibekukan
 
 # mode animasi bingkai
 var animated: bool = false
@@ -43,6 +45,12 @@ func _ready() -> void:
 	tool_spr.centered = false
 	tool_spr.visible = false
 	add_child(tool_spr)
+	hand_spr = Sprite2D.new()
+	hand_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	hand_spr.centered = false
+	hand_spr.hframes = 8
+	hand_spr.visible = false
+	add_child(hand_spr)
 	refresh_look()
 
 
@@ -60,6 +68,8 @@ func refresh_look() -> void:
 		spr.offset = Vector2(-float(k[0]), -float(k[1]))
 		var s: float = float(anim["skala"])
 		spr.scale = Vector2(s, s)
+		hand_spr.offset = spr.offset
+		hand_spr.scale = spr.scale
 		cur_anim = ""
 		_set_anim("diam")
 		return
@@ -116,7 +126,8 @@ func _process_anim(delta: float) -> void:
 		_end_act()   # berjalan membatalkan aksi
 	var want: String = acting if acting != "" else ("jalan" if walking else "diam")
 	_set_anim(want)
-	anim_t += delta
+	if not hold_anim:
+		anim_t += delta
 	var fps: float = float((anim["fps"] as Dictionary).get(cur_anim, 10))
 	var f: int = int(anim_t * fps)
 	if acting != "":
@@ -134,16 +145,19 @@ func _end_act() -> void:
 	acting = ""
 	act_tool = ""
 	tool_spr.visible = false
+	hand_spr.visible = false
 
 
 ## Alat kita di tangan pada bingkai f: titik genggam alat -> titik genggam pose, diputar ke arah pose.
 func _place_tool(f: int) -> void:
 	if acting == "" or act_tool == "" or not alat.has(act_tool):
 		tool_spr.visible = false
+		hand_spr.visible = false
 		return
 	var poses: Array = (anim["pose"] as Dictionary).get(cur_anim, []) as Array
 	if f >= poses.size() or poses[f] == null:
 		tool_spr.visible = false
+		hand_spr.visible = false
 		return
 	var p: Dictionary = poses[f] as Dictionary
 	var a: Dictionary = alat[act_tool] as Dictionary
@@ -165,6 +179,14 @@ func _place_tool(f: int) -> void:
 	tool_spr.scale = Vector2(s * dir, s)
 	tool_spr.modulate.a = 1.0
 	tool_spr.visible = true
+	tool_spr.z_index = -1 if bool(p.get("b", false)) else 0
+	# tangan digambar di atas alat -> jari menutupi gagang, tampak benar-benar menggenggam
+	var ht: String = ANIM_DIR + cur_anim + "_tangan.png"
+	hand_spr.visible = not bool(p.get("b", false)) and ResourceLoader.exists(ht)
+	if hand_spr.visible:
+		hand_spr.texture = _tex(cur_anim + "_tangan")
+		hand_spr.frame = f
+		hand_spr.flip_h = facing_left
 
 
 func _v(x: Variant) -> Vector2:

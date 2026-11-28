@@ -142,18 +142,14 @@ func _screenshots() -> void:
 	Game.selected_slot = 0
 	(w.get("hud") as CanvasLayer).call("_refresh_items")
 	w.call("_set_zoom", 4.0)
-	w.call("use_tool", "cangkul", pc + Vector2(72, 52))
-	await get_tree().create_timer(0.32).timeout
-	await _shot(pre + "13_alat.png")
-	w.call("use_tool", "pancing", pc + Vector2(60, 0))
-	await get_tree().create_timer(0.62).timeout
-	await _shot(pre + "15_pancing.png")
-	w.call("use_tool", "jaring", pc + Vector2(60, 0))
-	await get_tree().create_timer(0.2).timeout
-	await _shot(pre + "16_jaring.png")
-	w.call("use_tool", "penyiram", pc + Vector2(40, 20))
-	await get_tree().create_timer(0.45).timeout
-	await _shot(pre + "17_siram.png")
+	pl.set("hold_anim", true)
+	for sh: Array in [["cangkul", Vector2(72, 52), 6.0 / 14.0, "13_alat"], ["pancing", Vector2(60, 0), 6.0 / 10.0, "15_pancing"],
+			["jaring", Vector2(60, 0), 2.0 / 14.0, "16_jaring"], ["penyiram", Vector2(40, 20), 4.0 / 8.0, "17_siram"],
+			["sabit", Vector2(50, 30), 7.0 / 14.0, "18_sabit"], ["tombak", Vector2(60, 0), 5.0 / 14.0, "19_tombak"]]:
+		w.call("use_tool", str(sh[0]), pc + (sh[1] as Vector2))
+		pl.set("anim_t", float(sh[2]) + 0.01)
+		await _shot(pre + str(sh[3]) + ".png")
+	pl.set("hold_anim", false)
 	await get_tree().create_timer(0.8).timeout
 	w.call("_set_zoom", 2.0)
 	var hud: CanvasLayer = w.get("hud") as CanvasLayer
