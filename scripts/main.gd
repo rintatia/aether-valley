@@ -364,13 +364,14 @@ func _selftest() -> void:
 	_check(world.mw == 130 and world.mh == 96 and world.map_title == "Lake", "peta danau 130x96")
 	_check(_edge_closed(), "danau: seluruh tepi tertutup kecuali gerbang")
 	var ad: Vector2i = world._cell(world.player.position)
-	_check(ad.y < 8, "datang dari ladang muncul di sisi atas danau")
+	_check(ad.y >= 3 and ad.y < 8 and not world.gates.has(ad), "datang dari ladang muncul di sisi atas danau, di dalam (y=%d)" % ad.y)
 	var up: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
 		up = g
 	_check(up.y == 0 and str(world.gates[up]) == "ladang" and world.find_path(ad, up).size() > 0, "jalur danau -> gerbang ladang")
 	world.load_map("ladang", "danau")
-	_check(world._cell(world.player.position).y > world.mh - 9, "kembali dari danau muncul di sisi bawah ladang")
+	var ab: Vector2i = world._cell(world.player.position)
+	_check(ab.y > world.mh - 9 and ab.y <= world.mh - 3 and not world.gates.has(ab), "kembali dari danau muncul di sisi bawah ladang, di dalam (y=%d)" % ab.y)
 	# --- alat ---
 	var pp: Vector2 = world.player.position + Vector2(0, -64)
 	var cc: Vector2i = world._cell(pp)

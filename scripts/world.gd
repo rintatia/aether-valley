@@ -144,8 +144,15 @@ func load_map(id: String, from_gate: String) -> void:
 			if str(gates[g]) == from_gate:
 				arrive = g
 		if arrive.x >= 0:
-			var step: int = 2 if arrive.x < mw / 2 else -2
-			spawn = _nearest_free(Vector2i(arrive.x + step, arrive.y))
+			# masuk ke dalam peta, menjauh dari tepi gerbang (atas: lebih jauh, karena karakter tinggi)
+			var st: Vector2i = Vector2i(0, -2)
+			if arrive.x == 0:
+				st = Vector2i(2, 0)
+			elif arrive.x == mw - 1:
+				st = Vector2i(-2, 0)
+			elif arrive.y == 0:
+				st = Vector2i(0, 4)
+			spawn = _nearest_free(arrive + st)
 	player.position = _center(spawn)
 	cam.limit_left = 0
 	cam.limit_top = 0
