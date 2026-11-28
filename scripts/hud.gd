@@ -616,14 +616,26 @@ func _popup_settings() -> void:
 	row.position = Vector2(0, y)
 	row.size = Vector2(inner.size.x, 64)
 	inner.add_child(row)
-	var res: TextureButton = UIKit.pill_button("Resume", 240.0)
+	row.add_theme_constant_override("separation", 20)
+	var res: TextureButton = UIKit.pill_button("Resume", 210.0)
 	res.pressed.connect(close_popup)
 	row.add_child(res)
-	var mm: TextureButton = UIKit.pill_button("Main Menu", 240.0)
+	var sv: TextureButton = UIKit.pill_button("Save", 210.0)
+	sv.pressed.connect(func() -> void:
+		world.call("save_now", true)
+		_reopen("setting"))
+	row.add_child(sv)
+	var mm: TextureButton = UIKit.pill_button("Main Menu", 210.0)
 	mm.pressed.connect(func() -> void:
+		world.call("save_now", false)
 		close_popup()
 		world.get_parent().call("back_to_title"))
 	row.add_child(mm)
+	var ls: Label = UIKit.pixel_label(_last_saved_text(), 18, Color("#7F442C"))
+	ls.position = Vector2(0, y + 70.0)
+	ls.size = Vector2(inner.size.x, 24)
+	ls.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	inner.add_child(ls)
 	var v: Label = UIKit.pixel_label(UIKit.version(), 18, Color("#7F442C"))
 	v.position = Vector2(0, inner.size.y - 32)
 	v.size = Vector2(inner.size.x, 24)
@@ -730,7 +742,9 @@ func _build_build_ui() -> void:
 	root.add_child(build_hint)
 	build_done = UIKit.pill_button("Done", 150.0)
 	build_done.visible = false
-	build_done.pressed.connect(func() -> void: world.get("farm").call("set_build_mode", false))
+	build_done.pressed.connect(func() -> void:
+		world.get("farm").call("set_build_mode", false)
+		world.call("save_now", false))
 	root.add_child(build_done)
 	sel_panel = Control.new()
 	sel_panel.size = Vector2(460, 64)
@@ -1156,3 +1170,29 @@ func _popup_book() -> void:
 func _reopen(kind: String) -> void:
 	open_popup(kind)
 	modal.modulate.a = 1.0
+
+
+# ================= simpan =================
+func _last_saved_text() -> String:
+	if Game.last_saved_unix <= 0:
+		return "Not saved yet - auto-saves every minute"
+	var dt: Dictionary = Time.get_datetime_dict_from_unix_time(Game.last_saved_unix + int(Time.get_time_zone_from_system().get("bias", 0)) * 60)
+	return "Last saved %02d:%02d - auto-saves every minute" % [int(dt["hour"]), int(dt["minute"])]
+
+
+## Penanda kecil "Saved" di bawah status bar setiap simpan otomatis.
+var saved_mark: Label
+
+
+func flash_saved(ok: bool) -> void:
+	if saved_mark == null:
+		saved_mark = UIKit.pixel_label("", 18, UIKit.CREAM, 5, Color("#2B2730"))
+		saved_mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		root.add_child(saved_mark)
+	saved_mark.text = "Saved" if ok else "Save failed"
+	saved_mark.position = Vector2(status.position.x, status.position.y + status.size.y + 2.0)
+	saved_mark.size = Vector2(status.size.x - 10.0, 24)
+	saved_mark.modulate.a = 1.0
+	var tw: Tween = create_tween()
+	tw.tween_interval(1.4)
+	tw.tween_property(saved_mark, "modulate:a", 0.0, 0.6)

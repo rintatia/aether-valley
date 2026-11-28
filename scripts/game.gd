@@ -31,6 +31,8 @@ const THEMES: Dictionary = {
 }
 const SPEEDS: Dictionary = {"Slow": 0.75, "Normal": 1.0, "Fast": 1.35}
 const SETTINGS_PATH: String = "user://settings.cfg"
+const SAVE_PATH: String = "user://save.json"
+const SAVE_VERSION: int = 1
 
 # karakter
 var gender: String = "cowok"
@@ -102,6 +104,8 @@ func new_game() -> void:
 		bag[i] = {"id": START_TOOLS[i], "n": 1}
 	selected_slot = 0
 	tilled = {}
+	resume_map = ""
+	resume_pos = Vector2(-1, -1)
 	placed = []
 	crops = {}
 	animals = []
@@ -111,6 +115,132 @@ func new_game() -> void:
 	crystals = START_CRYSTALS
 	_roll_weather()
 	bag_changed.emit()
+
+
+# ---------------- simpan / muat (lokal di perangkat) ----------------
+## Dipakai world saat memuat permainan tersimpan: peta & posisi pemain terakhir.
+var resume_map: String = ""
+var resume_pos: Vector2 = Vector2(-1, -1)
+var last_saved_unix: int = 0
+
+
+func has_save() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
+
+func _cell_key(c: Vector2i) -> String:
+	return "%d,%d" % [c.x, c.y]
+
+
+func _key_cell(k: String) -> Vector2i:
+	var p: PackedStringArray = k.split(",")
+	return Vector2i(int(p[0]), int(p[1]))
+
+
+## Simpan seluruh progres. map_id & pos = peta dan posisi pemain sekarang.
+func save_game(map_id: String, pos: Vector2) -> bool:
+	var td: Dictionary = {}
+	for mid: Variant in tilled.keys():
+		var m: Dictionary = {}
+		for cv: Variant in (tilled[mid] as Dictionary).keys():
+			m[_cell_key(cv as Vector2i)] = bool(((tilled[mid] as Dictionary)[cv] as Dictionary).get("wet", false))
+		td[str(mid)] = m
+	var pl: Array = []
+	for ev: Variant in placed:
+		var e: Dictionary = ev as Dictionary
+		pl.append({"id": str(e["id"]), "c": _cell_key(e["cell"] as Vector2i)})
+	var cr: Dictionary = {}
+	for cv: Variant in crops.keys():
+		var c: Dictionary = crops[cv] as Dictionary
+		cr[_cell_key(cv as Vector2i)] = {"id": str(c["id"]), "days": int(c["days"])}
+	var an: Array = []
+	for av: Variant in animals:
+		var a: Dictionary = av as Dictionary
+		var ap: Vector2 = a["pos"] as Vector2
+		an.append({"jenis": str(a["jenis"]), "age": int(a["age"]), "x": ap.x, "y": ap.y, "product": str(a.get("product", ""))})
+	var data: Dictionary = {
+		"v": SAVE_VERSION, "time": int(Time.get_unix_time_from_system()),
+		"gender": gender, "name": player_name, "day": day, "minute": minute, "raining": raining,
+		"coins": coins, "crystals": crystals, "bag": bag, "slot": selected_slot,
+		"tilled": td, "placed": pl, "crops": cr, "animals": an,
+		"map": map_id, "px": pos.x, "py": pos.y,
+	}
+	var tmp: String = SAVE_PATH + ".tmp"
+	var f: FileAccess = FileAccess.open(tmp, FileAccess.WRITE)
+	if f == null:
+		return false
+	f.store_string(JSON.stringify(data))
+	f.close()
+	# tulis ke berkas sementara dulu lalu ganti nama -> berkas simpan tidak rusak bila aplikasi tertutup di tengah jalan
+	var dir: DirAccess = DirAccess.open("user://")
+	if dir == null or dir.rename(tmp.get_file(), SAVE_PATH.get_file()) != OK:
+		return false
+	last_saved_unix = int(data["time"])
+	return true
+
+
+## Muat progres tersimpan. Hasil: berhasil?
+func load_game() -> bool:
+	if not has_save():
+		return false
+	var f: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if f == null:
+		return false
+	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	f.close()
+	if not parsed is Dictionary:
+		return false
+	var d: Dictionary = parsed as Dictionary
+	new_game()
+	gender = str(d.get("gender", gender))
+	player_name = str(d.get("name", player_name))
+	day = int(d.get("day", 1))
+	minute = float(d.get("minute", START_MINUTE))
+	raining = bool(d.get("raining", false))
+	coins = int(d.get("coins", START_COINS))
+	crystals = int(d.get("crystals", START_CRYSTALS))
+	var b: Array = d.get("bag", []) as Array
+	for i: int in range(bag.size()):
+		bag[i] = {}
+		if i < b.size() and b[i] is Dictionary and not (b[i] as Dictionary).is_empty():
+			var it: Dictionary = b[i] as Dictionary
+			if ITEMS.has(str(it.get("id", ""))):
+				bag[i] = {"id": str(it["id"]), "n": int(it.get("n", 1))}
+	selected_slot = int(d.get("slot", 0))
+	tilled = {}
+	var td: Dictionary = d.get("tilled", {}) as Dictionary
+	for mid: String in td.keys():
+		var m: Dictionary = {}
+		for k: String in (td[mid] as Dictionary).keys():
+			m[_key_cell(k)] = {"wet": bool((td[mid] as Dictionary)[k])}
+		tilled[mid] = m
+	placed = []
+	for ev: Variant in d.get("placed", []) as Array:
+		var e: Dictionary = ev as Dictionary
+		if ITEMS.has(str(e.get("id", ""))):
+			placed.append({"id": str(e["id"]), "cell": _key_cell(str(e["c"]))})
+	crops = {}
+	var cr: Dictionary = d.get("crops", {}) as Dictionary
+	for k2: String in cr.keys():
+		var c: Dictionary = cr[k2] as Dictionary
+		if tanaman.has(str(c.get("id", ""))):
+			crops[_key_cell(k2)] = {"id": str(c["id"]), "days": int(c.get("days", 0))}
+	animals = []
+	for av: Variant in d.get("animals", []) as Array:
+		var a: Dictionary = av as Dictionary
+		if ternak.has(str(a.get("jenis", ""))):
+			animals.append({"jenis": str(a["jenis"]), "age": int(a.get("age", 0)), "pos": Vector2(float(a.get("x", 0)), float(a.get("y", 0))),
+				"product": str(a.get("product", ""))})
+	resume_map = str(d.get("map", "ladang"))
+	resume_pos = Vector2(float(d.get("px", -1)), float(d.get("py", -1)))
+	last_saved_unix = int(d.get("time", 0))
+	bag_changed.emit()
+	return true
+
+
+func delete_save() -> void:
+	if has_save():
+		DirAccess.remove_absolute(SAVE_PATH)
 
 
 # ---------------- pengaturan ----------------

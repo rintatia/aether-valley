@@ -39,15 +39,67 @@ func _title() -> void:
 	sub.size = Vector2(vs.x, 30)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	root.add_child(sub)
-	var b: TextureButton = UIKit.pill_button("Start", 300.0)
-	b.position = Vector2((vs.x - b.size.x) / 2.0, vs.y * 0.62)
-	b.pressed.connect(_choose_gender)
-	root.add_child(b)
+	# ada simpanan -> Continue (lanjutkan) + New Game; belum ada -> Start
+	if Game.has_save():
+		var cont: TextureButton = UIKit.pill_button("Continue", 300.0)
+		cont.position = Vector2((vs.x - cont.size.x) / 2.0, vs.y * 0.56)
+		cont.pressed.connect(_continue)
+		root.add_child(cont)
+		var nb: TextureButton = UIKit.pill_button("New Game", 300.0)
+		nb.position = Vector2((vs.x - nb.size.x) / 2.0, cont.position.y + cont.size.y + 16.0)
+		nb.pressed.connect(func() -> void: _confirm_new(root))
+		root.add_child(nb)
+	else:
+		var b: TextureButton = UIKit.pill_button("Start", 300.0)
+		b.position = Vector2((vs.x - b.size.x) / 2.0, vs.y * 0.62)
+		b.pressed.connect(_choose_gender)
+		root.add_child(b)
 	var v: Label = UIKit.pixel_label(UIKit.version(), 16, Color(1, 1, 1, 0.75))
 	v.position = Vector2(0, vs.y - 34)
 	v.size = Vector2(vs.x - 24, 24)
 	v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	root.add_child(v)
+
+
+func _continue() -> void:
+	if Game.load_game():
+		_start_world()
+	else:
+		_choose_gender()
+
+
+## Permainan baru menimpa simpanan lama: minta konfirmasi dulu.
+func _confirm_new(root: Control) -> void:
+	var cover: ColorRect = ColorRect.new()
+	cover.color = Color(0.05, 0.08, 0.05, 0.6)
+	cover.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	root.add_child(cover)
+	var vs: Vector2 = root.get_viewport_rect().size
+	var fr: Array = UIKit.frame("bingkai_21", 260.0)
+	var p: TextureRect = fr[0] as TextureRect
+	var inner: Control = fr[1] as Control
+	p.position = ((vs - p.size) / 2.0).round()
+	cover.add_child(p)
+	var q: Label = UIKit.pixel_label("Start a new game? Your saved farm will be erased.", 24, UIKit.BROWN)
+	q.position = Vector2(20, 14)
+	q.size = Vector2(inner.size.x - 40.0, 70)
+	q.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	q.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	inner.add_child(q)
+	var row: HBoxContainer = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 30)
+	row.position = Vector2(0, inner.size.y - 74)
+	row.size = Vector2(inner.size.x, 60)
+	inner.add_child(row)
+	var yes: TextureButton = UIKit.pill_button("New Game", 200.0)
+	yes.pressed.connect(func() -> void:
+		Game.delete_save()
+		_choose_gender())
+	row.add_child(yes)
+	var no: TextureButton = UIKit.pill_button("Cancel", 200.0)
+	no.pressed.connect(cover.queue_free)
+	row.add_child(no)
 
 
 func _clear() -> void:
@@ -659,5 +711,30 @@ func _selftest() -> void:
 		hud.call("open_popup", tab)
 		_check(bool(hud.get("modal_open")), "popup %s terbuka" % tab)
 		hud.call("close_popup")
+	# --- simpan & muat ---
+	Game.delete_save()
+	Game.new_game()
+	Game.coins = 123456
+	Game.day = 9
+	Game.add_item("silo", 1)
+	Game.placed = [{"id": "cottage", "cell": Vector2i(70, 50)}]
+	Game.tilled_of("ladang")[Vector2i(60, 60)] = {"wet": true}
+	Game.crops[Vector2i(60, 60)] = {"id": "tomato", "days": 3}
+	Game.animals = [{"jenis": "cow", "age": 5, "pos": Vector2(2000, 1800), "product": "milk"}]
+	_check(Game.save_game("ladang", Vector2(1900, 1700)) and Game.has_save(), "simpan ke perangkat")
+	Game.new_game()
+	_check(Game.placed.is_empty() and Game.coins == 1000000, "permainan baru mengosongkan progres")
+	_check(Game.load_game(), "muat simpanan")
+	_check(Game.coins == 123456 and Game.day == 9 and Game.count("silo") == 1, "koin, hari, tas kembali")
+	_check(Game.placed.size() == 1 and (Game.placed[0] as Dictionary)["cell"] == Vector2i(70, 50), "bangunan Farm kembali di tempatnya")
+	_check(Game.crops.has(Vector2i(60, 60)) and int((Game.crops[Vector2i(60, 60)] as Dictionary)["days"]) == 3, "tanaman kembali (hari tumbuh)")
+	_check(bool((Game.tilled_of("ladang")[Vector2i(60, 60)] as Dictionary)["wet"]), "tanah olahan & basah kembali")
+	_check(Game.animals.size() == 1 and str((Game.animals[0] as Dictionary)["product"]) == "milk", "ternak kembali")
+	_check(Game.resume_map == "ladang" and Game.resume_pos == Vector2(1900, 1700), "peta & posisi pemain kembali")
+	world.load_map("ladang", "")
+	_check(world.farm.placed_nodes.size() == 1 and world.farm.crop_nodes.size() == 1 and world.farm.animal_nodes.size() == 1, "Farm dibangun ulang dari simpanan")
+	_check(world.save_now(true), "tombol Save (manual)")
+	_check(is_equal_approx(world.AUTOSAVE_SEC, 60.0), "simpan otomatis setiap 1 menit")
+	Game.delete_save()
 	print("SELFTEST " + ("OK" if _fails == 0 else "GAGAL (%d)" % _fails))
 	get_tree().quit(0 if _fails == 0 else 1)

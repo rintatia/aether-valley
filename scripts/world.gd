@@ -71,6 +71,8 @@ var tint: CanvasModulate
 var toast: Label
 var toast_tw: Tween
 var fade: ColorRect
+const AUTOSAVE_SEC: float = 60.0           # simpan otomatis setiap 1 menit
+var autosave_t: float = 0.0
 
 
 func _ready() -> void:
@@ -104,7 +106,14 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(func() -> void:
 		_fit_zoom()
 		_set_zoom(zoom_now))
-	load_map("ladang", "")
+	if Game.resume_map != "":
+		load_map(Game.resume_map, "")
+		if Game.resume_pos.x >= 0.0:
+			var rc: Vector2i = _nearest_free(_cell(Game.resume_pos))
+			player.position = _center(rc)
+		Game.resume_map = ""
+	else:
+		load_map("ladang", "")
 
 
 # ---------------- peta ----------------
@@ -892,6 +901,10 @@ func _go(to: String) -> void:
 
 # ---------------- gerak ----------------
 func _process(delta: float) -> void:
+	autosave_t += delta
+	if autosave_t >= AUTOSAVE_SEC and not busy:
+		autosave_t = 0.0
+		save_now(false)
 	if bool(hud.get("modal_open")):
 		return
 	Game.tick(delta)
@@ -1351,3 +1364,21 @@ func _catch_bug(i: int) -> void:
 	get_tree().create_timer(30.0).timeout.connect(func() -> void:
 		if is_inside_tree():
 			_add_bug())
+
+
+# ---------------- simpan ----------------
+## Simpan progres ke perangkat. manual = dari tombol Save (pesan jelas); otomatis = penanda kecil saja.
+func save_now(manual: bool) -> bool:
+	var ok: bool = Game.save_game(map_id, player.position)
+	if manual:
+		show_toast("Game saved" if ok else "Save failed")
+	elif hud != null:
+		hud.call("flash_saved", ok)
+	return ok
+
+
+func _notification(what: int) -> void:
+	# aplikasi ditutup / dipindah ke latar belakang (Android) -> simpan dulu
+	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		if is_inside_tree() and player != null and map_id != "":
+			Game.save_game(map_id, player.position)
