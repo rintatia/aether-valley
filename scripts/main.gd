@@ -83,6 +83,13 @@ func _screenshots() -> void:
 	await _shot(pre + "ladang_terjauh.png")
 	w.call("_set_zoom", 6.0)
 	await _shot(pre + "ladang_terdekat_x6.png")
+	w.call("load_map", "hutan", "ladang")
+	w.call("_set_zoom", 2.0)
+	await _shot(pre + "hutan_x2_gerbang.png")
+	(w.get("player") as Node2D).position = Vector2(1900, 1500)
+	await _shot(pre + "hutan_x2_tengah.png")
+	w.call("_set_zoom", 0.01)
+	await _shot(pre + "hutan_terjauh.png")
 	get_tree().quit(0)
 
 

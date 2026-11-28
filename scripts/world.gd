@@ -89,6 +89,7 @@ func load_map(id: String, from_gate: String) -> void:
 	mw = grid[0].length() if mh > 0 else 0
 	for c: Node in ysort.get_children():
 		if c != player:
+			ysort.remove_child(c)
 			c.queue_free()
 	gates.clear()
 	buildings.clear()
@@ -171,6 +172,7 @@ func _place_object(key: String, cell: Vector2i, id: String) -> void:
 ## Mipmap dibuat agar saat kamera jauh rumput tidak berkedip.
 func _load_chunks(dir: String) -> void:
 	for c: Node in chunk_root.get_children():
+		chunk_root.remove_child(c)
 		c.queue_free()
 	if dir == "":
 		return
