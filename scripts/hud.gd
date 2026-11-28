@@ -2,10 +2,10 @@ extends CanvasLayer
 ## HUD permainan: status bar (siang/malam), setting + buku (kiri atas), shortcut bar + peta + tas (bawah),
 ## popup tas (5x5, 10 halaman), peta, buku, setting. Semua tombol bisa ditekan.
 
-const STATUS_W: float = 440.0
-const BAR_W: float = 640.0
-const ICON_SET: float = 78.0
-const ICON_BIG: float = 92.0
+const STATUS_W: float = 340.0
+const BAR_W: float = 500.0
+const ICON_SET: float = 60.0
+const ICON_BIG: float = 72.0
 
 var world: Node2D
 var root: Control
@@ -68,14 +68,14 @@ func _layout() -> void:
 	var m: Vector4 = UIKit.safe_margin(root)
 	status.position = Vector2(vs.x - m.z - STATUS_W, m.y)
 	btn_set.position = Vector2(m.x, m.y)
-	btn_book.position = Vector2(m.x, m.y + btn_set.size.y + 10.0)
-	var total: float = btn_map.size.x + 10.0 + BAR_W + 10.0 + btn_bag.size.x
+	btn_book.position = Vector2(m.x, m.y + btn_set.size.y + 8.0)
+	var total: float = btn_map.size.x + 8.0 + BAR_W + 8.0 + btn_bag.size.x
 	var x0: float = (vs.x - total) / 2.0
 	var bar_h: float = bar.size.y
 	var y_bar: float = vs.y - m.w - bar_h
 	btn_map.position = Vector2(x0, y_bar + (bar_h - btn_map.size.y) / 2.0)
-	bar.position = Vector2(x0 + btn_map.size.x + 10.0, y_bar)
-	btn_bag.position = Vector2(bar.position.x + BAR_W + 10.0, y_bar + (bar_h - btn_bag.size.y) / 2.0)
+	bar.position = Vector2(x0 + btn_map.size.x + 8.0, y_bar)
+	btn_bag.position = Vector2(bar.position.x + BAR_W + 8.0, y_bar + (bar_h - btn_bag.size.y) / 2.0)
 	toast.position = Vector2(0, m.y + 150.0)
 	toast.size = Vector2(vs.x, 40)
 	fade.position = Vector2.ZERO
@@ -96,10 +96,10 @@ func _build_status() -> void:
 	status.size = st_day.size
 	var L: Dictionary = UIKit.layout["status"] as Dictionary
 	var sz: Vector2 = st_day.size
-	lb_date = _field_label(L["tanggal"] as Array, sz, 18)
-	lb_clock = _field_label(L["jam"] as Array, sz, 21)
-	lb_coin = _field_label(L["koin"] as Array, sz, 18)
-	lb_crystal = _field_label(L["kristal"] as Array, sz, 18)
+	lb_date = _field_label(L["tanggal"] as Array, sz, 14)
+	lb_clock = _field_label(L["jam"] as Array, sz, 16)
+	lb_coin = _field_label(L["koin"] as Array, sz, 14)
+	lb_crystal = _field_label(L["kristal"] as Array, sz, 14)
 	lb_coin.add_theme_color_override("font_color", Color("#FFEE9A"))
 	lb_crystal.add_theme_color_override("font_color", Color("#C9BFFA"))
 	var sh: Array = L["musim"] as Array
@@ -108,7 +108,7 @@ func _build_status() -> void:
 	UIKit.place(season_icon, sz, [sh[0], float(sh[1]) + 0.04, sh[2], float(sh[1]) + 0.36])
 	season_icon.draw.connect(_draw_season_icon)
 	status.add_child(season_icon)
-	lb_season = UIKit.pixel_label("", 12, UIKit.BROWN)
+	lb_season = UIKit.pixel_label("", 10, UIKit.BROWN)
 	UIKit.place(lb_season, sz, [float(sh[0]) - 0.01, float(sh[1]) + 0.36, float(sh[2]) + 0.01, float(sh[1]) + 0.52])
 	lb_season.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lb_season.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -238,7 +238,7 @@ func _make_slot(parent: Control, psize: Vector2, r: Array, index: int) -> Dictio
 	ic.offset_bottom = -5
 	ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(ic)
-	var n: Label = UIKit.pixel_label("", 15, UIKit.CREAM, 4, Color("#43251D"))
+	var n: Label = UIKit.pixel_label("", 13, UIKit.CREAM, 4, Color("#43251D"))
 	n.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	n.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	n.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
