@@ -43,4 +43,4 @@ func _refresh() -> void:
 	var i: int = int(t * FPS) % n if walking else 0
 	spr.texture = Art.frame(key, i)
 	var sz: Vector2i = Art.size_of(key)
-	spr.position = Vector2(-sz.x / 2.0, -sz.y + 4.0)
+	spr.position = Vector2(-sz.x / 2.0, -sz.y + sz.y / 6.0)

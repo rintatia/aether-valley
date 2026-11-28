@@ -1,8 +1,8 @@
 extends Node2D
 ## Dunia v7: peta petak 16 px dari data/maps/*.txt, ketuk-untuk-jalan, zoom bulat.
 
-const T: int = 16
-const SPEED: float = 64.0  # piksel seni per detik (4 petak/detik)
+const T: int = 32
+const SPEED: float = 128.0  # piksel seni per detik (4 petak/detik)
 const ZOOMS: Array[int] = [2, 3, 4]
 const TAP_DIST: float = 24.0
 const TAP_TIME: float = 0.45
@@ -23,8 +23,12 @@ var player: Node2D
 var cam: Camera2D
 var path: PackedVector2Array = PackedVector2Array()
 var pending: Dictionary = {}
-var zoom_i: int = 1
+var zoom_i: int = 0   # x2 = terjauh, detail rumput tetap terlihat
 var busy: bool = false
+var baked: Texture2D
+var pinch_zoom0: float = 2.0
+var pinching: bool = false
+var snap_tw: Tween
 
 var touches: Dictionary = {}
 var pinch_ref: float = 0.0
@@ -63,6 +67,9 @@ func _ready() -> void:
 func load_map(id: String, from_gate: String) -> void:
 	map_id = id
 	var m: Dictionary = Art.load_json("res://data/maps/%s.json" % id)
+	baked = null
+	if m.has("baked"):
+		baked = load("res://assets/lanskap/%s.png" % str(m["baked"])) as Texture2D
 	grid = PackedStringArray()
 	for line: Variant in m.get("rows", []) as Array:
 		grid.append(str(line))
@@ -143,6 +150,9 @@ func _place_object(key: String, cell: Vector2i, id: String) -> void:
 
 
 func _draw_ground() -> void:
+	if baked != null:
+		ground.draw_texture(baked, Vector2.ZERO)
+		return
 	for y: int in range(mh):
 		for x: int in range(mw):
 			var L: Dictionary = legend.get(grid[y][x], {}) as Dictionary
@@ -237,6 +247,18 @@ func _apply_zoom() -> void:
 	cam.zoom = Vector2(ZOOMS[zoom_i], ZOOMS[zoom_i])
 
 
+## Jari dilepas: zoom menempel ke tingkat bulat terdekat agar piksel tetap tajam.
+func _pinch_end() -> void:
+	pinching = false
+	var best: int = 0
+	for i: int in range(ZOOMS.size()):
+		if absf(ZOOMS[i] - cam.zoom.x) < absf(ZOOMS[best] - cam.zoom.x):
+			best = i
+	zoom_i = best
+	snap_tw = create_tween()
+	snap_tw.tween_property(cam, "zoom", Vector2(ZOOMS[best], ZOOMS[best]), 0.12)
+
+
 func change_zoom(d: int) -> void:
 	zoom_i = clampi(zoom_i + d, 0, ZOOMS.size() - 1)
 	_apply_zoom()
@@ -252,23 +274,24 @@ func _unhandled_input(e: InputEvent) -> void:
 			touches[t.index] = t.position
 			if touches.size() == 2:
 				var v: Array = touches.values()
-				pinch_ref = (v[0] as Vector2).distance_to(v[1] as Vector2)
-				pinch_done = false
+				pinch_ref = maxf((v[0] as Vector2).distance_to(v[1] as Vector2), 1.0)
+				pinch_zoom0 = cam.zoom.x
+				pinching = true
 				multi = true
+				if snap_tw != null:
+					snap_tw.kill()
 		else:
 			touches.erase(t.index)
+			if pinching and touches.size() < 2:
+				_pinch_end()
 	elif e is InputEventScreenDrag:
 		var dr: InputEventScreenDrag = e as InputEventScreenDrag
 		touches[dr.index] = dr.position
-		if touches.size() == 2 and not pinch_done and pinch_ref > 1.0:
+		if touches.size() >= 2 and pinching:
+			# zoom halus mengikuti jari (seperti Stardew Valley)
 			var v2: Array = touches.values()
-			var ratio: float = (v2[0] as Vector2).distance_to(v2[1] as Vector2) / pinch_ref
-			if ratio >= 1.25:
-				change_zoom(1)
-				pinch_done = true
-			elif ratio <= 0.8:
-				change_zoom(-1)
-				pinch_done = true
+			var z: float = clampf(pinch_zoom0 * (v2[0] as Vector2).distance_to(v2[1] as Vector2) / pinch_ref, ZOOMS[0] - 0.25, ZOOMS[ZOOMS.size() - 1] + 0.25)
+			cam.zoom = Vector2(z, z)
 	elif e is InputEventMouseButton and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
 		var mb: InputEventMouseButton = e as InputEventMouseButton
 		var now: float = Time.get_ticks_msec() / 1000.0

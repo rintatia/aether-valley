@@ -79,15 +79,16 @@ func _placeholder(key: String) -> Texture2D:
 		if kind == "tile":
 			img.fill_rect(Rect2i(ox, 0, sz.x, sz.y), c)
 			# titik halus agar petak terbaca, tetap polos
-			img.set_pixel(ox + 3, 4, c.darkened(0.08))
-			img.set_pixel(ox + 11, 10, c.darkened(0.08))
+			img.set_pixel(ox + sz.x / 5, sz.y / 4, c.darkened(0.08))
+			img.set_pixel(ox + sz.x * 2 / 3, sz.y * 2 / 3, c.darkened(0.08))
 		elif kind == "character":
-			var bob: int = 1 if f % 2 == 1 else 0
-			img.fill_rect(Rect2i(ox + 3, 9 - bob, 10, 11), c)
-			img.fill_rect(Rect2i(ox + 4, 2 - bob, 8, 7), Color("#F5D0B0"))
-			img.fill_rect(Rect2i(ox + 4, 1 - bob + 1, 8, 2), Color("#43251D"))
-			img.fill_rect(Rect2i(ox + 4, 20, 3, 4), Color("#43251D"))
-			img.fill_rect(Rect2i(ox + 9, 20, 3, 4), Color("#43251D"))
+			var k: int = maxi(1, sz.x / 16)
+			var bob: int = (1 if f % 2 == 1 else 0) * k
+			img.fill_rect(Rect2i(ox + 3 * k, 9 * k - bob, 10 * k, 11 * k), c)
+			img.fill_rect(Rect2i(ox + 4 * k, 2 * k - bob, 8 * k, 7 * k), Color("#F5D0B0"))
+			img.fill_rect(Rect2i(ox + 4 * k, 2 * k - bob, 8 * k, 2 * k), Color("#43251D"))
+			img.fill_rect(Rect2i(ox + 4 * k, 20 * k, 3 * k, 4 * k), Color("#43251D"))
+			img.fill_rect(Rect2i(ox + 9 * k, 20 * k, 3 * k, 4 * k), Color("#43251D"))
 		else:
 			var inset: int = 1
 			img.fill_rect(Rect2i(ox + inset, inset, sz.x - inset * 2, sz.y - inset * 2), c.darkened(0.35))

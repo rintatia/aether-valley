@@ -82,6 +82,10 @@ func _screenshots() -> void:
 	await _shot(pre + "zoom_terjauh.png")
 	tt.call("set_zoom", 2, Vector2(430, 330))
 	await _shot(pre + "zoom_terdekat.png")
+	tt.queue_free()
+	var w: Node2D = (load("res://scripts/world.gd") as GDScript).new()
+	add_child(w)
+	await _shot(pre + "ladang_main.png")
 	get_tree().quit(0)
 
 

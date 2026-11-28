@@ -1,5 +1,7 @@
 # Aturan aset Aether Valley v7
 
+> Ukuran petak: **32×32 piksel** (mengikuti tileset & lanskap yang disepakati).
+
 Game membaca aset dari daftar di `data/assets.json`. Selama file belum ada, game memakai kotak warna polos seukuran aset itu. Begitu file dengan **nama dan ukuran persis** di bawah dimasukkan, dia langsung muncul. Tidak perlu mengubah kode.
 
 ## Aturan umum
@@ -12,45 +14,45 @@ Game membaca aset dari daftar di `data/assets.json`. Selama file belum ada, game
 
 ## Cara objek berdiri
 - Objek dan bangunan berdiri di **tepi bawah gambar**: bagian bawah gambar = tanah tempat ia menapak. Sisakan ruang kosong transparan di atas, bukan di bawah.
-- Karakter: kaki di 4 piksel terbawah, badan di tengah horizontal.
+- Karakter: kaki di 8 piksel terbawah, badan di tengah horizontal.
 
-## Ubin tanah & air (16×16, harus bisa disambung ke segala arah)
+## Ubin tanah & air (32×32, harus bisa disambung ke segala arah)
 
 | File | Ukuran (piksel) | Keterangan |
 |---|---|---|
-| `assets/tanah/rumput.png` | 16×16 |  |
-| `assets/tanah/tanah_garap.png` | 16×16 |  |
-| `assets/tanah/jalan.png` | 16×16 |  |
-| `assets/tanah/pasir.png` | 16×16 |  |
-| `assets/air/air.png` | 16×16 |  |
+| `assets/tanah/rumput.png` | 32×32 |  |
+| `assets/tanah/tanah_garap.png` | 32×32 |  |
+| `assets/tanah/jalan.png` | 32×32 |  |
+| `assets/tanah/pasir.png` | 32×32 |  |
+| `assets/air/air.png` | 32×32 |  |
 
 ## Karakter (strip animasi, bingkai berjajar ke kanan)
 
 | File | Ukuran (piksel) | Keterangan |
 |---|---|---|
-| `assets/karakter/petani_jalan_bawah_4f.png` | 64×24 (4 bingkai @ 16×24) |  |
-| `assets/karakter/petani_jalan_atas_4f.png` | 64×24 (4 bingkai @ 16×24) |  |
-| `assets/karakter/petani_jalan_kiri_4f.png` | 64×24 (4 bingkai @ 16×24) |  |
-| `assets/karakter/petani_jalan_kanan_4f.png` | 64×24 (4 bingkai @ 16×24) |  |
+| `assets/karakter/petani_jalan_bawah_4f.png` | 128×48 (4 bingkai @ 32×48) |  |
+| `assets/karakter/petani_jalan_atas_4f.png` | 128×48 (4 bingkai @ 32×48) |  |
+| `assets/karakter/petani_jalan_kiri_4f.png` | 128×48 (4 bingkai @ 32×48) |  |
+| `assets/karakter/petani_jalan_kanan_4f.png` | 128×48 (4 bingkai @ 32×48) |  |
 
 ## Objek (berdiri di atas satu petak)
 
 | File | Ukuran (piksel) | Keterangan |
 |---|---|---|
-| `assets/objek/pohon.png` | 32×48 |  |
-| `assets/objek/semak.png` | 16×16 |  |
-| `assets/objek/batu.png` | 16×16 |  |
-| `assets/objek/kotak_kirim.png` | 16×16 |  |
+| `assets/objek/pohon.png` | 64×96 |  |
+| `assets/objek/semak.png` | 32×32 |  |
+| `assets/objek/batu.png` | 32×32 |  |
+| `assets/objek/kotak_kirim.png` | 32×32 |  |
 
-## Bangunan (berdiri di atas tapak 5×3 petak)
+## Bangunan (berdiri di atas tapak 10×6 petak)
 
 | File | Ukuran (piksel) | Keterangan |
 |---|---|---|
-| `assets/bangunan/rumah_pemain.png` | 80×64 | Rumah |
-| `assets/bangunan/toko_serba_ada.png` | 80×64 | Toko Serba Ada |
-| `assets/bangunan/pandai_besi.png` | 80×64 | Pandai Besi |
-| `assets/bangunan/kedai.png` | 80×64 | Kedai |
-| `assets/bangunan/rumah_tetua.png` | 80×64 | Rumah Tetua |
+| `assets/bangunan/rumah_pemain.png` | 160×128 | Rumah |
+| `assets/bangunan/toko_serba_ada.png` | 160×128 | Toko Serba Ada |
+| `assets/bangunan/pandai_besi.png` | 160×128 | Pandai Besi |
+| `assets/bangunan/kedai.png` | 160×128 | Kedai |
+| `assets/bangunan/rumah_tetua.png` | 160×128 | Rumah Tetua |
 
 ## Palet 47 warna
 

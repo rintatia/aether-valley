@@ -1,21 +1,210 @@
 {
-  "_note": "Daftar aset v7. 'file' relatif ke res://assets/. Kalau file belum ada, game memakai kotak warna polos. 'size' dalam piksel seni, 'foot' = petak yang menghalangi (lebar x tinggi) dari kiri bawah.",
-  "tile_rumput":   {"file": "tanah/rumput.png",      "size": [16, 16], "color": "#6EA427", "kind": "tile"},
-  "tile_tanah":    {"file": "tanah/tanah_garap.png", "size": [16, 16], "color": "#B58A2A", "kind": "tile"},
-  "tile_jalan":    {"file": "tanah/jalan.png",       "size": [16, 16], "color": "#DE9A4C", "kind": "tile"},
-  "tile_pasir":    {"file": "tanah/pasir.png",       "size": [16, 16], "color": "#EDBB78", "kind": "tile"},
-  "tile_air":      {"file": "air/air.png",           "size": [16, 16], "color": "#34A0D6", "kind": "tile"},
-  "obj_pohon":     {"file": "objek/pohon.png",       "size": [32, 48], "color": "#2F6A32", "kind": "object", "foot": [1, 1]},
-  "obj_semak":     {"file": "objek/semak.png",       "size": [16, 16], "color": "#4E912F", "kind": "object", "foot": [1, 1]},
-  "obj_batu":      {"file": "objek/batu.png",        "size": [16, 16], "color": "#8E8A8A", "kind": "object", "foot": [1, 1]},
-  "obj_kotak_kirim": {"file": "objek/kotak_kirim.png", "size": [16, 16], "color": "#A55E36", "kind": "object", "foot": [1, 1]},
-  "bld_rumah":     {"file": "bangunan/rumah_pemain.png", "size": [80, 64], "color": "#C87D38", "kind": "building", "foot": [5, 3], "label": "Rumah"},
-  "bld_toko":      {"file": "bangunan/toko_serba_ada.png", "size": [80, 64], "color": "#2480BE", "kind": "building", "foot": [5, 3], "label": "Toko Serba Ada"},
-  "bld_pandai":    {"file": "bangunan/pandai_besi.png", "size": [80, 64], "color": "#6B6670", "kind": "building", "foot": [5, 3], "label": "Pandai Besi"},
-  "bld_kedai":     {"file": "bangunan/kedai.png",    "size": [80, 64], "color": "#D8574F", "kind": "building", "foot": [5, 3], "label": "Kedai"},
-  "bld_tetua":     {"file": "bangunan/rumah_tetua.png", "size": [80, 64], "color": "#6B5BA8", "kind": "building", "foot": [5, 3], "label": "Rumah Tetua"},
-  "chr_petani_bawah": {"file": "karakter/petani_jalan_bawah_4f.png", "size": [16, 24], "frames": 4, "color": "#D8574F", "kind": "character"},
-  "chr_petani_atas":  {"file": "karakter/petani_jalan_atas_4f.png",  "size": [16, 24], "frames": 4, "color": "#D8574F", "kind": "character"},
-  "chr_petani_kiri":  {"file": "karakter/petani_jalan_kiri_4f.png",  "size": [16, 24], "frames": 4, "color": "#D8574F", "kind": "character"},
-  "chr_petani_kanan": {"file": "karakter/petani_jalan_kanan_4f.png", "size": [16, 24], "frames": 4, "color": "#D8574F", "kind": "character"}
+  "_note": "Daftar aset v7. 'file' relatif ke res://assets/. Kalau file belum ada, game memakai kotak warna polos. 'size' dalam piksel seni (petak 32 px), 'foot' = petak yang menghalangi (lebar x tinggi) dari kiri bawah.",
+  "tile_rumput": {
+    "file": "tanah/rumput.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#6EA427",
+    "kind": "tile"
+  },
+  "tile_tanah": {
+    "file": "tanah/tanah_garap.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#B58A2A",
+    "kind": "tile"
+  },
+  "tile_jalan": {
+    "file": "tanah/jalan.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#DE9A4C",
+    "kind": "tile"
+  },
+  "tile_pasir": {
+    "file": "tanah/pasir.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#EDBB78",
+    "kind": "tile"
+  },
+  "tile_air": {
+    "file": "air/air.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#34A0D6",
+    "kind": "tile"
+  },
+  "obj_pohon": {
+    "file": "objek/pohon.png",
+    "size": [
+      64,
+      96
+    ],
+    "color": "#2F6A32",
+    "kind": "object",
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_semak": {
+    "file": "objek/semak.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#4E912F",
+    "kind": "object",
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_batu": {
+    "file": "objek/batu.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#8E8A8A",
+    "kind": "object",
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "obj_kotak_kirim": {
+    "file": "objek/kotak_kirim.png",
+    "size": [
+      32,
+      32
+    ],
+    "color": "#A55E36",
+    "kind": "object",
+    "foot": [
+      1,
+      1
+    ]
+  },
+  "bld_rumah": {
+    "file": "bangunan/rumah_pemain.png",
+    "size": [
+      160,
+      128
+    ],
+    "color": "#C87D38",
+    "kind": "building",
+    "foot": [
+      5,
+      3
+    ],
+    "label": "Rumah"
+  },
+  "bld_toko": {
+    "file": "bangunan/toko_serba_ada.png",
+    "size": [
+      160,
+      128
+    ],
+    "color": "#2480BE",
+    "kind": "building",
+    "foot": [
+      5,
+      3
+    ],
+    "label": "Toko Serba Ada"
+  },
+  "bld_pandai": {
+    "file": "bangunan/pandai_besi.png",
+    "size": [
+      160,
+      128
+    ],
+    "color": "#6B6670",
+    "kind": "building",
+    "foot": [
+      5,
+      3
+    ],
+    "label": "Pandai Besi"
+  },
+  "bld_kedai": {
+    "file": "bangunan/kedai.png",
+    "size": [
+      160,
+      128
+    ],
+    "color": "#D8574F",
+    "kind": "building",
+    "foot": [
+      5,
+      3
+    ],
+    "label": "Kedai"
+  },
+  "bld_tetua": {
+    "file": "bangunan/rumah_tetua.png",
+    "size": [
+      160,
+      128
+    ],
+    "color": "#6B5BA8",
+    "kind": "building",
+    "foot": [
+      5,
+      3
+    ],
+    "label": "Rumah Tetua"
+  },
+  "chr_petani_bawah": {
+    "file": "karakter/petani_jalan_bawah_4f.png",
+    "size": [
+      32,
+      48
+    ],
+    "frames": 4,
+    "color": "#D8574F",
+    "kind": "character"
+  },
+  "chr_petani_atas": {
+    "file": "karakter/petani_jalan_atas_4f.png",
+    "size": [
+      32,
+      48
+    ],
+    "frames": 4,
+    "color": "#D8574F",
+    "kind": "character"
+  },
+  "chr_petani_kiri": {
+    "file": "karakter/petani_jalan_kiri_4f.png",
+    "size": [
+      32,
+      48
+    ],
+    "frames": 4,
+    "color": "#D8574F",
+    "kind": "character"
+  },
+  "chr_petani_kanan": {
+    "file": "karakter/petani_jalan_kanan_4f.png",
+    "size": [
+      32,
+      48
+    ],
+    "frames": 4,
+    "color": "#D8574F",
+    "kind": "character"
+  }
 }
