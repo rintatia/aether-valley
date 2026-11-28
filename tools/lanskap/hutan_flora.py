@@ -185,15 +185,15 @@ if cfg['tebang']:
     from scipy.ndimage import gaussian_filter
     clear = gaussian_filter(rng.standard_normal((R, C)), 6)
     clear = clear / clear.std()
-    for _ in range(40000):
+    for _ in range(120000):
         x, y = rng.uniform(0, W), rng.uniform(0, H)
         cx, cy = int(x // T), int(y // T)
         # jauh dari sabuk tertutup & lorong, tidak di titik muncul
-        if any(grid[yy][xx] in '#<>' for yy in range(max(0, cy - 2), min(R, cy + 3)) for xx in range(max(0, cx - 2), min(C, cx + 3))):
+        if any(grid[yy][xx] in '#<>' for yy in range(max(0, cy - 1), min(R, cy + 1)) for xx in range(max(0, cx - 1), min(C, cx + 2))):
             continue
-        if in_corridor(x, y, pad=2.5) or (x - sp[0]) ** 2 + (y - sp[1]) ** 2 < (4 * T) ** 2:
+        if in_corridor(x, y, pad=0.5) or (x - sp[0]) ** 2 + (y - sp[1]) ** 2 < (2 * T) ** 2:
             continue
-        if clear[cy, cx] < -0.75 or rng.random() > np.clip(0.75 + 0.30 * clear[cy, cx], 0.25, 1.0):
+        if rng.random() > np.clip(0.85 + 0.15 * clear[cy, cx], 0.6, 1.0):
             continue                      # padang terbuka & kepadatan berubah-ubah (rumpun dan celah alami)
         code = pick(CHOP)
         s_ = rng.uniform(0.78, 1.0)

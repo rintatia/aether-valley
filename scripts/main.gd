@@ -178,7 +178,8 @@ func _selftest() -> void:
 	_check(_edge_closed(), "hutan: seluruh tepi tertutup kecuali gerbang")
 	var arrive: Vector2i = world._cell(world.player.position)
 	_check(arrive.x > 100, "datang dari ladang muncul di sisi kanan hutan")
-	_check(world.chop_trees.size() > 400, "pohon tebang: %d" % world.chop_trees.size())
+	_check(world.chop_trees.size() > 800, "pohon tebang: %d" % world.chop_trees.size())
+	_check(world.find_path(arrive, Vector2i(world.mw / 2, world.mh / 2)).size() > 20, "hutan rapat tapi tetap bisa dijelajahi sampai tengah")
 	var k0: int = world.kayu
 	var ct: Dictionary = world.chop_trees[0]
 	var old_cell: Vector2i = ct["cell"] as Vector2i

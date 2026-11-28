@@ -351,11 +351,11 @@ func _find_chop_spots() -> void:
 	chop_spots.clear()
 	if chop_kinds.is_empty():
 		return
-	for y: int in range(3, mh - 3):
-		for x: int in range(3, mw - 3):
+	for y: int in range(2, mh - 2):
+		for x: int in range(2, mw - 2):
 			var ok: bool = true
-			for yy: int in range(y - 3, y + 4):
-				for xx: int in range(x - 3, x + 4):
+			for yy: int in range(y - 1, y + 2):
+				for xx: int in range(x - 1, x + 2):
 					var ch: String = grid[yy][xx]
 					if ch == "#" or ch == "<" or ch == ">":
 						ok = false
