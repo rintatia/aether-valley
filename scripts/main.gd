@@ -55,11 +55,6 @@ func _title() -> void:
 		world = (load("res://scripts/world.gd") as GDScript).new()
 		add_child(world))
 	v.add_child(b)
-	var bt: Button = UIKit.button("Lihat Lanskap Starter", 0, 64)
-	bt.pressed.connect(func() -> void:
-		layer.queue_free()
-		add_child((load("res://scripts/tiletest.gd") as GDScript).new()))
-	v.add_child(bt)
 
 
 # ---------------- tangkapan layar (CI, pakai layar virtual) ----------------
@@ -76,16 +71,14 @@ func _shot(name: String) -> void:
 
 
 func _screenshots() -> void:
-	var tt: Node2D = (load("res://scripts/tiletest.gd") as GDScript).new()
-	add_child(tt)
-	var pre: String = OS.get_environment("SHOT_PREFIX")
-	await _shot(pre + "zoom_terjauh.png")
-	tt.call("set_zoom", 2, Vector2(430, 330))
-	await _shot(pre + "zoom_terdekat.png")
-	tt.queue_free()
 	var w: Node2D = (load("res://scripts/world.gd") as GDScript).new()
 	add_child(w)
-	await _shot(pre + "ladang_main.png")
+	var pre: String = OS.get_environment("SHOT_PREFIX")
+	await _shot(pre + "ladang_x2_awal.png")
+	w.call("_set_zoom", 0.01)
+	await _shot(pre + "ladang_terjauh.png")
+	w.call("_set_zoom", 6.0)
+	await _shot(pre + "ladang_terdekat_x6.png")
 	get_tree().quit(0)
 
 
@@ -111,7 +104,9 @@ func _selftest() -> void:
 	world = (load("res://scripts/world.gd") as GDScript).new()
 	add_child(world)
 	await get_tree().process_frame
-	_check(world.mw == 40 and world.mh == 30, "peta ladang 40x30")
+	_check(world.mw == 155 and world.mh == 116, "peta ladang 155x116 (15x lebih luas)")
+	_check(world.chunk_root.get_child_count() == 20, "20 potongan lanskap terpasang")
+	_check(world.astar.is_point_solid(Vector2i(0, 0)) and world.astar.is_point_solid(Vector2i(154, 0)), "batas peta tidak bisa dilewati")
 	var gate: Vector2i = Vector2i(-1, -1)
 	for g: Vector2i in world.gates.keys():
 		gate = g

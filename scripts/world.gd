@@ -1,9 +1,13 @@
 extends Node2D
-## Dunia v7: peta petak 16 px dari data/maps/*.txt, ketuk-untuk-jalan, zoom bulat.
+## Dunia v7: peta petak 32 px dari data/maps/*.json, ketuk-untuk-jalan.
+## Zoom = jarak KAMERA. Peta & detailnya tetap; karakter ikut membesar/mengecil di layar.
+## Terjauh: seluruh peta memenuhi layar. Terdekat: x6. Di >= x1.5 zoom menempel ke angka bulat (piksel tajam).
 
 const T: int = 32
 const SPEED: float = 128.0  # piksel seni per detik (4 petak/detik)
-const ZOOMS: Array[int] = [2, 3, 4]
+const ZOOM_MAX: float = 6.0
+const ZOOM_DEFAULT: float = 2.0
+const ZOOM_STEPS: Array[float] = [0.5, 1.0, 2.0, 3.0, 4.0, 6.0]
 const TAP_DIST: float = 24.0
 const TAP_TIME: float = 0.45
 
@@ -23,9 +27,10 @@ var player: Node2D
 var cam: Camera2D
 var path: PackedVector2Array = PackedVector2Array()
 var pending: Dictionary = {}
-var zoom_i: int = 0   # x2 = terjauh, detail rumput tetap terlihat
+var zoom_min: float = 1.0   # dihitung dari ukuran peta & layar (seluruh peta memenuhi layar)
+var zoom_now: float = ZOOM_DEFAULT
 var busy: bool = false
-var baked: Texture2D
+var chunk_root: Node2D
 var pinch_zoom0: float = 2.0
 var pinching: bool = false
 var snap_tw: Tween
@@ -50,6 +55,8 @@ func _ready() -> void:
 	ground = Node2D.new()
 	ground.draw.connect(_draw_ground)
 	add_child(ground)
+	chunk_root = Node2D.new()
+	ground.add_child(chunk_root)
 	ysort = Node2D.new()
 	ysort.y_sort_enabled = true
 	add_child(ysort)
@@ -59,7 +66,9 @@ func _ready() -> void:
 	cam = Camera2D.new()
 	player.add_child(cam)
 	_build_hud()
-	_apply_zoom()
+	get_viewport().size_changed.connect(func() -> void:
+		_fit_zoom()
+		_set_zoom(zoom_now))
 	load_map("ladang", "")
 
 
@@ -67,9 +76,7 @@ func _ready() -> void:
 func load_map(id: String, from_gate: String) -> void:
 	map_id = id
 	var m: Dictionary = Art.load_json("res://data/maps/%s.json" % id)
-	baked = null
-	if m.has("baked"):
-		baked = load("res://assets/lanskap/%s.png" % str(m["baked"])) as Texture2D
+	_load_chunks(str(m.get("chunks", "")))
 	grid = PackedStringArray()
 	for line: Variant in m.get("rows", []) as Array:
 		grid.append(str(line))
@@ -117,6 +124,8 @@ func load_map(id: String, from_gate: String) -> void:
 	pending = {}
 	lbl_map.text = "Ladang" if id == "ladang" else "Kota"
 	ground.queue_redraw()
+	_fit_zoom()
+	_set_zoom(zoom_now)
 
 
 func _place_object(key: String, cell: Vector2i, id: String) -> void:
@@ -149,9 +158,30 @@ func _place_object(key: String, cell: Vector2i, id: String) -> void:
 	ysort.add_child(holder)
 
 
+## Lanskap dipanggang dipasang per potongan 1024 px (aman untuk batas tekstur GPU HP).
+## Mipmap dibuat agar saat kamera jauh rumput tidak berkedip.
+func _load_chunks(dir: String) -> void:
+	for c: Node in chunk_root.get_children():
+		c.queue_free()
+	if dir == "":
+		return
+	var info: Dictionary = Art.load_json("res://assets/lanskap/%s/info.json" % dir)
+	var cs: int = int(info["chunk"])
+	for cy: int in range(int(info["ny"])):
+		for cx: int in range(int(info["nx"])):
+			var src: Texture2D = load("res://assets/lanskap/%s/c_%d_%d.png" % [dir, cx, cy]) as Texture2D
+			var img: Image = src.get_image()
+			img.convert(Image.FORMAT_RGB8)
+			img.generate_mipmaps()
+			var sp: Sprite2D = Sprite2D.new()
+			sp.texture = ImageTexture.create_from_image(img)
+			sp.centered = false
+			sp.position = Vector2(cx * cs, cy * cs)
+			chunk_root.add_child(sp)
+
+
 func _draw_ground() -> void:
-	if baked != null:
-		ground.draw_texture(baked, Vector2.ZERO)
+	if chunk_root.get_child_count() > 0:
 		return
 	for y: int in range(mh):
 		for x: int in range(mw):
@@ -243,25 +273,56 @@ func show_toast(t: String) -> void:
 	toast_tw.tween_property(toast, "modulate:a", 0.0, 0.4)
 
 
+func _fit_zoom() -> void:
+	var vs: Vector2 = get_viewport_rect().size
+	if mw == 0 or mh == 0:
+		return
+	zoom_min = maxf(vs.x / float(mw * T), vs.y / float(mh * T))
+
+
+func _set_zoom(z: float) -> void:
+	zoom_now = clampf(z, zoom_min, ZOOM_MAX)
+	cam.zoom = Vector2(zoom_now, zoom_now)
+	# kamera jauh (< x1): beberapa piksel peta jadi satu piksel layar -> pakai mipmap agar tidak berkedip
+	ground.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS if zoom_now < 1.0 else CanvasItem.TEXTURE_FILTER_NEAREST
+
+
 func _apply_zoom() -> void:
-	cam.zoom = Vector2(ZOOMS[zoom_i], ZOOMS[zoom_i])
+	_set_zoom(zoom_now)
 
 
-## Jari dilepas: zoom menempel ke tingkat bulat terdekat agar piksel tetap tajam.
+func _tween_zoom(target: float) -> void:
+	if snap_tw != null:
+		snap_tw.kill()
+	snap_tw = create_tween()
+	snap_tw.tween_method(_set_zoom, cam.zoom.x, clampf(target, zoom_min, ZOOM_MAX), 0.15)
+
+
+func _levels() -> Array[float]:
+	var out: Array[float] = [zoom_min]
+	for z: float in ZOOM_STEPS:
+		if z > zoom_min * 1.08 and z <= ZOOM_MAX:
+			out.append(z)
+	return out
+
+
+## Jari dilepas: di >= x1.5 menempel ke angka bulat terdekat (piksel tajam); lebih jauh dari itu dibiarkan.
 func _pinch_end() -> void:
 	pinching = false
-	var best: int = 0
-	for i: int in range(ZOOMS.size()):
-		if absf(ZOOMS[i] - cam.zoom.x) < absf(ZOOMS[best] - cam.zoom.x):
-			best = i
-	zoom_i = best
-	snap_tw = create_tween()
-	snap_tw.tween_property(cam, "zoom", Vector2(ZOOMS[best], ZOOMS[best]), 0.12)
+	var z: float = cam.zoom.x
+	if z >= 1.5:
+		_tween_zoom(roundf(z))
+	else:
+		_set_zoom(z)
 
 
 func change_zoom(d: int) -> void:
-	zoom_i = clampi(zoom_i + d, 0, ZOOMS.size() - 1)
-	_apply_zoom()
+	var lv: Array[float] = _levels()
+	var best: int = 0
+	for i: int in range(lv.size()):
+		if absf(lv[i] - zoom_now) < absf(lv[best] - zoom_now):
+			best = i
+	_tween_zoom(lv[clampi(best + d, 0, lv.size() - 1)])
 
 
 # ---------------- input ----------------
@@ -290,8 +351,7 @@ func _unhandled_input(e: InputEvent) -> void:
 		if touches.size() >= 2 and pinching:
 			# zoom halus mengikuti jari (seperti Stardew Valley)
 			var v2: Array = touches.values()
-			var z: float = clampf(pinch_zoom0 * (v2[0] as Vector2).distance_to(v2[1] as Vector2) / pinch_ref, ZOOMS[0] - 0.25, ZOOMS[ZOOMS.size() - 1] + 0.25)
-			cam.zoom = Vector2(z, z)
+			_set_zoom(pinch_zoom0 * (v2[0] as Vector2).distance_to(v2[1] as Vector2) / pinch_ref)
 	elif e is InputEventMouseButton and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
 		var mb: InputEventMouseButton = e as InputEventMouseButton
 		var now: float = Time.get_ticks_msec() / 1000.0
@@ -304,6 +364,8 @@ func _unhandled_input(e: InputEvent) -> void:
 			if pressing and not multi and mb.position.distance_to(press_pos) <= TAP_DIST and now - press_t <= TAP_TIME:
 				tap_world(get_canvas_transform().affine_inverse() * mb.position)
 			pressing = false
+	elif e is InputEventMouseButton and (e as InputEventMouseButton).pressed and ((e as InputEventMouseButton).button_index == MOUSE_BUTTON_WHEEL_UP or (e as InputEventMouseButton).button_index == MOUSE_BUTTON_WHEEL_DOWN):
+		_set_zoom(zoom_now * (1.1 if (e as InputEventMouseButton).button_index == MOUSE_BUTTON_WHEEL_UP else 1.0 / 1.1))
 	elif e is InputEventKey and (e as InputEventKey).pressed and not (e as InputEventKey).echo:
 		var k: Key = (e as InputEventKey).keycode
 		if k == KEY_EQUAL or k == KEY_KP_ADD:
