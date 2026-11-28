@@ -79,6 +79,7 @@ func _ready() -> void:
 	chunk_root = Node2D.new()
 	ground.add_child(chunk_root)
 	soil = Node2D.new()
+	soil.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS   # tileset 128 px/petak -> halus & tajam di semua zoom
 	soil.draw.connect(_draw_soil)
 	add_child(soil)
 	ysort = Node2D.new()
@@ -1178,22 +1179,58 @@ func _splash(p: Vector2) -> void:
 		tw.tween_callback(d.queue_free)
 
 
-## Tanah olahan: petak cokelat dengan alur; basah = lebih gelap.
+## Tanah olahan: tileset dual-grid 15 bagian (4x4 petak; tiap petak 128 px = resolusi tinggi untuk 32 px dunia).
+## Petak yang digambar berada di antara sel logika; pilihannya dari 4 sel di sekitarnya, jadi tepi menyambung alami.
+## Lapisan kering untuk semua tanah olahan, lalu lapisan basah (lebih gelap) hanya untuk sel yang disiram.
+const DUAL_FRAME: Array[int] = [-1, 15, 8, 9, 0, 11, 14, 7, 13, 4, 1, 10, 3, 2, 5, 6]
+var soil_tex: Dictionary = {}
+
+
+func _soil_texture(name: String) -> Texture2D:
+	if not soil_tex.has(name):
+		var img: Image = (load("res://assets/lanskap/%s.png" % name) as Texture2D).get_image()
+		img.generate_mipmaps()
+		soil_tex[name] = ImageTexture.create_from_image(img)
+	return soil_tex[name] as Texture2D
+
+
 func _draw_soil() -> void:
 	var td: Dictionary = Game.tilled_of(map_id)
+	if td.is_empty():
+		return
+	var wet: Dictionary = {}
 	for cv: Variant in td.keys():
+		if bool((td[cv] as Dictionary).get("wet", false)):
+			wet[cv] = true
+	_draw_dual(td, _soil_texture("tanah_olah"))
+	if not wet.is_empty():
+		_draw_dual(wet, _soil_texture("tanah_basah"))
+
+
+func _draw_dual(cells: Dictionary, tex: Texture2D) -> void:
+	var ts: float = tex.get_width() / 4.0
+	var done: Dictionary = {}
+	for cv: Variant in cells.keys():
 		var c: Vector2i = cv as Vector2i
-		var wet: bool = bool((td[cv] as Dictionary).get("wet", false))
-		var r: Rect2 = Rect2(c.x * T + 1, c.y * T + 1, T - 2, T - 2)
-		var base: Color = Color("#5E3B26") if wet else Color("#9A6741")
-		var edge: Color = Color("#3E2617") if wet else Color("#6F4429")
-		var lite: Color = Color("#7A5034") if wet else Color("#B5824F")
-		soil.draw_rect(r, edge)
-		soil.draw_rect(r.grow(-2.0), base)
-		for k: int in range(3):
-			var y: float = r.position.y + 7.0 + k * 9.0
-			soil.draw_rect(Rect2(r.position.x + 4, y, r.size.x - 8, 2), edge)
-			soil.draw_rect(Rect2(r.position.x + 4, y + 2, r.size.x - 8, 1), lite)
+		for d: Vector2i in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]:
+			var p: Vector2i = c + d
+			if done.has(p):
+				continue
+			done[p] = true
+			var mask: int = 0
+			if cells.has(p + Vector2i(-1, -1)):
+				mask |= 1
+			if cells.has(p + Vector2i(0, -1)):
+				mask |= 2
+			if cells.has(p + Vector2i(-1, 0)):
+				mask |= 4
+			if cells.has(p):
+				mask |= 8
+			var fr: int = DUAL_FRAME[mask]
+			if fr < 0:
+				continue
+			soil.draw_texture_rect_region(tex, Rect2((p.x - 0.5) * T, (p.y - 0.5) * T, T, T),
+				Rect2((fr % 4) * ts, (fr / 4) * ts, ts, ts))
 
 
 # ---------------- kupu-kupu ----------------

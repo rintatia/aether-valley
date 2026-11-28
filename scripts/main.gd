@@ -133,12 +133,16 @@ func _screenshots() -> void:
 	w.call("_set_zoom", 3.0)
 	var pl: Node2D = w.get("player") as Node2D
 	var pc: Vector2 = pl.position
-	for yy: int in range(0, 2):
-		for xx: int in range(-1, 2):
-			w.call("use_tool", "cangkul", pc + Vector2(xx * 32 + 40, yy * 32 + 20))
-	for xx: int in range(-1, 1):
-		w.call("use_tool", "penyiram", pc + Vector2(xx * 32 + 40, 20))
+	Game.raining = false
+	# petak tanah olahan berbentuk tak beraturan (tepi dual-grid menyambung), sebagian disiram
+	for v: Vector2i in [Vector2i(-2, 1), Vector2i(-1, 1), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(-2, 2), Vector2i(-1, 2),
+			Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(0, 3), Vector2i(1, 3), Vector2i(2, 3), Vector2i(3, 2), Vector2i(-2, 3)]:
+		w.call("use_tool", "cangkul", pc + Vector2(v.x * 32, v.y * 32))
+	for v: Vector2i in [Vector2i(0, 2), Vector2i(1, 2), Vector2i(0, 3), Vector2i(1, 3), Vector2i(2, 2)]:
+		w.call("use_tool", "penyiram", pc + Vector2(v.x * 32, v.y * 32))
 	await get_tree().create_timer(0.8).timeout
+	w.call("_set_zoom", 4.0)
+	await _shot(pre + "24_tanah.png")
 	Game.selected_slot = 0
 	(w.get("hud") as CanvasLayer).call("_refresh_items")
 	w.call("_set_zoom", 4.0)
